@@ -1,0 +1,2 @@
+D:/Mobile app/IMPAL/consolidated_stage_sb1/android/app/.cxx/RelWithDebInfo/551c5663/x86/CMakeFiles/edit_cache.dir
+D:/Mobile app/IMPAL/consolidated_stage_sb1/android/app/.cxx/RelWithDebInfo/551c5663/x86/CMakeFiles/rebuild_cache.dir
