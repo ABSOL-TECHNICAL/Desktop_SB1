@@ -239,16 +239,16 @@ class _TempReceiptState extends State<TempReceipt> {
 
     return Material(
         child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Create Temp Receipt',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color(0xFF161717),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Create Temp Receipt',
+      //     style: theme.textTheme.bodyLarge?.copyWith(
+      //       color: Colors.white,
+      //     ),
+      //   ),
+      //   backgroundColor: const Color(0xFF161717),
+      //   iconTheme: const IconThemeData(color: Colors.white),
+      // ),
       body: Center(
           child: Stack(
         children: [

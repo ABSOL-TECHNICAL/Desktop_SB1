@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:impal_desktop/features/cyberwarehosue/view/planning_indent.dart';
 import 'package:impal_desktop/features/login/controllers/login_controller.dart';
-import 'package:impal_desktop/features/sales/managers/reports/create_report/create_report.dart';
-import 'package:impal_desktop/features/sales/managers/reports/temp_receipt/temp_receipt.dart';
+
+import 'package:impal_desktop/features/sales/managers/reports/merge_reports/merge_reports.dart';
+
 import 'package:impal_desktop/features/sales/managers/reports/visit_report/view/visit_report.dart';
 import 'package:impal_desktop/features/sales/managers/reports/visit_report_manager/view/visit_report_m.dart';
 import 'package:impal_desktop/features/sales/managers/reports/visit_temp_reciept/view/visit_temp_report.dart';
@@ -45,26 +46,35 @@ class _ReportsState extends State<Reports> {
                 runSpacing: 16.0,
                 alignment: WrapAlignment.center,
                 children: [
-                  _buildReportCard(context, Icons.add_box_outlined,
-                      'Generate Report', CreateReport(), Colors.blue, 0),
+                  // _buildReportCard(context, Icons.add_box_outlined,
+                  //     'Generate Report', CreateReport(), Colors.blue, 0),
                   if (isManager)
                     _buildReportCard(context, Icons.storage, 'Planning Indent',
                         PlanningIndent(), Colors.purple, 7),
                   if (!isManager)
                     _buildReportCard(context, Icons.insert_chart_outlined,
                         'Visit Summary', VisitReport(), Colors.green, 2),
-                  _buildReportCard(
-                      context,
-                      Icons.receipt_long,
-                      'Generate Temporary Receipt',
-                      TempReceipt(),
-                      Colors.orange,
-                      3),
+                  // _buildReportCard(
+                  //     context,
+                  //     Icons.receipt_long,
+                  //     'Generate Temporary Receipt',
+                  //     TempReceipt(),
+                  //     Colors.orange,
+                  //     3),
                   _buildReportCard(
                       context,
                       Icons.business,
                       "Temporary Receipt Summary",
                       VisitTempReceipt(),
+                      Colors.green,
+                      7),
+
+                       _buildReportCard(
+                      context,
+                      Icons.file_copy,
+                      "Merge Reports",
+                      MergeReportsPage(),
+                      
                       Colors.green,
                       4),
                   if (isManager)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:impal_desktop/features/global/theme/widgets/search.dart';
 import 'package:impal_desktop/features/global/theme/widgets/suppliersearchdrodown.dart';
+import 'package:intl/intl.dart';
 
 import 'package:shimmer/shimmer.dart';
 import 'package:get/get.dart';
@@ -47,6 +48,11 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
   final BranchTransfersController locationController = Get.find();
   RxList<DefaulBranchstock> searchedBranch = <DefaulBranchstock>[].obs;
 
+
+
+  String fromDate = 'Choose From Date';
+  String toDate = 'Choose To Date';
+
   Future<String?> getSupplierId(String supplierName) async {
     final selectedSupplierDetails = globalSupplierController
         .globalsupplierController
@@ -92,6 +98,75 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
       });
     });
   }
+  Future<void> _pickFromDate() async {
+    DateTime pickedDate;
+    if (fromDate != 'Choose From Date') {
+      pickedDate = DateFormat('dd/MM/yyyy').parse(fromDate);
+    } else {
+      pickedDate = DateTime.now();
+    }
+
+    DateTime? newPickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (newPickedDate != null) {
+      _onFromDatePicked(newPickedDate);
+    }
+  }
+
+  Future<void> _pickToDate() async {
+    DateTime pickedDate;
+    if (toDate != 'Choose To Date') {
+      pickedDate = DateFormat('dd/MM/yyyy').parse(toDate);
+    } else {
+      pickedDate = DateTime.now();
+    }
+
+    DateTime? newPickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime(2000), // Ensure a valid date
+      lastDate: DateTime(2100),
+    );
+
+    if (newPickedDate != null) {
+      _onToDatePicked(newPickedDate);
+    }
+  }
+
+  void _onFromDatePicked(DateTime pickedDate) {
+    if (toDate != 'Choose To Date' &&
+        pickedDate.isAfter(DateFormat('dd/MM/yyyy').parse(toDate))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("From Date cannot be later than To Date.")),
+      );
+      return;
+    }
+
+    setState(() {
+      fromDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+    });
+  }
+
+  void _onToDatePicked(DateTime pickedDate) {
+    if (fromDate != 'Choose From Date' &&
+        pickedDate.isBefore(DateFormat('dd/MM/yyyy').parse(fromDate))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("To Date cannot be earlier than From Date.")),
+      );
+      return;
+    }
+
+    setState(() {
+      toDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+    });
+  }
+
+
 
   @override
   void dispose() {
@@ -426,6 +501,104 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                               Obx(() => showDescriptionDropdown.value
                                   ? _buildDescriptionSuggestionsList()
                                   : const SizedBox.shrink()),
+
+                                   SizedBox(height: 10,),
+                                Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('From Date',
+                                        style: theme.textTheme.bodySmall),
+                                    const SizedBox(height: 6),
+                                    GestureDetector(
+                                      onTap: _pickFromDate,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: isDarkMode
+                                              ? Colors.blueGrey.shade900
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 8.0),
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.calendar_today,
+                                                  color: Colors.grey),
+                                              const SizedBox(width: 4.0),
+                                              Text(fromDate,
+                                                  style: theme
+                                                      .textTheme.bodySmall
+                                                      ?.copyWith(
+                                                    color: isDarkMode
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  )),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 16.0),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('To Date',
+                                        style: theme.textTheme.bodySmall),
+                                    const SizedBox(height: 6),
+                                    GestureDetector(
+                                      onTap: _pickToDate,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: isDarkMode
+                                              ? Colors.blueGrey.shade900
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 8.0),
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.calendar_today,
+                                                  color: Colors.grey),
+                                              const SizedBox(width: 4.0),
+                                              Text(toDate,
+                                                  style: theme
+                                                      .textTheme.bodySmall
+                                                      ?.copyWith(
+                                                    color: isDarkMode
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  )),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                              const SizedBox(height: 15),
                             ],
                           ),
                         ),

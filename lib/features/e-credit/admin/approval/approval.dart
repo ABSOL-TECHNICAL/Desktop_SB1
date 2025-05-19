@@ -26,6 +26,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
       Get.put(CreditlimitController());
   final ApproverController approverController = Get.put(ApproverController());
   final LoginController loginController = Get.put(LoginController());
+  final ScrollController _scrollController = ScrollController();
 
   String? selectedBranchId;
   String? selectedApplication;
@@ -89,6 +90,31 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
     approverController.fetchApproverBranch();
   }
 
+  
+  // Scroll up function
+  void _scrollUp() {
+    _scrollController.animateTo(
+      (_scrollController.offset - 500).clamp(
+        0.0,
+        _scrollController.position.maxScrollExtent,
+      ),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  // Scroll down function
+  void _scrollDown() {
+    _scrollController.animateTo(
+      (_scrollController.offset + 500).clamp(
+        0.0,
+        _scrollController.position.maxScrollExtent,
+      ),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   void dispose() {
     approverController.fetchApproverBranch();
@@ -102,7 +128,13 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
     final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: GlobalAppBar(title: 'Approval'),
-      body: Padding(
+   body: Stack(
+    children: [
+      CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
@@ -488,13 +520,42 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
                             ),
                         ],
                       ),
+                      
                     ),
                   ),
+                   
                 ],
               ),
             ],
           ),
+          
         ),
+        
+      ),
+          ),
+        ],
+      ),
+      Positioned(
+            top: 250,
+            right: 4,
+            bottom: 5,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  onPressed: _scrollUp,
+                  mini: true,
+                  child: const Icon(Icons.arrow_upward),
+                ),
+                const SizedBox(height: 10),
+                FloatingActionButton(
+                  onPressed: _scrollDown,
+                  mini: true,
+                  child: const Icon(Icons.arrow_downward),
+                ),
+              ],
+            ),
+          ),
+    ],
       ),
     );
   }
