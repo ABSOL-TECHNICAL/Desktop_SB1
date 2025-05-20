@@ -48,10 +48,12 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
   final BranchTransfersController locationController = Get.find();
   RxList<DefaulBranchstock> searchedBranch = <DefaulBranchstock>[].obs;
 
-
-
   String fromDate = 'Choose From Date';
   String toDate = 'Choose To Date';
+
+  RxString fromdate = ''.obs;
+  RxString todate = ''.obs;
+
 
   Future<String?> getSupplierId(String supplierName) async {
     final selectedSupplierDetails = globalSupplierController
@@ -98,6 +100,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
       });
     });
   }
+
   Future<void> _pickFromDate() async {
     DateTime pickedDate;
     if (fromDate != 'Choose From Date') {
@@ -165,8 +168,6 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
       toDate = DateFormat('dd/MM/yyyy').format(pickedDate);
     });
   }
-
-
 
   @override
   void dispose() {
@@ -430,41 +431,82 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                   ),
                                   const SizedBox(width: 6),
                                   ElevatedButton(
-                                    onPressed: () {
-                                      String partNumber =
-                                          selectedPartNumberId.value ??
-                                              partNumberController.text.trim();
-                                      print('Part Number: $partNumber');
+                                    // onPressed: () {
+                                    //   String partNumber =
+                                    //       selectedPartNumberId.value ??
+                                    //           partNumberController.text.trim();
+                                    //   print('Part Number: $partNumber');
 
-                                      if (partNumber.isNotEmpty) {
-                                        branchTransfersController
-                                            .supplierDetails
-                                            .clear();
+                                    //   if (partNumber.isNotEmpty) {
+                                    //     branchTransfersController
+                                    //         .supplierDetails
+                                    //         .clear();
 
-                                        branchTransfersController
-                                            .fetchBranchTransferDetails(
-                                          partNumber,
-                                          branchTransfersController
-                                              .defaultBranchStocks,
-                                        );
+                                    //     branchTransfersController
+                                    //         .fetchBranchTransferDetails(
+                                    //       partNumber,
+                                    //       branchTransfersController
+                                    //           .defaultBranchStocks,
+                                    //     );
 
-                                        setState(() {
-                                          isSearchPerformed =
-                                              true; // Flag to display selected date widget
-                                        });
+                                    //     setState(() {
+                                    //       isSearchPerformed =
+                                    //           true; // Flag to display selected date widget
+                                    //     });
 
-                                        branchTransfersController
-                                            .defaultBranchStocks
-                                            .listen((data) {
-                                          searchedBranchTransfer.value =
-                                              data; // Update the UI observable
-                                        });
-                                      } else {
-                                        AppSnackBar.alert(
-                                          message: "Please Select All fields.",
-                                        );
-                                      }
-                                    },
+                                    //     branchTransfersController
+                                    //         .defaultBranchStocks
+                                    //         .listen((data) {
+                                    //       searchedBranchTransfer.value =
+                                    //           data; // Update the UI observable
+                                    //     });
+                                    //   } else {
+                                    //     AppSnackBar.alert(
+                                    //       message: "Please Select All fields.",
+                                    //     );
+                                    //   }
+                                    // },
+
+                               onPressed: () {
+  final String partNumber = selectedPartNumberId.value?.trim().isNotEmpty == true
+      ? selectedPartNumberId.value!.trim()
+      : partNumberController.text.trim();
+
+  final bool isPartNumberEmpty = partNumber.isEmpty;
+  final bool isFromDateEmpty = fromDate.isEmpty || fromDate == 'Choose From Date';
+  final bool isToDateEmpty = toDate.isEmpty || toDate == 'Choose To Date';
+
+  if (!isPartNumberEmpty && !isFromDateEmpty && !isToDateEmpty) {
+    // Clear previous results
+    branchTransfersController.supplierDetails.clear();
+
+    // Make API call
+    branchTransfersController.fetchBranchTransferDetails(
+      partNumber,
+      branchTransfersController.defaultBranchStocks,
+      fromDate: fromDate,
+      toDate: toDate,
+    );
+
+    // Mark search performed
+    setState(() {
+      isSearchPerformed = true;
+    });
+
+    // Update UI with fetched data
+    branchTransfersController.defaultBranchStocks.listen((data) {
+      searchedBranchTransfer.value = data;
+    });
+  } else {
+    // Build an error message showing exactly which field is missing
+    String errorMessage = 'Please fill all the fields';
+    
+
+    AppSnackBar.alert(message: errorMessage.trim());
+  }
+},
+
+
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(
                                           255, 251, 134, 45),
@@ -501,103 +543,112 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                               Obx(() => showDescriptionDropdown.value
                                   ? _buildDescriptionSuggestionsList()
                                   : const SizedBox.shrink()),
-
-                                   SizedBox(height: 10,),
-                                Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('From Date',
-                                        style: theme.textTheme.bodySmall),
-                                    const SizedBox(height: 6),
-                                    GestureDetector(
-                                      onTap: _pickFromDate,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: isDarkMode
-                                              ? Colors.blueGrey.shade900
-                                              : Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              color: Colors.grey.shade300),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10.0, horizontal: 8.0),
-                                          child: Row(
-                                            children: [
-                                              const Icon(Icons.calendar_today,
-                                                  color: Colors.grey),
-                                              const SizedBox(width: 4.0),
-                                              Text(fromDate,
-                                                  style: theme
-                                                      .textTheme.bodySmall
-                                                      ?.copyWith(
-                                                    color: isDarkMode
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  )),
-                                            ],
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('From Date',
+                                            style: theme.textTheme.bodySmall),
+                                        const SizedBox(height: 6),
+                                        GestureDetector(
+                                          onTap: _pickFromDate,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: isDarkMode
+                                                  ? Colors.blueGrey.shade900
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 8.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(fromDate,
+                                                      style: theme
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      )),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 16.0),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('To Date',
-                                        style: theme.textTheme.bodySmall),
-                                    const SizedBox(height: 6),
-                                    GestureDetector(
-                                      onTap: _pickToDate,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: isDarkMode
-                                              ? Colors.blueGrey.shade900
-                                              : Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              color: Colors.grey.shade300),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10.0, horizontal: 8.0),
-                                          child: Row(
-                                            children: [
-                                              const Icon(Icons.calendar_today,
-                                                  color: Colors.grey),
-                                              const SizedBox(width: 4.0),
-                                              Text(toDate,
-                                                  style: theme
-                                                      .textTheme.bodySmall
-                                                      ?.copyWith(
-                                                    color: isDarkMode
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  )),
-                                            ],
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('To Date',
+                                            style: theme.textTheme.bodySmall),
+                                        const SizedBox(height: 6),
+                                        GestureDetector(
+                                          onTap: _pickToDate,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: isDarkMode
+                                                  ? Colors.blueGrey.shade900
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 8.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(toDate,
+                                                      style: theme
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      )),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
                               const SizedBox(height: 15),
                             ],
                           ),
