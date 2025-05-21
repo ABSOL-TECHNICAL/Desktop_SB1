@@ -29,6 +29,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
   final TextEditingController dateController = TextEditingController(
     text: DateFormat('yyyy-MM-dd').format(DateTime.now()),
   );
+  
 
   final LoginController logincontroller = Get.find<LoginController>();
 
@@ -131,6 +132,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                   return buildDropdown<String>(
                     label: "Branch",
                     selectedValue: controller.selectedBranchId,
+                    // hasError: controller.hasDealerClassifyError,
                     items: controller.branchLocation
                         .map((b) => b.branchId!)
                         .toList(),
@@ -170,6 +172,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     label: 'Dealer Name',
                     autoFetch: true, // Fetch when user selects dealer
                     selectedValue: controller.selecteddealer,
+                    //  hasError: controller.hasDealerError,
                     required: true,
                     items: controller.dealernnamedata.toSet().toList(),
                     itemLabel: (dealer) =>
@@ -239,6 +242,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     onChanged: (value) {
                       controller.dealerController.text = value;
                     },
+                     hasError: controller.hasDealerError.value, // Pass error state here
                   );
                 }),
               ),
@@ -324,6 +328,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     onChanged: (value) {
                       controller.address1Controller.text = value;
                     },
+                     hasError: controller.hasAddress1Error.value, // Pass error state here
                   );
                 }),
               ),
@@ -349,6 +354,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     onChanged: (value) {
                       controller.address2Controller.text = value;
                     },
+                   
                   );
                 }),
               ),
@@ -367,6 +373,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     onChanged: (value) {
                       controller.propertierController.text = value;
                     },
+                     hasError: controller.hasPropertierError.value, // Pass error state here
                   );
                 }),
               ),
@@ -383,6 +390,8 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     onChanged: (value) {
                       controller.phoneController.text = value;
                     },
+                  hasError: controller.hasPhoneError.value, // Pass error state here
+
                     readOnly: false,
                   );
                 }),
@@ -419,11 +428,18 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       if (controller.isLoadingstate.value) {
                         return const Center(child: CircularProgressIndicator());
                       }
+//                         if (controller.selecteddealerstate.value == null 
+//     ) {
+//   controller.hasStateError.value = true;
+// } else {
+//   controller.hasStateError.value = false;
+// }
                       return buildDropdown<DealerState>(
                         label: 'State',
                         required: true,
                         selectedValue: controller.selecteddealerstate,
                         items: controller.dealerstate,
+                          // hasError: controller.hasStateError,
                         itemLabel: (state) => state.stateName ?? 'Unknown',
                         fetchData:
                             controller.fetchdState, // Will only fetch if needed
@@ -433,7 +449,9 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                               ? controller.applicationdata.first.stateName ??
                                   'Unknown'
                               : '';
+                              
                         },
+                       
                       );
                     }),
                   ),
@@ -446,6 +464,12 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       if (controller.isLoadingdistrict.value) {
                         return const Center(child: CircularProgressIndicator());
                       }
+//                         if (controller.selecteddealerdistrict.value == null 
+//     ) {
+//   controller.hasDistrictError.value = true;
+// } else {
+//   controller.hasDistrictError.value = false;
+// }
 
                       // if (controller.selecteddealerdistrict.value == null &&
                       //     controller.applicationdata.isNotEmpty) {
@@ -460,6 +484,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         label: 'District',
                         required: true,
                         selectedValue: controller.selecteddealerdistrict,
+                        //  hasError: controller.hasDistrictError,
                         items: controller.dealerdistrict,
                         itemLabel: (district) =>
                             district.dealerDistrict ?? 'Unknown',
@@ -471,6 +496,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                                   'Unknown'
                               : '';
                         },
+                        
                       );
                     }),
                   ),
@@ -500,6 +526,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         required: true,
                         selectedValue: controller.selectedSlbTown,
                         items: controller.dealerslbtown,
+                          // hasError: controller.hasTownError,
                         itemLabel: (town) => town.slbTownName ?? 'Unknown',
                         fetchData: controller.fetchSlbTown,
                         showDropdown: controller.showDropdown.value,
@@ -507,8 +534,14 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                             controller.applicationdata.isNotEmpty
                                 ? controller.applicationdata.first.town
                                 : '',
+                                //  hasError: controller.hasTownError.value, 
                       );
-                    }),
+                        
+                    },
+                    
+                   ),
+                   
+                    
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -527,11 +560,18 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       //         .applicationdata.first.localOutstationName,
                       //   );
                       // }
+//                         if (controller.selecteddealertownlocation.value == null 
+//     ) {
+//   controller.hasTownLocationError.value = true;
+// } else {
+//   controller.hasTownLocationError.value = false;
+// }
 
                       return buildDropdown<TownLoc>(
                         label: 'Town Location',
                         required: true,
                         selectedValue: controller.selecteddealertownlocation,
+                        //  hasError: controller.hasTownLocationError, // moved
                         items: controller.dealertownlocation,
                         itemLabel: (townLoc) => townLoc.name ?? 'Unknown',
                         fetchData: controller.fetchTownLocation,
@@ -541,6 +581,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                                 ? controller
                                     .applicationdata.first.localOutstationName
                                 : '',
+                               
                       );
                     }),
                   ),
@@ -553,6 +594,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       if (controller.isLoadingszone.value) {
                         return const Center(child: CircularProgressIndicator());
                       }
+                    
 
                       // if (controller.selecteddealerzone.value == null &&
                       //     controller.applicationdata.isNotEmpty) {
@@ -564,6 +606,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       return buildDropdown<Zzone>(
                         label: 'Zone',
                         required: true,
+                          //  hasError: controller.hasZoneError, 
                         selectedValue: controller.selecteddealerzone,
                         items: controller.dealerzone,
                         itemLabel: (zone) => zone.name ?? 'Unknown',
@@ -573,6 +616,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                             controller.applicationdata.isNotEmpty
                                 ? controller.applicationdata.first.zoneName
                                 : '',
+                                //  hasError: controller.hasZoneError.value, // moved inside correctl
                       );
                     }),
                   ),
@@ -638,8 +682,12 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         onChanged: (value) {
                           controller.emailController.text = value;
                         },
+                         hasError: controller.hasEmailError.value, // moved inside correctl
                       );
-                    }),
+                      
+                    }
+                    
+                    ),
                   ),
                 ],
               ),
@@ -678,11 +726,12 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         onChanged: (value) {
                           controller.zipcodeController.text = value;
                         },
+                         hasError: controller.hasZipcodeError.value, // moved inside correctl
                       );
                     }),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
+                 Expanded(
                     child: Obx(() {
                       return CustomTextContainer(
                         label: 'PAN',
@@ -693,9 +742,12 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                                 controller.applicationdata.first.pAN != null)
                             ? controller.applicationdata.first.pAN!
                             : null,
+                              hasError: controller.hasPanError.value,
                       );
+                      
                     }),
                   ),
+
                 ],
               ),
               const SizedBox(height: 20),
@@ -718,11 +770,18 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       //         controller.applicationdata.first.firmTypeName,
                       //   );
                       // }
+//                        if (controller.selectedtypeofFirm.value == null 
+//     ) {
+//   controller.hasTypeOfFirmError.value = true;
+// } else {
+//   controller.hasTypeOfFirmError.value = false;
+// }
 
                       return buildDropdown<TypeofFirm>(
                         label: 'Type Of Firm',
                         required: true,
                         selectedValue: controller.selectedtypeofFirm,
+                        //  hasError: controller.hasTypeOfFirmError,
                         items: controller.typeofFirm,
                         itemLabel: (firm) => firm.typeFirmName ?? 'Unknown',
                         fetchData: controller.fetchTypeofFirm,
@@ -731,6 +790,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                             controller.applicationdata.isNotEmpty
                                 ? controller.applicationdata.first.firmTypeName
                                 : '',
+                                 // moved inside correctl
                       );
                     }),
                   ),
@@ -744,12 +804,20 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       if (controller.isLoadingtypeofreg.value) {
                         return const Center(child: CircularProgressIndicator());
                       }
+//                       if (controller.selectedtypeofReg.value == null 
+//     ) {
+//   controller.hasTypeOfRegError.value = true;
+// } else {
+//   controller.hasTypeOfRegError.value = false;
+// }
+
 
                       return buildDropdown<Reg>(
                         label: 'Type of Registration',
                         required: true,
                         selectedValue: controller.selectedtypeofReg,
                         items: controller.typeofReg,
+                        //  hasError: controller.hasTypeOfRegError,
                         itemLabel: (state) => state.name ?? 'Unknown',
                         fetchData: controller.fetchTypeofReg,
                         showDropdown: controller.showDropdown.value,
@@ -761,6 +829,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         onChanged: (selected) {
                           controller.selectedtypeofReg.value = selected;
                         },
+                        //  hasError: controller.hasTypeOfRegError.value, // moved inside correctl
                         readOnly:
                             !isEcreditHo, // Now properly disables user interaction
                       );
@@ -798,6 +867,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
 
                           controller.gstController.text = value;
                         },
+                        
                       ),
                     );
                   }),
@@ -806,6 +876,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     child: Obx(() => buildDropdown<Data>(
                           label: 'GST Location',
                           selectedValue: controller.selectedgstlocation,
+                          // hasError: controller.hasDealerClassifyError,
                           items: controller.gstlocation,
                           itemLabel: (state) => state.name ?? 'Unknown',
                           fetchData: controller.fetchGstLocation,
@@ -899,15 +970,20 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         return const Center(child: CircularProgressIndicator());
                       }
 
-                      if (controller.selectedSalesman.value == null &&
-                          controller.applicationdata.isNotEmpty) {}
-                      // Print the selected salesman's name
+                      // if (controller.selectedSalesman.value == null &&
+//                       if (controller.selectedSalesman.value == null && controller.applicationdata.isNotEmpty) {
+//   controller.hasSalesmanError.value = true;
+// } else {
+//   controller.hasSalesmanError.value = false;
+// }
+//                       // Print the selected salesman's name
                       print(
                           "Selected Salesman: ${controller.selectedSalesman.value?.salesManName ?? 'None'}");
 
                       return buildDropdown<SalesManName>(
                         label: 'Sales Representative Assigned to the Dealer',
                         required: true,
+                        //  hasError: controller.hasSalesmanError,
                         selectedValue: controller.selectedSalesman,
                         items: controller.salesmandata,
                         itemLabel: (salesman) =>
@@ -931,6 +1007,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                             controller.applicationdata.isNotEmpty
                                 ? controller.applicationdata.first.salesManname
                                 : '',
+                                //  hasError: controller.hasSalesmanError.value, // moved inside correctl
                         onChanged: (SalesManName? newSalesman) {
                           controller.selectedSalesman.value =
                               newSalesman; // ✅ Updates selected salesman
@@ -952,6 +1029,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         label: 'Periodicity of Dealer Visit',
                         required: false,
                         selectedValue: controller.selectedPeriodVisit,
+                          // hasError: controller.hasAddress1Error,
                         items: controller.periodVisitList,
                         itemLabel: (state) =>
                             state.periodVisitName ?? 'Unknown',
@@ -1186,10 +1264,17 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                   //         .applicationdata.first.dealerClassificationName,
                   //   );
                   // }
+//                     if (controller.selecteddealerclassify.value == null 
+//     ) {
+//   controller.hasDealerClassifyError.value = true;
+// } else {
+//   controller.hasDealerClassifyError.value = false;
+// }
 
                   return buildDropdown<DealerClassification>(
                     label: 'Dealer Classification',
                     required: true,
+                    // hasError: controller.hasDealerClassifyError,
                     selectedValue: controller.selecteddealerclassify,
                     items: controller.dealerclassify,
                     itemLabel: (classify) =>
@@ -1200,6 +1285,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                         ? controller
                             .applicationdata.first.dealerClassificationName
                         : '',
+                        //  hasError: controller.hasDealerClassifyError.value, // moved inside correctl
                   );
                 }),
               ),
@@ -1220,11 +1306,18 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                   //         controller.applicationdata.first.dealerSegmentName,
                   //   );
                   // }
+//                     if (controller.selecteddealersegment.value == null 
+//     ) {
+//   controller.hasDealerSegmentError.value = true;
+// } else {
+//   controller.hasDealerSegmentError.value = false;
+// }
 
                   return buildDropdown<DealerSegment>(
                     label: 'Dealer Business/Segment',
                     required: true,
                     selectedValue: controller.selecteddealersegment,
+                    //  hasError: controller.hasDealerSegmentError,
                     items: controller.dealersegment,
                     itemLabel: (segment) =>
                         segment.dealerBussegName ?? 'Unknown',
@@ -1233,6 +1326,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     fallbackValue: () => controller.applicationdata.isNotEmpty
                         ? controller.applicationdata.first.dealerSegmentName
                         : '',
+                          // moved inside correctl
                   );
                 }),
               ),
@@ -1556,7 +1650,9 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                                 "The minimum enhanced credit limit is 1 rupee.");
                         controller.enhanceController.clear();
                       }
+                      
                     },
+                     hasError: controller.hasEnhanceError.value,
                   );
                 }),
               ),
@@ -1573,6 +1669,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                   if (controller.isLoadingcreditlimitinid.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
+                   
 
                   // if (controller.selectedcreditlimitindicator.value == null &&
                   //     controller.applicationdata.isNotEmpty) {
@@ -1587,6 +1684,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     label: 'Credit Limit Indicator',
                     required: true,
                     selectedValue: controller.selectedcreditlimitindicator,
+                    //  hasError: controller.hasCreditLimitIndicatorError, 
                     items: controller.creditlimitindicator,
                     itemLabel: (indicator) => indicator.name ?? 'Unknown',
                     fetchData: controller.fetchCreditLimitIndicator,
@@ -1594,6 +1692,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     fallbackValue: () => controller.applicationdata.isNotEmpty
                         ? controller.applicationdata.first.creditlimitindicator
                         : '',
+                        //  hasError: controller.hasCreditLimitIndicatorError.value, // moved inside correctl
                   );
                 }),
               ),
@@ -1607,6 +1706,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                   if (controller.isLoadingvalidityindi.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
+                 
 
                   return buildDropdown<Validityindi>(
                     label: 'Validity Indicator',
@@ -1615,9 +1715,12 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     items: controller.validityindicator,
                     itemLabel: (state) => state.name ?? 'Unknown',
                     fetchData: controller.fetchValidtyIndicator,
+                    //  hasError: controller.hasValidityIndicatorError,
                     showDropdown: controller.validityindicator.isNotEmpty,
                     fallbackValue: () =>
                         controller.selectedvalidityindicator.value?.name ?? '',
+                        // 
+                        //  hasError: controller.hasValidityIndicatorError.value, // moved inside correctl
                     onChanged: (Validityindi? newValue) async {
                       if (newValue != null) {
                         controller.selectedvalidityindicator.value = newValue;
@@ -1696,32 +1799,65 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
               //     );
               //   }),
               // ),
-              Expanded(
-                child: Obx(() {
-                  if (controller.isLoadings.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (controller.isLoadingfreightindi.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return buildDropdown<Freightindi>(
-                    label: 'Freight Indicator',
-                    required: true,
-                    selectedValue: controller.selectedfreightindicator,
-                    items: controller.freightindictaor,
-                    itemLabel: (state) => state.name ?? 'Unknown',
-                    fetchData: controller
-                        .fetchFreightIndicator, // Will only fetch if needed
-                    showDropdown: controller.showDropdown.value,
-                    fallbackValue: () {
-                      return controller.applicationdata.isNotEmpty
-                          ? controller.applicationdata.first.frightName ??
-                              'Unknown'
-                          : '';
-                    },
-                  );
-                }),
-              ),
+//               Expanded(
+//                 child: Obx(() {
+//                   if (controller.isLoadings.value) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   }
+//                   if (controller.isLoadingfreightindi.value) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   }
+//                     if (controller.selectedfreightindicator.value == null 
+//     ) {
+//   controller.hasFreightIndicatorError.value = true;
+// } else {
+//   controller.hasFreightIndicatorError.value = false;
+// }
+//                   return buildDropdown<Freightindi>(
+//                     label: 'Freight Indicator',
+//                     required: true,
+//                     selectedValue: controller.selectedfreightindicator,
+//                     items: controller.freightindictaor,
+//                     itemLabel: (state) => state.name ?? 'Unknown',
+//                     fetchData: controller
+//                         .fetchFreightIndicator, // Will only fetch if needed
+//                     showDropdown: controller.showDropdown.value,
+//                     fallbackValue: () {
+//                       return controller.applicationdata.isNotEmpty
+//                           ? controller.applicationdata.first.frightName ??
+//                               'Unknown'
+//                           : '';
+                          
+//                     },
+//                       hasError: controller.hasFreightIndicatorError.value, // moved inside correctl
+//                   );
+//                 }),
+//               ),
+Expanded(
+  child: Obx(() {
+    if (controller.isLoadings.value || controller.isLoadingfreightindi.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return buildDropdown<Freightindi>(
+      label: 'Freight Indicator',
+      required: true,
+      selectedValue: controller.selectedfreightindicator,
+      items: controller.freightindictaor,
+      //  hasError: controller.hasFreightIndicatorError, 
+      itemLabel: (state) => state.name ?? 'Unknown',
+      fetchData: controller.fetchFreightIndicator,
+      showDropdown: controller.showDropdown.value,
+      fallbackValue: () {
+        return controller.applicationdata.isNotEmpty
+            ? controller.applicationdata.first.frightName ?? 'Unknown'
+            : '';
+      },
+     // ✅ pass error
+    );
+  }),
+),
+
 
               const SizedBox(width: 16),
               Expanded(

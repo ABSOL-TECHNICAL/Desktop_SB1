@@ -1,7 +1,8 @@
+// CustomDropdown.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:impal_desktop/features/global/theme/widgets/snack_bar.dart';
- 
+
 class CustomDropdown<T> extends StatefulWidget {
   final String? label;
   final String? hint;
@@ -16,10 +17,9 @@ class CustomDropdown<T> extends StatefulWidget {
   final VoidCallback? onTextTap;
   final bool required;
   final Future<void> Function()? fetchData;
-    final String? Function(String?)? validator;
-   
  
-  
+  final Rx<T?>? selectedValue;
+
   const CustomDropdown({
     super.key,
     this.hint,
@@ -35,33 +35,33 @@ class CustomDropdown<T> extends StatefulWidget {
     this.textController,
     this.onTextTap,
     this.fetchData,
-       this.validator,
-          
+    
+    this.selectedValue,
+   
   });
- 
+
   @override
   State<CustomDropdown<T>> createState() => _CustomDropdownState<T>();
 }
- 
+
 class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
   List<T>? filteredItems;
   bool isDropdownOpen = false;
   late TextEditingController _controller;
-    bool hasError = false;
-    String? errorMessage;
- 
+
   @override
   void initState() {
     super.initState();
     filteredItems = widget.items ?? [];
     _controller = widget.textController ?? TextEditingController();
- 
+
     if (widget.value != null && widget.itemLabel != null) {
       _controller.text = widget.itemLabel!(widget.value as T);
     }
   }
- 
- 
+
+
+
   void _filterItems(String query) {
     setState(() {
       filteredItems = widget.items
@@ -72,41 +72,29 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
       isDropdownOpen = filteredItems != null && filteredItems!.isNotEmpty;
     });
   }
- 
+
   void _selectItem(T item) {
     setState(() {
       _controller.text = widget.itemLabel!(item);
       isDropdownOpen = false;
     });
- 
     widget.onChanged?.call(item);
   }
- 
+
   Future<void> _handleTap() async {
     if (widget.fetchData != null) {
       await widget.fetchData!();
     }
- 
     if (!mounted) return;
- 
     setState(() {
       isDropdownOpen = true;
     });
- 
     widget.onTextTap?.call();
   }
-  void validate() {
-    setState(() {
-      hasError = widget.required && (_controller.text.isEmpty || widget.value == null);
-      errorMessage = hasError ? 'This field is required' : null;
-    });
-  }
 
- 
   @override
   Widget build(BuildContext context) {
-     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -118,26 +106,20 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                 children: [
                   TextSpan(
                     text: widget.label!,
-                    // style: const TextStyle(
-                    //   fontSize: 14,
-                    //   fontWeight: FontWeight.bold,
-                    //   color: Colors.black,
-                    // ),
-                     style:theme.textTheme.bodyLarge?.copyWith( fontSize: 14,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,)
+                      color: Colors.black,
+                    ),
                   ),
                   if (widget.required)
-                     TextSpan(
+                    TextSpan(
                       text: ' *',
-                        style:theme.textTheme.bodyLarge?.copyWith(  fontSize: 14,
-                         fontWeight: FontWeight.bold,
-                         color: Colors.red,)
-                      // style: TextStyle(
-                      //   fontSize: 14,
-                      //   fontWeight: FontWeight.bold,
-                      //   color: Colors.red,
-                      // ),
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
                     ),
                 ],
               ),
@@ -150,12 +132,12 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
           decoration: InputDecoration(
             hintText: widget.hint ?? "Select...",
             hintStyle: TextStyle(color: Colors.grey.shade500),
-            border: _outlinedBorder(Colors.grey),
-            enabledBorder: _outlinedBorder(Colors.grey),
-            focusedBorder: _outlinedBorder(Colors.blue),
+            border: _outlinedBorder( Colors.grey),
+             enabledBorder: _outlinedBorder( Colors.grey),
+    focusedBorder: _outlinedBorder(Colors.blue),
             filled: true,
             fillColor: Colors.white,
-             errorText: hasError ? errorMessage : null,
+            // errorText: widget.hasError ? 'This field is required' : null,
             errorStyle: const TextStyle(fontSize: 12),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
@@ -163,11 +145,10 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
                 ? GestureDetector(
                     onTap: () async {
                       if (!isDropdownOpen) {
-                        await _handleTap(); // Fetch data and open dropdown
+                        await _handleTap();
                       } else {
                         setState(() {
-                          isDropdownOpen =
-                              false; // Close dropdown if already open
+                          isDropdownOpen = false;
                         });
                       }
                     },
@@ -188,12 +169,11 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             margin: const EdgeInsets.only(top: 2),
             decoration: BoxDecoration(
               color: Colors.white,
-             border: Border.all(
-      color: hasError ? Colors.red : Colors.grey,
-      width: hasError ? 2 : 1,
-    ),
+              border: Border.all(
+                color: Colors.grey,
+                width: 1,
+              ),
               borderRadius: BorderRadius.circular(5),
-                
               boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
             ),
             child: ListView.builder(
@@ -214,16 +194,15 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
       ],
     );
   }
- 
+
   OutlineInputBorder _outlinedBorder(Color color) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(5),
       borderSide: BorderSide(color: color, width: 1),
     );
   }
-  
 }
- 
+
 Widget buildDropdown<T>({
   String? label,
   required Rx<T?> selectedValue,
@@ -235,8 +214,8 @@ Widget buildDropdown<T>({
   void Function(T?)? onChanged,
   bool required = false,
   bool autoFetch = false,
-  bool readOnly = false,
-
+  bool readOnly = false, 
+  
   
 }) {
   return Obx(() {
@@ -245,15 +224,15 @@ Widget buildDropdown<T>({
           ? itemLabel(selectedValue.value as T)
           : fallbackValue?.call() ?? '',
     );
- 
+    final isEmptyAndRequired = required && selectedValue.value == null;
     return GestureDetector(
       onTap: () async {
         if (readOnly) {
           AppSnackBar.alert(
               message: "This field can only be edited by the Head Office.");
         } else {
-          await fetchData(); // Fetch data first
-          selectedValue.refresh(); // Ensure dropdown updates
+          await fetchData();
+          selectedValue.refresh();
         }
       },
       child: AbsorbPointer(
@@ -264,15 +243,17 @@ Widget buildDropdown<T>({
           value: selectedValue.value,
           items: items,
           itemLabel: itemLabel,
-          onChanged: readOnly
-              ? null
-              : (newValue) async {
-                  if (newValue != null) {
-                    selectedValue.value = newValue;
-                    onChanged?.call(newValue);
-                    if (autoFetch) await fetchData();
-                  }
-                },
+        onChanged: readOnly
+    ? null
+    : (newValue) async {
+        if (newValue != null) {
+          selectedValue.value = newValue;
+         
+          onChanged?.call(newValue);
+          if (autoFetch) await fetchData();
+        }
+      },
+
           required: required,
           showDropdown: showDropdown && items.isNotEmpty,
           textController: textController,
@@ -280,20 +261,18 @@ Widget buildDropdown<T>({
               ? null
               : () async {
                   await fetchData();
-                  selectedValue
-                      .refresh(); // Refresh to trigger dropdown visibility
+                  selectedValue.refresh();
                 },
           fetchData: fetchData,
           onTap: readOnly
               ? null
               : () async {
                   await fetchData();
-                  selectedValue.refresh(); // Ensure dropdown opens on tap
+                  selectedValue.refresh();
                 },
+       
         ),
       ),
     );
   });
 }
- 
- 

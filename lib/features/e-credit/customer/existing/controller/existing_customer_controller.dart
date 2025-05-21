@@ -106,6 +106,55 @@ class ExistingcustomerController extends GetxController {
   
 
   var isEmailValid = true.obs; // Observable to track validity
+  // In your ExistingcustomerController
+// Error state variables
+var hasDealerError = false.obs;
+var hasAddress1Error = false.obs;
+// var hasAddress2Error = false.obs;
+var hasZipcodeError = false.obs;
+var hasPhoneError = false.obs;
+var hasPropertierError = false.obs;
+var hasEmailError = false.obs;
+var hasPanError = false.obs;
+var hasEnhanceError = false.obs;
+var hasStateError = false.obs;
+var hasDistrictError = false.obs;
+var hasTownError = false.obs;
+var hasTownLocationError = false.obs;
+var hasZoneError = false.obs;
+var hasTypeOfFirmError = false.obs;
+var hasTypeOfRegError = false.obs;
+var hasSalesmanError = false.obs;
+var hasDealerClassifyError = false.obs;
+var hasDealerSegmentError = false.obs;
+var hasCreditLimitIndicatorError = false.obs;
+var hasValidityIndicatorError = false.obs;
+var hasFreightIndicatorError = false.obs;
+
+void resetErrorStates() {
+  hasDealerError.value = false;
+  hasAddress1Error.value = false;
+
+  hasZipcodeError.value = false;
+  hasPhoneError.value = false;
+  hasPropertierError.value = false;
+  hasEmailError.value = false;
+  hasPanError.value = false;
+  hasEnhanceError.value = false;
+  hasStateError.value = false;
+  hasDistrictError.value = false;
+  hasTownError.value = false;
+  hasTownLocationError.value = false;
+  hasZoneError.value = false;
+  hasTypeOfFirmError.value = true;
+  hasTypeOfRegError.value = false;
+  hasSalesmanError.value = false;
+  hasDealerClassifyError.value = false;
+  hasDealerSegmentError.value = false;
+  hasCreditLimitIndicatorError.value = false;
+  hasValidityIndicatorError.value = false;
+  hasFreightIndicatorError.value = false;
+}
 
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();

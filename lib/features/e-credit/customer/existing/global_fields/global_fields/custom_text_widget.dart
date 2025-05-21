@@ -1,3 +1,4 @@
+// CustomTextContainer.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,8 +14,9 @@ class CustomTextContainer extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool autoFetch;
   final Future<String> Function()? fetchDataCallback;
-  final Color? backgroundColor; // New parameter for background color
+  final Color? backgroundColor;
   final Widget? suffixIcon;
+  final bool hasError;
 
   const CustomTextContainer({
     super.key,
@@ -29,8 +31,9 @@ class CustomTextContainer extends StatefulWidget {
     this.inputFormatters,
     this.autoFetch = false,
     this.fetchDataCallback,
-    this.backgroundColor, // Initialize background color
+    this.backgroundColor,
     this.suffixIcon,
+    this.hasError = false,
   });
 
   @override
@@ -39,14 +42,13 @@ class CustomTextContainer extends StatefulWidget {
 
 class _CustomTextContainerState extends State<CustomTextContainer> {
   late TextEditingController _controller;
-  String? errorText;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        widget.controller ?? TextEditingController(text: widget.value);
-
+    _controller = widget.controller ?? TextEditingController(text: widget.value);
+    
     if (widget.controller == null) {
       _controller.addListener(() {
         widget.onChanged?.call(_controller.text);
@@ -68,7 +70,6 @@ class _CustomTextContainerState extends State<CustomTextContainer> {
 
   Future<void> fetchDataAndUpdate() async {
     if (widget.fetchDataCallback == null) return;
-
     String fetchedData = await widget.fetchDataCallback!();
     if (mounted) {
       setState(() {
@@ -77,26 +78,15 @@ class _CustomTextContainerState extends State<CustomTextContainer> {
     }
   }
 
-  
-
   @override
   void dispose() {
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
+    _focusNode.dispose();
     super.dispose();
-  }
-   bool hasError = false;
-    void validate() {
-    setState(() {
-      hasError = widget.required && _controller.text.isEmpty;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,55 +98,47 @@ class _CustomTextContainerState extends State<CustomTextContainer> {
                 children: [
                   TextSpan(
                     text: widget.label,
-                     style:theme.textTheme.bodyLarge?.copyWith(fontSize: 12,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,)
-                    // style: const TextStyle(
-                    //   fontSize: 12,
-                    //   fontWeight: FontWeight.bold,
-                    //   color: Colors.black,
-                    // ),
+                      color: Colors.black,
+                    ),
                   ),
                   if (widget.required)
-                     TextSpan(
+                    TextSpan(
                       text: ' *',
-                       style:theme.textTheme.bodyLarge?.copyWith( fontSize: 14,
-                         fontWeight: FontWeight.bold,
-                         color: Colors.red,)
-                      // style: TextStyle(
-                      //   fontSize: 14,
-                      //   fontWeight: FontWeight.bold,
-                      //   color: Colors.red,
-                      // ),
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
                     ),
                 ],
               ),
             ),
           ),
         SizedBox(
-          width: double.infinity, // Make width flexible
-          height: 40,
+          width: double.infinity,
+          height: widget.hasError ? 60 : 40,
           child: TextField(
             controller: _controller,
+            focusNode: _focusNode,
             readOnly: widget.readOnly,
             style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(
-              border: _outlinedBorder(Colors.grey),
-              enabledBorder: _outlinedBorder(Colors.grey),
-              focusedBorder: _outlinedBorder(Colors.blue, width: 2),
+              border: _outlinedBorder(widget.hasError ? Colors.red : Colors.grey),
+              enabledBorder: _outlinedBorder(widget.hasError ? Colors.red : Colors.grey),
+              focusedBorder: _outlinedBorder(widget.hasError ? Colors.red : Colors.blue, width: 2),
               errorBorder: _outlinedBorder(Colors.red),
-            focusedErrorBorder: _outlinedBorder(Colors.red),
-            errorText: hasError ? 'This field is required' : null,
-            errorStyle: const TextStyle(fontSize: 12),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              focusedErrorBorder: _outlinedBorder(Colors.red),
+              errorText: widget.hasError ? 'This field is required' : null,
+              errorStyle: const TextStyle(fontSize: 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               hintText: widget.hint ?? 'Enter...',
               hintStyle: TextStyle(color: Colors.grey.shade500),
               filled: true,
-              fillColor: widget.backgroundColor ??
-                  Colors.white, // Apply the background color
-              suffixIcon:
-                  widget.suffixIcon, // Add this line to allow suffix icon
+              fillColor: widget.backgroundColor ?? Colors.white,
+              suffixIcon: widget.suffixIcon,
             ),
             inputFormatters: widget.inputFormatters ??
                 [
@@ -176,7 +158,7 @@ class _CustomTextContainerState extends State<CustomTextContainer> {
 
   OutlineInputBorder _outlinedBorder(Color color, {double width = 1}) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(5), // Smaller radius
+      borderRadius: BorderRadius.circular(5),
       borderSide: BorderSide(color: color, width: width),
     );
   }

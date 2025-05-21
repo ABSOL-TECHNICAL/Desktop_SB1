@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:impal_desktop/features/e-credit/customer/existing/controller/existing_customer_controller.dart';
-
 import 'package:impal_desktop/features/e-credit/customer/existing/widget/existing_widget.dart';
 import 'package:impal_desktop/features/global/theme/widgets/custom_alert.dart';
 import 'package:impal_desktop/features/global/theme/widgets/snack_bar.dart';
@@ -33,6 +32,8 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
   final ScrollController _scrollController = ScrollController();
 
   String? selectedBranchId;
+   final FocusNode _focusNode = FocusNode();
+  bool hasError = false;
 
   @override
   void initState() {
@@ -85,19 +86,129 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
     _resetForm();
     dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
   }
+  
 
   @override
   void dispose() {
     Get.delete<ExistingcustomerController>();
+     _focusNode.dispose();
     super.dispose();
   }
 
+  
   void _submitForm() {
-    if (!_formKey.currentState!.validate()) {
-      AppSnackBar.alert(message: "Please fill all required fields");
-      return;
-    }
+  controller.resetErrorStates();
+  
+  bool isValid = true;
 
+  // Validate text fields
+  if (controller.dealerController.text.isEmpty) {
+    controller.hasDealerError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.address1Controller.text.isEmpty) {
+    controller.hasAddress1Error.value = true;
+    isValid = false;
+  }
+  
+  if (controller.zipcodeController.text.isEmpty) {
+    controller.hasZipcodeError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.phoneController.text.isEmpty) {
+    controller.hasPhoneError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.propertierController.text.isEmpty) {
+    controller.hasPropertierError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.emailController.text.isEmpty) {
+    controller.hasEmailError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.panController.text.isEmpty) {
+    controller.hasPanError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.enhanceController.text.isEmpty) {
+    controller.hasEnhanceError.value = true;
+    isValid = false;
+  }
+  
+  // Validate dropdowns
+  if (controller.selecteddealerstate.value == null) {
+    controller.hasStateError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selecteddealerdistrict.value == null) {
+    controller.hasDistrictError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selectedSlbTown.value == null) {
+    controller.hasTownError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selecteddealertownlocation.value == null) {
+    controller.hasTownLocationError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selecteddealerzone.value == null) {
+    controller.hasZoneError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selectedtypeofFirm.value == null) {
+    controller.hasTypeOfFirmError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selectedtypeofReg.value == null) {
+    controller.hasTypeOfRegError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selectedSalesman.value == null) {
+    controller.hasSalesmanError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selecteddealerclassify.value == null) {
+    controller.hasDealerClassifyError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selecteddealersegment.value == null) {
+    controller.hasDealerSegmentError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selectedcreditlimitindicator.value == null) {
+    controller.hasCreditLimitIndicatorError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selectedvalidityindicator.value == null) {
+    controller.hasValidityIndicatorError.value = true;
+    isValid = false;
+  }
+  
+  if (controller.selectedfreightindicator.value == null) {
+    controller.hasFreightIndicatorError.value = true;
+    isValid = false;
+  }
+
+ 
     // Retrieve values from controllers or fallback to API data
     String getValue(String? textController, String? apiValue) {
       return textController?.trim().isNotEmpty == true
@@ -105,7 +216,7 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
           : apiValue ?? '';
     }
 
-    final controller = this.controller;
+    //  final controller = this.controller;
 
     // Retrieve values
     String customerID = controller.customerId.value;
@@ -445,6 +556,7 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
     // 🔥 Force UI update
     controller.update();
   }
+  
 
   // Function to scroll up
   void _scrollUp() {
@@ -493,7 +605,7 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
                  child: InkWell(
                       onTap: () {
                         _resetForm();
-                        
+                       controller. resetErrorStates() ;
                        controller. refreshData();
                         AppSnackBar.success(
                           message: "Application details refreshed successfully.",
