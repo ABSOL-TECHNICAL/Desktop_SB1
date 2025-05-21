@@ -7,6 +7,7 @@ import 'package:impal_desktop/features/login/bindings/login_bindings.dart';
 import 'package:impal_desktop/routes/app_pages.dart';
 import 'package:impal_desktop/routes/app_routes.dart';
 import 'package:fl_downloader/fl_downloader.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,13 @@ void main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+   final prefs = await SharedPreferences.getInstance();
+  bool isFirstInstall = prefs.getBool('is_first_install') ?? true;
+  
+  if (isFirstInstall) {
+    await prefs.setBool('is_first_install', false);
+    await prefs.setBool('show_welcome_popup', true); // Flag to show popup
+  }
 
   runApp(const MyApp());
 }

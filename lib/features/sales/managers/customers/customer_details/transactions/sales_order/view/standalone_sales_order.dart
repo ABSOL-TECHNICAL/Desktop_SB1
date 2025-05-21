@@ -90,6 +90,7 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
     {"name": "Cash Sales", "id": 1},
     {"name": "Credit Sales", "id": 2},
     {"name": "Distress Sale", "id": 4},
+    {"name": "Advance Sale", "id": 5},
   ];
 
   @override
