@@ -235,16 +235,16 @@ class _CreateReportState extends State<CreateReport> {
     final theme = Theme.of(context);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Create Report',
-          style: theme.textTheme.bodyLarge?.copyWith(      
-                  color: Colors.white,
-                ),
-        ),
-        backgroundColor: const Color(0xFF161717),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Create Report',
+      //     style: theme.textTheme.bodyLarge?.copyWith(      
+      //             color: Colors.white,
+      //           ),
+      //   ),
+      //   backgroundColor: const Color(0xFF161717),
+      //   iconTheme: const IconThemeData(color: Colors.white),
+      // ),
       body: Stack(children: [
         Align(
             alignment: Alignment.bottomCenter,
