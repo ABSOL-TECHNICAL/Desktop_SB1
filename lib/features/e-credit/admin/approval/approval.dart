@@ -26,7 +26,6 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
       Get.put(CreditlimitController());
   final ApproverController approverController = Get.put(ApproverController());
   final LoginController loginController = Get.put(LoginController());
-  final ScrollController _scrollController = ScrollController();
 
   String? selectedBranchId;
   String? selectedApplication;
@@ -90,31 +89,6 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
     approverController.fetchApproverBranch();
   }
 
-  
-  // Scroll up function
-  void _scrollUp() {
-    _scrollController.animateTo(
-      (_scrollController.offset - 500).clamp(
-        0.0,
-        _scrollController.position.maxScrollExtent,
-      ),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  // Scroll down function
-  void _scrollDown() {
-    _scrollController.animateTo(
-      (_scrollController.offset + 500).clamp(
-        0.0,
-        _scrollController.position.maxScrollExtent,
-      ),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
-
   @override
   void dispose() {
     approverController.fetchApproverBranch();
@@ -128,13 +102,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
     final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: GlobalAppBar(title: 'Approval'),
-   body: Stack(
-    children: [
-      CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
@@ -289,7 +257,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
 
                           print("Selected ApplicationNo: $selectedApplication");
 
-                          expandedSections["(C) Commercial Matters"] = true;
+                          expandedSections["(A) Dealer KYC"] = true;
                         },
                         items: approverController.getapp
                             .map((GetApplication application) =>
@@ -315,11 +283,10 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
               const SizedBox(height: 20),
               buildSection("(A) Dealer KYC"),
               buildSection("(B) Dealer Profile"),
-              buildSection("(C) Commercial Matters"),
-              buildSection("(D) Review and Approval at Branch Level"),
-              buildSection("(E) Review and Approval at Head Office"),
+              buildSection("(C) Review and Approval at Branch Level"),
+              buildSection("(D) Review and Approval at Head Office"),
               buildSection(
-                  "(F) Closure of Business with Dealer (with closure of sister concern accounts)"),
+                  "(E) Closure of Business with Dealer (with closure of sister concern accounts)"),
               SizedBox(height: 30),
               Row(
                 mainAxisAlignment:
@@ -520,42 +487,13 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
                             ),
                         ],
                       ),
-                      
                     ),
                   ),
-                   
                 ],
               ),
             ],
           ),
-          
         ),
-        
-      ),
-          ),
-        ],
-      ),
-      Positioned(
-            top: 250,
-            right: 4,
-            bottom: 5,
-            child: Column(
-              children: [
-                FloatingActionButton(
-                  onPressed: _scrollUp,
-                  mini: true,
-                  child: const Icon(Icons.arrow_upward),
-                ),
-                const SizedBox(height: 10),
-                FloatingActionButton(
-                  onPressed: _scrollDown,
-                  mini: true,
-                  child: const Icon(Icons.arrow_downward),
-                ),
-              ],
-            ),
-          ),
-    ],
       ),
     );
   }
@@ -783,6 +721,214 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
       case "(A) Dealer KYC":
         return [
           Column(children: [
+            Row(children: [
+                Expanded(
+                    child: buildReadOnlyTextField(
+                        "If any cash purchase in last three months ( Specify)",
+                        approverController.cashPurchaseController)),
+                const SizedBox(width: 10),
+                const Expanded(
+                    child: Column(
+                  children: [],
+                )),
+                const Expanded(
+                    child: Column(
+                  children: [],
+                )),
+              ]),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(children: [
+                Expanded(
+                    child: buildReadOnlyTextField("Existing Credit Limit Rs",
+                        approverController.exisCreditController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextFieldColor("Enhanced Credit Limit",
+                        approverController.enhCreditLimitController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextField("Credit Limit Indicator",
+                        approverController.creditLimitIndiController)),
+              ]),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(children: [
+                Expanded(
+                    child: buildReadOnlyTextField("Credit Sales",
+                        approverController.creditSalesController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextField("Proposed Validity",
+                        approverController.validityIndiController)),
+                const SizedBox(width: 10),
+                // Expanded(
+                //     child: buildReadOnlyTextField("Validity Due Date",
+                //         approverController.validityDueDateController)),
+
+                if (approverController.creditSalesControllerId.text != "1")
+                  const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Obx(() {
+                        String selectedText =
+                            approverController.validityIndi.value == "2"
+                                ? "Temporary"
+                                : approverController.validityIndi.value == "3"
+                                    ? "Permanent"
+                                    : "";
+
+                        return CustomDropDownField(
+                          label: "Approver Validity Indicator",
+                          hint: "Select a Validity Indicator",
+                          isRequired: true,
+                          value: selectedText.isNotEmpty ? selectedText : null,
+                          items: ["Temporary", "Permanent"],
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              int newValueId = newValue == "Temporary" ? 2 : 3;
+                              validityIndicatorId = newValueId;
+                              print(
+                                  "Selected Validity Indicator ID: $validityIndicatorId");
+
+                              if (newValueId == 2) {
+                                DateTime now = DateTime.now();
+                                DateTime lastDay =
+                                    DateTime(now.year, now.month + 1, 0);
+                                dateController.text =
+                                    "${lastDay.day}/${lastDay.month}/${lastDay.year}";
+                                showValidityDueDate = true;
+                                approverController.showValidityDueDate.value =
+                                    true; // Update observable
+                              } else {
+                                approverController.showValidityDueDate.value =
+                                    false;
+                                showValidityDueDate = false;
+                                dateController.clear();
+                              }
+
+                              approverController
+                                  .setValidityIndicator(newValueId.toString());
+                            }
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                    width: 16), // Space between date picker and checkbox
+                Expanded(
+                  child: SizedBox(
+                    width: 400, // Adjust width
+                    height: 65, // Adjust height
+                    child: Obx(() {
+                      return approverController.showValidityDueDate.value
+                          ? SizedBox(
+                              width: 400,
+                              height: 65,
+                              child: CustomTextContainer(
+                                label: 'Approver Validity Due Date',
+                                controller: dateController,
+                                readOnly: true,
+                                hint: 'Enter Validity Date',
+                                required: true,
+                                backgroundColor: Colors.white,
+                                suffixIcon: Icon(Icons.calendar_today),
+                                onTap: () async {
+                                  await _pickDate(autoSelect: false);
+                                },
+                              ),
+                            )
+                          : SizedBox(); // Hides the field when not needed
+                    }),
+                  ),
+                ),
+              ]),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(children: [
+                Expanded(
+                    child: buildReadOnlyTextField("Freight Indicator",
+                        approverController.freightIndiController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextField(
+                        "First Time Credit Amount Request Rs",
+                        approverController.firstTimeCreditLimitIndiController)),
+              ]),
+              const SizedBox(
+                height: 25,
+              ),
+               Row(
+                children: [
+                  Text(
+                    "Dealer Bank Account Details",
+                    style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              const SizedBox(width: 10),
+              Row(children: [
+                Expanded(
+                    child: buildReadOnlyTextField(
+                        "Bank Name", approverController.dBankNameController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextField("Bank Branch Name",
+                        approverController.dBankBranchController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextField("Bank Account Number",
+                        approverController.dBankAccNumController)),
+              ]),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(children: [
+                Expanded(
+                    child: buildReadOnlyTextField(
+                        "IFSC Code", approverController.dBankIFSCController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextField(
+                        "Name of the Bank A/C Holder ",
+                        approverController.dNameOfBankController)),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: buildReadOnlyTextField("Card No. and Expiry Date",
+                        approverController.dBankCardNoController)),
+              ]),
+              const SizedBox(
+                height: 25,
+              ),
+               Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Authorized Signature with Name of Dealer",
+                        style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "Dealer Official Seal",
+                        style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+              height: 25,
+            ),
             Row(children: [
               Expanded(
                   child: buildReadOnlyTextField("Name of Dealer/Firm/STU",
@@ -1141,219 +1287,15 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
             ],
           ),
         ];
-      case "(C) Commercial Matters":
-        return [
-          Column(
-            children: [
-              Row(children: [
-                Expanded(
-                    child: buildReadOnlyTextField(
-                        "If any cash purchase in last three months ( Specify)",
-                        approverController.cashPurchaseController)),
-                const SizedBox(width: 10),
-                const Expanded(
-                    child: Column(
-                  children: [],
-                )),
-                const Expanded(
-                    child: Column(
-                  children: [],
-                )),
-              ]),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(children: [
-                Expanded(
-                    child: buildReadOnlyTextField("Existing Credit Limit Rs",
-                        approverController.exisCreditController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextFieldColor("Enhanced Credit Limit",
-                        approverController.enhCreditLimitController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextField("Credit Limit Indicator",
-                        approverController.creditLimitIndiController)),
-              ]),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(children: [
-                Expanded(
-                    child: buildReadOnlyTextField("Credit Sales",
-                        approverController.creditSalesController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextField("Proposed Validity",
-                        approverController.validityIndiController)),
-                const SizedBox(width: 10),
-                // Expanded(
-                //     child: buildReadOnlyTextField("Validity Due Date",
-                //         approverController.validityDueDateController)),
-
-                if (approverController.creditSalesControllerId.text != "1")
-                  const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Obx(() {
-                        String selectedText =
-                            approverController.validityIndi.value == "2"
-                                ? "Temporary"
-                                : approverController.validityIndi.value == "3"
-                                    ? "Permanent"
-                                    : "";
-
-                        return CustomDropDownField(
-                          label: "Approver Validity Indicator",
-                          hint: "Select a Validity Indicator",
-                          isRequired: true,
-                          value: selectedText.isNotEmpty ? selectedText : null,
-                          items: ["Temporary", "Permanent"],
-                          onChanged: (String? newValue) {
-                            if (newValue != null) {
-                              int newValueId = newValue == "Temporary" ? 2 : 3;
-                              validityIndicatorId = newValueId;
-                              print(
-                                  "Selected Validity Indicator ID: $validityIndicatorId");
-
-                              if (newValueId == 2) {
-                                DateTime now = DateTime.now();
-                                DateTime lastDay =
-                                    DateTime(now.year, now.month + 1, 0);
-                                dateController.text =
-                                    "${lastDay.day}/${lastDay.month}/${lastDay.year}";
-                                showValidityDueDate = true;
-                                approverController.showValidityDueDate.value =
-                                    true; // Update observable
-                              } else {
-                                approverController.showValidityDueDate.value =
-                                    false;
-                                showValidityDueDate = false;
-                                dateController.clear();
-                              }
-
-                              approverController
-                                  .setValidityIndicator(newValueId.toString());
-                            }
-                          },
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                    width: 16), // Space between date picker and checkbox
-                Expanded(
-                  child: SizedBox(
-                    width: 400, // Adjust width
-                    height: 65, // Adjust height
-                    child: Obx(() {
-                      return approverController.showValidityDueDate.value
-                          ? SizedBox(
-                              width: 400,
-                              height: 65,
-                              child: CustomTextContainer(
-                                label: 'Approver Validity Due Date',
-                                controller: dateController,
-                                readOnly: true,
-                                hint: 'Enter Validity Date',
-                                required: true,
-                                backgroundColor: Colors.white,
-                                suffixIcon: Icon(Icons.calendar_today),
-                                onTap: () async {
-                                  await _pickDate(autoSelect: false);
-                                },
-                              ),
-                            )
-                          : SizedBox(); // Hides the field when not needed
-                    }),
-                  ),
-                ),
-              ]),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(children: [
-                Expanded(
-                    child: buildReadOnlyTextField("Freight Indicator",
-                        approverController.freightIndiController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextField(
-                        "First Time Credit Amount Request Rs",
-                        approverController.firstTimeCreditLimitIndiController)),
-              ]),
-              const SizedBox(
-                height: 25,
-              ),
-               Row(
-                children: [
-                  Text(
-                    "Dealer Bank Account Details",
-                    style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const SizedBox(width: 10),
-              Row(children: [
-                Expanded(
-                    child: buildReadOnlyTextField(
-                        "Bank Name", approverController.dBankNameController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextField("Bank Branch Name",
-                        approverController.dBankBranchController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextField("Bank Account Number",
-                        approverController.dBankAccNumController)),
-              ]),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(children: [
-                Expanded(
-                    child: buildReadOnlyTextField(
-                        "IFSC Code", approverController.dBankIFSCController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextField(
-                        "Name of the Bank A/C Holder ",
-                        approverController.dNameOfBankController)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildReadOnlyTextField("Card No. and Expiry Date",
-                        approverController.dBankCardNoController)),
-              ]),
-              const SizedBox(
-                height: 25,
-              ),
-               Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Authorized Signature with Name of Dealer",
-                        style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "Dealer Official Seal",
-                        style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ];
-      case "(D) Review and Approval at Branch Level":
+      // case "(C) Commercial Matters":
+      //   return [
+      //     Column(
+      //       children: [
+              
+      //       ],
+      //     ),
+      //   ];
+      case "(C) Review and Approval at Branch Level":
         return [
           Column(children: [
             Row(children: [
@@ -1402,7 +1344,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
             ),
           ]),
         ];
-      case "(E) Review and Approval at Head Office":
+      case "(D) Review and Approval at Head Office":
         return [
           Column(
             children: [
@@ -1538,7 +1480,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
             ],
           ),
         ];
-      case "(F) Closure of Business with Dealer (with closure of sister concern accounts)":
+      case "(E) Closure of Business with Dealer (with closure of sister concern accounts)":
         return [
           Column(
             children: [

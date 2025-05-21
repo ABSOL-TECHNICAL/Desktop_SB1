@@ -71,6 +71,18 @@ class _SalesSummaryManagerState extends State<SalesSummaryManager> {
     }
   }
 
+  double _calculateCumulativeTotal() {
+  final filteredData = _filterData(); // Apply search filter if any
+  double total = 0.0;
+
+  for (var entry in filteredData) {
+    final value = double.tryParse(entry['CumulativeSales']?.toString() ?? '0') ?? 0.0;
+    total += value;
+  }
+
+  return total;
+}
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -112,6 +124,30 @@ class _SalesSummaryManagerState extends State<SalesSummaryManager> {
                         ),
                       ),
                     ),
+                                        const SizedBox(height: 20),
+Row(
+  mainAxisAlignment: MainAxisAlignment.end,
+  children: [
+    Obx(() {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 201, 199, 199),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade400),
+        ),
+        child: Text(
+          'Cumulative Total: ${_calculateCumulativeTotal().toStringAsFixed(2)}',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+      );
+    }),
+  ],
+),
+const SizedBox(height: 20),
                     Expanded(
                       child: Obx(
                         () {
@@ -226,6 +262,8 @@ class _SalesSummaryManagerState extends State<SalesSummaryManager> {
                         },
                       ),
                     ),
+
+                    
                   ],
                 ),
               ),

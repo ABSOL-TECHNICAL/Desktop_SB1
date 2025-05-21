@@ -4,6 +4,7 @@ import 'package:impal_desktop/features/sales/managers/customers/customer_details
 import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/view_order/model/view_order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/view_order/widget/view_order_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -357,8 +358,116 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         const SizedBox(height: 10),
                         isLoading
                             ? _buildShimmerTable()
-                            : _buildDynamicTable(
-                                context, viewController.viewOrder),
+                            :
+                            Expanded( 
+                                                child:   Obx(() {
+                if (viewController.isLoading.value) {
+                  return _buildShimmerTable();
+                }
+
+                if (viewController.viewOrder.isEmpty) {
+                  return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 70),
+              Shimmer.fromColors(
+                baseColor: const Color.fromARGB(255, 53, 51, 51),
+                highlightColor: Colors.white,
+                child: Icon(
+                  Icons.search_off,
+                  size: 100,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              SizedBox(height: 20),
+              Shimmer.fromColors(
+                baseColor: const Color.fromARGB(255, 53, 51, 51),
+                highlightColor: Colors.white,
+                child: Text(
+                  'No results found for last three days.\nPlease refine your search criteria.',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                     fontSize: 20,
+                  ),
+                  
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        );
+                }
+                                            return ListView.builder(
+                                                  shrinkWrap: true,
+                                                  physics:
+                                                      const AlwaysScrollableScrollPhysics(),
+                                                  itemCount: (viewController.viewOrder
+                                                              .length /
+                                                          2)
+                                                      .ceil(), // divide by 2 to pair data
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final detail1 =
+                                                        viewController.viewOrder[
+                                                            index *
+                                                                2]; // first item
+                                                    final detail2 = (index * 2 +
+                                                                1) <
+                                                            viewController.viewOrder
+                                                                .length
+                                                        ? viewController.viewOrder[index *
+                                                                2 +
+                                                            1] // second item (if available)
+                                                        : null;
+
+                                                    return Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 8.0),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          // Card 1
+                                                          Expanded(
+                                                            child:
+                                                                ViewOrderWidget(
+                                                              title:
+                                                                  '${detail1.item}\n${detail1.documentNumber}',
+                                                              subtitle:
+                                                                  'Date: ${detail1.documentDate}',
+                                                              vieworderDetails: [
+                                                                detail1
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          // Add space between cards
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          // Card 2 (if exists)
+                                                          if (detail2 != null)
+                                                            Expanded(
+                                                              child:
+                                                                  ViewOrderWidget(
+                                                                title:
+                                                                    '${detail2.item}\n${detail2.documentNumber}',
+                                                                subtitle:
+                                                                    'Date: ${detail2.documentDate}',
+                                                                vieworderDetails: [
+                                                                  detail2
+                                                                ],
+                                                              ),
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                                })
+                                              )
+                            //  _buildDynamicTable(
+                            //     context, viewController.viewOrder),
                       ],
                     ),
                   )))
