@@ -1,0 +1,2 @@
+D:/New folder/Impal_desktop_sandbox/android/app/.cxx/Debug/376i3q3s/x86_64/CMakeFiles/edit_cache.dir
+D:/New folder/Impal_desktop_sandbox/android/app/.cxx/Debug/376i3q3s/x86_64/CMakeFiles/rebuild_cache.dir
