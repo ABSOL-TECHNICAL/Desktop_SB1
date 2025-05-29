@@ -448,13 +448,18 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                         onDescriptionChanged(value);
                                       },
                                       enabled: true,
-                                      onFocusChange: (hasFocus) {
-                                        if (hasFocus) {
-                                          toggleFields('desc');
-                                        } else {
-                                          showDescriptionDropdown.value =
-                                              true; // Hide on losing focus
-                                        }
+                                        onFocusChange: (hasFocus) {
+      final globalsupplierController = Get.find<GlobalsupplierController>();
+      final selectedSupplierId = globalsupplierController.selectedSupplierId.value;
+ 
+      if (hasFocus) {
+        toggleFields('desc');
+        showDescriptionDropdown.value = false;
+      } else {
+        if (selectedSupplierId != null && selectedSupplierId.isNotEmpty) {
+          showDescriptionDropdown.value = true;
+        }
+      }
                                       },
                                     ),
                                   ),

@@ -946,30 +946,82 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                                       CrossAxisAlignment
                                                                           .start,
                                                                   children: [
-                                                                    _buildTextFields(
-                                                                      label:
-                                                                          'Enter Part No / Description',
-                                                                      hintText:
-                                                                          'Please Search Part No or Description...',
-                                                                      controller:
-                                                                          partNumberController,
-                                                                      onChanged:
-                                                                          onPartNumberChanged,
-                                                                      enabled:
-                                                                          true,
-                                                                      onFocusChange:
-                                                                          (hasFocus) {
-                                                                        if (hasFocus) {
-                                                                          toggleFields(
-                                                                              'partNo');
-                                                                          showPartNumberDropdown.value =
-                                                                              false;
-                                                                        } else {
-                                                                          showPartNumberDropdown.value =
-                                                                              true;
-                                                                        }
-                                                                      },
-                                                                    ),
+                                                                    // _buildTextFields(
+                                                                    //   label:
+                                                                    //       'Enter Part No / Description',
+                                                                    //   hintText:
+                                                                    //       'Please Search Part No or Description...',
+                                                                    //   controller:
+                                                                    //       partNumberController,
+                                                                    //   onChanged:
+                                                                    //       onPartNumberChanged,
+                                                                    //   enabled:
+                                                                    //       true,
+                                                                    //   onFocusChange:
+                                                                    //       (hasFocus) {
+                                                                    //     if (hasFocus) {
+                                                                    //       toggleFields(
+                                                                    //           'partNo');
+                                                                    //       showPartNumberDropdown.value =
+                                                                    //           false;
+                                                                    //     } else {
+                                                                    //       showPartNumberDropdown.value =
+                                                                    //           true;
+                                                                    //     }
+                                                                    //   },
+                                                                    // ),
+                                                                         Expanded(
+                                            child: _buildTextFields(
+                                                label: 'Enter Part No / Description',
+                                                hintText: 'Enter Part No / Description',
+                                                controller:
+                                                    partNumberController,
+                                                // onChanged: onPartNumberChanged,
+                                                onChanged: (value) {
+                                                  final globalsupplierController =
+                                                      Get.find<
+                                                          GlobalsupplierController>();
+                                                  final selectedSupplierId =
+                                                      globalsupplierController
+                                                          .selectedSupplierId
+                                                          .value;
+
+                                                  if (selectedSupplierId ==
+                                                          null ||
+                                                      selectedSupplierId
+                                                          .isEmpty) {
+                                                    AppSnackBar.alert(
+                                                        message:
+                                                            "Please select a supplier first.");
+                                                    return;
+                                                  }
+                                                  onPartNumberChanged(value);
+                                                },
+                                                enabled: true,
+                                                onFocusChange: (hasFocus) {
+                                                  final globalsupplierController =
+                                                      Get.find<
+                                                          GlobalsupplierController>();
+                                                  final selectedSupplierId =
+                                                      globalsupplierController
+                                                          .selectedSupplierId
+                                                          .value;
+
+                                                  if (hasFocus) {
+                                                    toggleFields('desc');
+                                                    showDescriptionDropdown
+                                                        .value = false;
+                                                  } else {
+                                                    if (selectedSupplierId !=
+                                                            null &&
+                                                        selectedSupplierId
+                                                            .isNotEmpty) {
+                                                      showDescriptionDropdown
+                                                          .value = true;
+                                                    }
+                                                  }
+                                                }),
+                                                                         ),
                                                                     Obx(() => showPartNumberDropdown
                                                                             .value
                                                                         ? _buildSuggestionsList()

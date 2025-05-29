@@ -182,7 +182,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
     partNumberController.text = item.itemName ?? '';
     selectedPartNumberId.value = item.itemId;
 
-    descriptionController.text = item.desc ?? '';
+    descriptionController.text = item.vehicalApplication ?? '';
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear();
@@ -192,11 +192,11 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
 
   void onSelectDescription(GlobalitemDetail item) {
     FocusScope.of(context).unfocus();
-    descriptionController.text = item.desc ?? '';
+    descriptionController.text = item.vehicalApplication ?? '';
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear();
-    fetchPartNumbersByDescription(item.desc!);
+    fetchPartNumbersByDescription(item.vehicalApplication!);
 
     showDescriptionDropdown.value = false;
   }
@@ -361,33 +361,125 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
                                               },
                                             ),
                                           ),
+                                          // const SizedBox(width: 8),
+                                          // Expanded(
+                                          //   child: _buildTextField(
+                                          //     label: 'Enter Part Number',
+                                          //     hintText: 'Enter Part No...',
+                                          //     controller: partNumberController,
+                                          //     onChanged: onPartNumberChanged,
+                                          //     enabled: true,
+                                          //     onFocusChange: (hasFocus) {
+                                          //       if (hasFocus) {
+                                          //         toggleFields('partNo');
+                                          //         showPartNumberDropdown.value =
+                                          //             false;
+                                          //       } else {
+                                          //         showPartNumberDropdown.value =
+                                          //             true;
+                                          //       }
+                                          //     },
+                                          //   ),
+                                          // ),
+                                          // const SizedBox(width: 8),
+                                          // Expanded(
+                                          //   child: _buildTextField(
+                                          //     label: 'Enter Description',
+                                          //     hintText: 'Enter  Description...',
+                                          //     controller: descriptionController,
+                                          //     onChanged: onDescriptionChanged,
+                                          //     enabled: true,
+                                          //     onFocusChange: (hasFocus) {
+                                          //       if (hasFocus) {
+                                          //         toggleFields('desc');
+                                          //       } else {
+                                          //         showDescriptionDropdown
+                                          //             .value = true;
+                                          //       }
+                                          //     },
+                                          //   ),
+                                          // ),
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: _buildTextField(
-                                              label: 'Enter Part Number',
-                                              hintText: 'Enter Part No...',
-                                              controller: partNumberController,
-                                              onChanged: onPartNumberChanged,
-                                              enabled: true,
-                                              onFocusChange: (hasFocus) {
-                                                if (hasFocus) {
-                                                  toggleFields('partNo');
-                                                  showPartNumberDropdown.value =
-                                                      false;
-                                                } else {
-                                                  showPartNumberDropdown.value =
-                                                      true;
-                                                }
-                                              },
-                                            ),
+                                                label: 'Enter Part No',
+                                                hintText: 'Enter Part No...',
+                                                controller:
+                                                    partNumberController,
+                                                // onChanged: onPartNumberChanged,
+                                                onChanged: (value) {
+                                                  final globalsupplierController =
+                                                      Get.find<
+                                                          GlobalsupplierController>();
+                                                  final selectedSupplierId =
+                                                      globalsupplierController
+                                                          .selectedSupplierId
+                                                          .value;
+
+                                                  if (selectedSupplierId ==
+                                                          null ||
+                                                      selectedSupplierId
+                                                          .isEmpty) {
+                                                    AppSnackBar.alert(
+                                                        message:
+                                                            "Please select a supplier first.");
+                                                    return;
+                                                  }
+                                                  onPartNumberChanged(value);
+                                                },
+                                                enabled: true,
+                                                onFocusChange: (hasFocus) {
+                                                  final globalsupplierController =
+                                                      Get.find<
+                                                          GlobalsupplierController>();
+                                                  final selectedSupplierId =
+                                                      globalsupplierController
+                                                          .selectedSupplierId
+                                                          .value;
+
+                                                  if (hasFocus) {
+                                                    toggleFields('desc');
+                                                    showDescriptionDropdown
+                                                        .value = false;
+                                                  } else {
+                                                    if (selectedSupplierId !=
+                                                            null &&
+                                                        selectedSupplierId
+                                                            .isNotEmpty) {
+                                                      showDescriptionDropdown
+                                                          .value = true;
+                                                    }
+                                                  }
+                                                }),
                                           ),
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: _buildTextField(
-                                              label: 'Enter Description',
-                                              hintText: 'Enter  Description...',
+                                              label:
+                                                  'Enter Vehicle Application No',
+                                              hintText: 'Enter Vehicle...',
                                               controller: descriptionController,
-                                              onChanged: onDescriptionChanged,
+                                              // onChanged: onDescriptionChanged,
+                                              onChanged: (value) {
+                                                final globalsupplierController =
+                                                    Get.find<
+                                                        GlobalsupplierController>();
+                                                final selectedSupplierId =
+                                                    globalsupplierController
+                                                        .selectedSupplierId
+                                                        .value;
+
+                                                if (selectedSupplierId ==
+                                                        null ||
+                                                    selectedSupplierId
+                                                        .isEmpty) {
+                                                  AppSnackBar.alert(
+                                                      message:
+                                                          "Please select a supplier first.");
+                                                  return;
+                                                }
+                                                onDescriptionChanged(value);
+                                              },
                                               enabled: true,
                                               onFocusChange: (hasFocus) {
                                                 if (hasFocus) {
