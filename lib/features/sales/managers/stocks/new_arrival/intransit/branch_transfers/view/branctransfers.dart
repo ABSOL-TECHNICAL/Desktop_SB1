@@ -54,7 +54,6 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
   RxString fromdate = ''.obs;
   RxString todate = ''.obs;
 
-
   Future<String?> getSupplierId(String supplierName) async {
     final selectedSupplierDetails = globalSupplierController
         .globalsupplierController
@@ -264,7 +263,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
     selectedPartNumberId.value = item.itemId;
 
     // Set the description based on the selected part number
-    descriptionController.text = item.desc ?? '';
+    descriptionController.text = item.vehicalApplication ?? '';
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear();
@@ -275,13 +274,13 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
   void onSelectDescription(GlobalitemDetail item) {
     FocusScope.of(context).unfocus(); // Close the keyboard
     descriptionController.text =
-        item.desc ?? ''; // Set selected description in the field
+        item.vehicalApplication ?? ''; // Set selected description in the field
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear(); // Clear current items
 
     // Fetch related part numbers based on the selected description
-    fetchPartNumbersByDescription(item.desc!);
+    fetchPartNumbersByDescription(item.vehicalApplication!);
 
     showDescriptionDropdown.value = false;
   }
@@ -397,7 +396,22 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                       label: 'Enter Part No',
                                       hintText: 'Enter Part No...',
                                       controller: partNumberController,
-                                      onChanged: onPartNumberChanged,
+                                      onChanged: (value) {
+                                        final globalsupplierController = Get
+                                            .find<GlobalsupplierController>();
+                                        final selectedSupplierId =
+                                            globalsupplierController
+                                                .selectedSupplierId.value;
+
+                                        if (selectedSupplierId == null ||
+                                            selectedSupplierId.isEmpty) {
+                                          AppSnackBar.alert(
+                                              message:
+                                                  "Please select a supplier first.");
+                                          return;
+                                        }
+                                        onPartNumberChanged(value);
+                                      },
                                       enabled: true,
                                       onFocusChange: (hasFocus) {
                                         if (hasFocus) {
@@ -414,10 +428,25 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: _buildTextField1(
-                                      label: 'Enter Description',
-                                      hintText: 'Enter Desc No...',
+                                      label: 'Enter Vehicle Application No',
+                                      hintText: 'Enter vehicle No...',
                                       controller: descriptionController,
-                                      onChanged: onDescriptionChanged,
+                                      onChanged: (value) {
+                                        final globalsupplierController = Get
+                                            .find<GlobalsupplierController>();
+                                        final selectedSupplierId =
+                                            globalsupplierController
+                                                .selectedSupplierId.value;
+
+                                        if (selectedSupplierId == null ||
+                                            selectedSupplierId.isEmpty) {
+                                          AppSnackBar.alert(
+                                              message:
+                                                  "Please select a supplier first.");
+                                          return;
+                                        }
+                                        onDescriptionChanged(value);
+                                      },
                                       enabled: true,
                                       onFocusChange: (hasFocus) {
                                         if (hasFocus) {
@@ -467,45 +496,64 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                     //   }
                                     // },
 
-                               onPressed: () {
-  final String partNumber = selectedPartNumberId.value?.trim().isNotEmpty == true
-      ? selectedPartNumberId.value!.trim()
-      : partNumberController.text.trim();
+                                    onPressed: () {
+                                      final String partNumber =
+                                          selectedPartNumberId.value
+                                                      ?.trim()
+                                                      .isNotEmpty ==
+                                                  true
+                                              ? selectedPartNumberId.value!
+                                                  .trim()
+                                              : partNumberController.text
+                                                  .trim();
 
-  final bool isPartNumberEmpty = partNumber.isEmpty;
-  final bool isFromDateEmpty = fromDate.isEmpty || fromDate == 'Choose From Date';
-  final bool isToDateEmpty = toDate.isEmpty || toDate == 'Choose To Date';
+                                      final bool isPartNumberEmpty =
+                                          partNumber.isEmpty;
+                                      final bool isFromDateEmpty =
+                                          fromDate.isEmpty ||
+                                              fromDate == 'Choose From Date';
+                                      final bool isToDateEmpty =
+                                          toDate.isEmpty ||
+                                              toDate == 'Choose To Date';
 
-  if (!isPartNumberEmpty && !isFromDateEmpty && !isToDateEmpty) {
-    // Clear previous results
-    branchTransfersController.supplierDetails.clear();
+                                      if (!isPartNumberEmpty &&
+                                          !isFromDateEmpty &&
+                                          !isToDateEmpty) {
+                                        // Clear previous results
+                                        branchTransfersController
+                                            .supplierDetails
+                                            .clear();
 
-    // Make API call
-    branchTransfersController.fetchBranchTransferDetails(
-      partNumber,
-      branchTransfersController.defaultBranchStocks,
-      fromDate: fromDate,
-      toDate: toDate,
-    );
+                                        // Make API call
+                                        branchTransfersController
+                                            .fetchBranchTransferDetails(
+                                          partNumber,
+                                          branchTransfersController
+                                              .defaultBranchStocks,
+                                          fromDate: fromDate,
+                                          toDate: toDate,
+                                        );
 
-    // Mark search performed
-    setState(() {
-      isSearchPerformed = true;
-    });
+                                        // Mark search performed
+                                        setState(() {
+                                          isSearchPerformed = true;
+                                        });
 
-    // Update UI with fetched data
-    branchTransfersController.defaultBranchStocks.listen((data) {
-      searchedBranchTransfer.value = data;
-    });
-  } else {
-    // Build an error message showing exactly which field is missing
-    String errorMessage = 'Please fill all the fields';
-    
+                                        // Update UI with fetched data
+                                        branchTransfersController
+                                            .defaultBranchStocks
+                                            .listen((data) {
+                                          searchedBranchTransfer.value = data;
+                                        });
+                                      } else {
+                                        // Build an error message showing exactly which field is missing
+                                        String errorMessage =
+                                            'Please fill all the fields';
 
-    AppSnackBar.alert(message: errorMessage.trim());
-  }
-},
-
+                                        AppSnackBar.alert(
+                                            message: errorMessage.trim());
+                                      }
+                                    },
 
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(
@@ -1159,7 +1207,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: Text(
-                  item.desc ?? '',
+                  item.vehicalApplication ?? '',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

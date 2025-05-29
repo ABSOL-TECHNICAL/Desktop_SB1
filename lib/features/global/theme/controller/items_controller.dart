@@ -22,38 +22,86 @@ class GlobalItemsController extends GetxController {
   }
 
   Future<void> fetchGlobalItems(
-      String itemName, String desc, String supplierId) async {
-    final requestBody = {
-      "ItemName": itemName,
-      "Desc": desc,
-      "Supplier": supplierId, // Pass supplier ID here
-    };
+    String itemName, String vehicalApplication, String supplierId) async {
+  final requestBody = {
+    "ItemName": itemName,
+    "vehicalApplication": vehicalApplication,
+    "Supplier": supplierId,
+  };
 
-    try {
-      isLoading.value = true;
-      final response = await _restletService.fetchReportData(
-        NetSuiteScripts.globalitemScriptId,
-        requestBody,
-      );
+  try {
+    isLoading.value = true;
+    final response = await _restletService.fetchReportData(
+      NetSuiteScripts.globalitemScriptId,
+      requestBody,
+    );
 
-      if (response is List<dynamic> && response.isNotEmpty) {
-        globalItems.value = GlobalitemDetail.listFromJson(response);
+    if (response is List<dynamic> && response.isNotEmpty) {
+      var items = GlobalitemDetail.listFromJson(response);
 
-        itemMappings.clear();
-        for (var item in globalItems) {
-          itemMappings[item.itemName ?? ''] = item.itemId ?? '';
-        }
-
-        if (globalItems.isEmpty) {
-          AppSnackBar.alert(message: "No Items found.");
-        }
+      // 🔍 Local filtering by vehicle application (if input is provided)
+      if (vehicalApplication.isNotEmpty) {
+        items = items.where((item) =>
+          item.vehicalApplication != null &&
+          item.vehicalApplication!
+              .toLowerCase()
+              .contains(vehicalApplication.toLowerCase())
+        ).toList();
       }
-    } catch (e) {
-      AppSnackBar.alert(message: "Error fetching global items: $e");
-    } finally {
-      isLoading.value = false;
+
+      globalItems.value = items;
+
+      itemMappings.clear();
+      for (var item in globalItems) {
+        itemMappings[item.itemName ?? ''] = item.itemId ?? '';
+      }
+
+      if (globalItems.isEmpty) {
+        AppSnackBar.alert(message: "No Items found.");
+      }
     }
+  } catch (e) {
+    AppSnackBar.alert(message: "Error fetching global items: $e");
+  } finally {
+    isLoading.value = false;
   }
+}
+
+
+  // Future<void> fetchGlobalItems(
+  //     String itemName, String vehicalApplication,String supplierId) async {
+  //   final requestBody = {
+  //     "ItemName": itemName,
+  //     // "Desc": desc,
+  //     "vehicalApplication": vehicalApplication,
+  //     "Supplier": supplierId, // Pass supplier ID here
+  //   };
+
+  //   try {
+  //     isLoading.value = true;
+  //     final response = await _restletService.fetchReportData(
+  //       NetSuiteScripts.globalitemScriptId,
+  //       requestBody,
+  //     );
+
+  //     if (response is List<dynamic> && response.isNotEmpty) {
+  //       globalItems.value = GlobalitemDetail.listFromJson(response);
+
+  //       itemMappings.clear();
+  //       for (var item in globalItems) {
+  //         itemMappings[item.itemName ?? ''] = item.itemId ?? '';
+  //       }
+
+  //       if (globalItems.isEmpty) {
+  //         AppSnackBar.alert(message: "No Items found.");
+  //       }
+  //     }
+  //   } catch (e) {
+  //     AppSnackBar.alert(message: "Error fetching global items: $e");
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<void> selectPartNumber(String partNoId) async {
     final locationId = loginController.employeeModel.location;

@@ -2,13 +2,15 @@ class GlobalitemDetail {
   String? itemName;
   String? itemId;
   String? desc;
+  String? vehicalApplication;
 
-  GlobalitemDetail({this.itemName, this.itemId, this.desc});
+  GlobalitemDetail({this.itemName, this.itemId, this.desc, this.vehicalApplication});
 
   GlobalitemDetail.fromJson(Map<String, dynamic> json) {
     itemName = json['ItemName'];
     itemId = json['ItemId'];
     desc = json['Desc'];
+    vehicalApplication = json['vehicalApplication'];
   }
 
   Map<String, dynamic> toJson() {
@@ -16,6 +18,7 @@ class GlobalitemDetail {
     data['ItemName'] = itemName;
     data['ItemId'] = itemId;
     data['Desc'] = desc;
+    data['vehicalApplication'] = vehicalApplication;
     return data;
   }
 
