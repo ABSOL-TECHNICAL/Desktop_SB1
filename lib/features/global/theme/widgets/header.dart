@@ -55,7 +55,7 @@ class GlobalAppBar extends GetView<DashboardController>
           children: [
             Text(username, style: _textStyle(fontSize: 14, bold: true)),
             Text(email, style: _textStyle(fontSize: 12)),
-            Text('Environment: Production 1.0.2',
+            Text('Environment: Production 1.0.3',
                 style: _textStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),

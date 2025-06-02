@@ -1262,119 +1262,119 @@ bool _validateForm = false;
                       ),
                     ]),
                     const SizedBox(height: 30),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'GST Form Upload',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 8),
-                              InkWell(
-                                onTap: () async {
-                                  FilePickerResult? result =
-                                      await FilePicker.platform.pickFiles();
+                    // Row(
+                    //   children: [
+                    //     Expanded(
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           const Text(
+                    //             'GST Form Upload',
+                    //             style: TextStyle(fontWeight: FontWeight.bold),
+                    //           ),
+                    //           const SizedBox(height: 8),
+                    //           InkWell(
+                    //             onTap: () async {
+                    //               FilePickerResult? result =
+                    //                   await FilePicker.platform.pickFiles();
 
-                                  if (result != null &&
-                                      result.files.single.path != null) {
-                                    setState(() {
-                                      selectedFile =
-                                          File(result.files.single.path!);
-                                      selectedFileName =
-                                          result.files.single.name;
-                                    });
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14, horizontal: 12),
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.grey.shade400),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.upload_file,
-                                          color: Colors.grey),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          selectedFileName ?? 'Upload File...',
-                                          style: TextStyle(
-                                            color: selectedFileName == null
-                                                ? Colors.grey
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'PAN Card Upload (Unregistered)',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 8),
-                              InkWell(
-                                onTap: () async {
-                                  FilePickerResult? result =
-                                      await FilePicker.platform.pickFiles();
+                    //               if (result != null &&
+                    //                   result.files.single.path != null) {
+                    //                 setState(() {
+                    //                   selectedFile =
+                    //                       File(result.files.single.path!);
+                    //                   selectedFileName =
+                    //                       result.files.single.name;
+                    //                 });
+                    //               }
+                    //             },
+                    //             child: Container(
+                    //               padding: const EdgeInsets.symmetric(
+                    //                   vertical: 14, horizontal: 12),
+                    //               decoration: BoxDecoration(
+                    //                 border:
+                    //                     Border.all(color: Colors.grey.shade400),
+                    //                 borderRadius: BorderRadius.circular(8),
+                    //               ),
+                    //               child: Row(
+                    //                 children: [
+                    //                   const Icon(Icons.upload_file,
+                    //                       color: Colors.grey),
+                    //                   const SizedBox(width: 12),
+                    //                   Expanded(
+                    //                     child: Text(
+                    //                       selectedFileName ?? 'Upload File...',
+                    //                       style: TextStyle(
+                    //                         color: selectedFileName == null
+                    //                             ? Colors.grey
+                    //                             : Colors.black,
+                    //                       ),
+                    //                     ),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 16),
+                    //     Expanded(
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           const Text(
+                    //             'PAN Card Upload (Unregistered)',
+                    //             style: TextStyle(fontWeight: FontWeight.bold),
+                    //           ),
+                    //           const SizedBox(height: 8),
+                    //           InkWell(
+                    //             onTap: () async {
+                    //               FilePickerResult? result =
+                    //                   await FilePicker.platform.pickFiles();
 
-                                  if (result != null &&
-                                      result.files.single.path != null) {
-                                    setState(() {
-                                      selectedFile =
-                                          File(result.files.single.path!);
-                                      selectedFileName =
-                                          result.files.single.name;
-                                    });
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14, horizontal: 12),
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.grey.shade400),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.upload_file,
-                                          color: Colors.grey),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          selectedFileName ?? 'Upload File...',
-                                          style: TextStyle(
-                                            color: selectedFileName == null
-                                                ? Colors.grey
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    //               if (result != null &&
+                    //                   result.files.single.path != null) {
+                    //                 setState(() {
+                    //                   selectedFile =
+                    //                       File(result.files.single.path!);
+                    //                   selectedFileName =
+                    //                       result.files.single.name;
+                    //                 });
+                    //               }
+                    //             },
+                    //             child: Container(
+                    //               padding: const EdgeInsets.symmetric(
+                    //                   vertical: 14, horizontal: 12),
+                    //               decoration: BoxDecoration(
+                    //                 border:
+                    //                     Border.all(color: Colors.grey.shade400),
+                    //                 borderRadius: BorderRadius.circular(8),
+                    //               ),
+                    //               child: Row(
+                    //                 children: [
+                    //                   const Icon(Icons.upload_file,
+                    //                       color: Colors.grey),
+                    //                   const SizedBox(width: 12),
+                    //                   Expanded(
+                    //                     child: Text(
+                    //                       selectedFileName ?? 'Upload File...',
+                    //                       style: TextStyle(
+                    //                         color: selectedFileName == null
+                    //                             ? Colors.grey
+                    //                             : Colors.black,
+                    //                       ),
+                    //                     ),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

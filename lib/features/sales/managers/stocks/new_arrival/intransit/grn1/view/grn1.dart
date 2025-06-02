@@ -266,11 +266,11 @@ class _Grn1PageState extends State<Grn1Page> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: _buildTextField(
-                                    label: 'Enter Part No',
-                                    hintText: 'Enter Part No...',
-                                    controller: partNumberController,
-                                    // onChanged: onPartNumberChanged,
-                                     onChanged: (value) {
+                                      label: 'Enter Part No',
+                                      hintText: 'Enter Part No...',
+                                      controller: partNumberController,
+                                      // onChanged: onPartNumberChanged,
+                                      onChanged: (value) {
                                         final globalsupplierController = Get
                                             .find<GlobalsupplierController>();
                                         final selectedSupplierId =
@@ -286,21 +286,25 @@ class _Grn1PageState extends State<Grn1Page> {
                                         }
                                         onPartNumberChanged(value);
                                       },
-                                    enabled: true,
-                              onFocusChange: (hasFocus) {
-      final globalsupplierController = Get.find<GlobalsupplierController>();
-      final selectedSupplierId = globalsupplierController.selectedSupplierId.value;
- 
-      if (hasFocus) {
-        toggleFields('desc');
-        showDescriptionDropdown.value = false;
-      } else {
-        if (selectedSupplierId != null && selectedSupplierId.isNotEmpty) {
-          showDescriptionDropdown.value = true;
-        }
-      }
-                              }
-                                  ),
+                                      enabled: true,
+                                      onFocusChange: (hasFocus) {
+                                        final globalsupplierController = Get
+                                            .find<GlobalsupplierController>();
+                                        final selectedSupplierId =
+                                            globalsupplierController
+                                                .selectedSupplierId.value;
+
+                                        if (hasFocus) {
+                                          toggleFields('desc');
+                                          showDescriptionDropdown.value = false;
+                                        } else {
+                                          if (selectedSupplierId != null &&
+                                              selectedSupplierId.isNotEmpty) {
+                                            showDescriptionDropdown.value =
+                                                true;
+                                          }
+                                        }
+                                      }),
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
@@ -309,22 +313,22 @@ class _Grn1PageState extends State<Grn1Page> {
                                     hintText: 'Enter Vehicle...',
                                     controller: descriptionController,
                                     // onChanged: onDescriptionChanged,
-                                     onChanged: (value) {
-                                        final globalsupplierController = Get
-                                            .find<GlobalsupplierController>();
-                                        final selectedSupplierId =
-                                            globalsupplierController
-                                                .selectedSupplierId.value;
+                                    onChanged: (value) {
+                                      final globalsupplierController =
+                                          Get.find<GlobalsupplierController>();
+                                      final selectedSupplierId =
+                                          globalsupplierController
+                                              .selectedSupplierId.value;
 
-                                        if (selectedSupplierId == null ||
-                                            selectedSupplierId.isEmpty) {
-                                          AppSnackBar.alert(
-                                              message:
-                                                  "Please select a supplier first.");
-                                          return;
-                                        }
-                                         onDescriptionChanged(value);
-                                      },
+                                      if (selectedSupplierId == null ||
+                                          selectedSupplierId.isEmpty) {
+                                        AppSnackBar.alert(
+                                            message:
+                                                "Please select a supplier first.");
+                                        return;
+                                      }
+                                      onDescriptionChanged(value);
+                                    },
                                     enabled: true,
                                     onFocusChange: (hasFocus) {
                                       if (hasFocus) {
