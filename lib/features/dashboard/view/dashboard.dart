@@ -74,21 +74,24 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("• Empty fields are now highlighted for clarity", style: TextStyle(color: Colors.black)),
+                  Text("•Remove Unwanted Fields", style: TextStyle(color: Colors.black)),
+                  Text("•Page Refresh Button", style: TextStyle(color: Colors.black)),
+                   Text("•Page Scroll up & down for Dealer Approval", style: TextStyle(color: Colors.black)),
+                   Text("•Page Scroll up & down for Dealer Approval", style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
 
             SizedBox(height: 10),
 
-            Text("• Sales Order Summary:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+            Text("•View Order:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
             Padding(
               padding: EdgeInsets.only(left: 16.0, top: 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("• View detailed summaries of orders", style: TextStyle(color: Colors.black)),
-                  Text("• Grouped by product category and region", style: TextStyle(color: Colors.black)),
+                  Text("• Table view on expansion Tile", style: TextStyle(color: Colors.black)),
+                  Text("• Change description to Vehicle application", style: TextStyle(color: Colors.black)),
                 ],
               ),
             ),
