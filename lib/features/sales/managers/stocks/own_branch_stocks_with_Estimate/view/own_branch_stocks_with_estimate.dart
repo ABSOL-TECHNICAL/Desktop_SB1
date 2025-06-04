@@ -315,6 +315,15 @@ class _OwnBranchStocksWithEstimatePageState extends State<OwnBranchStocksWithEst
         false;
   }
 
+String _getSalesTypeName(int? id) {
+  if (id == null) return 'Not Selected';
+  final option = salesOptions.firstWhere(
+    (option) => option['id'] == id,
+    orElse: () => {'name': 'Unknown'},
+  );
+  return option['name'];
+}
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1054,16 +1063,24 @@ class _OwnBranchStocksWithEstimatePageState extends State<OwnBranchStocksWithEst
                     ),
                   ),
                 ),
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 16.0),
+                //   child: Text(
+                //     'OrderType: $ordertypeId',
+                //     style: theme.textTheme.bodyMedium?.copyWith(
+                //       fontWeight: FontWeight.bold,
+                //     ),
+                //   ),
+                // ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    'OrderType: $ordertypeId',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-
+  padding: const EdgeInsets.only(bottom: 16.0),
+  child: Text(
+    'Order Type: ${_getSalesTypeName(selectedSalesId)}', // Shows "Cash Sales" instead of "1"
+    style: theme.textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
                 // Item details
                 Text(
                   '${item.itemId} - ${item.itemName} - ${item.desc}',
