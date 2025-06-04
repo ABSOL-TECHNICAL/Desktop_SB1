@@ -877,7 +877,7 @@ class _OwnBranchStocksWithEstimatePageState extends State<OwnBranchStocksWithEst
           cells: <DataCell>[
             DataCell(Text(index.toString())),
             DataCell(Text(detail.itemName ?? '-')),
-            DataCell(Text(detail.itemId ?? '-')),
+            // DataCell(Text(detail.itemId ?? '-')),
             DataCell(Text(detail.desc ?? '-')),
             DataCell(Text(detail.vehicalApplication ?? '-')),
             DataCell(
@@ -954,18 +954,18 @@ class _OwnBranchStocksWithEstimatePageState extends State<OwnBranchStocksWithEst
                               )),
                         ),
                       ),
+                      // DataColumn(
+                      //   label: Center(
+                      //     child: Text('Available Stock',
+                      //         style: theme.textTheme.bodyLarge?.copyWith(
+                      //           color: Colors.white,
+                      //           fontWeight: FontWeight.bold,
+                      //         )),
+                      //   ),
+                      // ),
                       DataColumn(
                         label: Center(
-                          child: Text('Available Stock',
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Center(
-                          child: Text('MRP',
+                          child: Text('Vehicle No',
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
