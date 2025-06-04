@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:impal_desktop/features/global/theme/widgets/search.dart';
 import 'package:impal_desktop/features/global/theme/widgets/suppliersearchdrodown.dart';
 import 'package:impal_desktop/features/sales/managers/stocks/own_branch_stocks/model/own_branch_model.dart';
-
 import 'package:shimmer/shimmer.dart';
 import 'package:impal_desktop/features/global/theme/controller/items_controller.dart';
 import 'package:impal_desktop/features/global/theme/controller/supplier_controller.dart';
@@ -808,20 +806,20 @@ class _BranchStockPageState extends State<BranchStocksPage> {
               DataCell(Text(detail.mRP?.toStringAsFixed(2) ?? '0.00')),
               DataCell(Text(detail.listPrice?.toStringAsFixed(2) ?? '0.00')),
               DataCell(Text(detail.gSTRate?.toString() ?? '0')),
-             DataCell(
-  IconButton(
-    icon: const Icon(Icons.more_vert),
-    tooltip: 'View SLB options',
-    onPressed: () {
-      if ((detail.sLB ?? '').isNotEmpty) {
-        showSLBDropdownDialog(context, detail);
-      } else {
-         ownBranchController.slbFieldValue.value = '';
-        AppSnackBar.alert(message: 'No SLB options available');
-      }
-    },
-  ),
-),
+//              DataCell(
+//   IconButton(
+//     icon: const Icon(Icons.more_vert),
+//     tooltip: 'View SLB options',
+//     onPressed: () {
+//       if ((detail.sLB ?? '').isNotEmpty) {
+//         showSLBDropdownDialog(context, detail);
+//       } else {
+//          ownBranchController.slbFieldValue.value = '';
+//         AppSnackBar.alert(message: 'No SLB options available');
+//       }
+//     },
+//   ),
+// ),
             ],
           );
         }).toList();
@@ -949,17 +947,17 @@ class _BranchStockPageState extends State<BranchStocksPage> {
                             ),
                           ),
                         ),
-                        DataColumn(
-                          label: Center(
-                            child: Text(
-                              'SLB',
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // DataColumn(
+                        //   label: Center(
+                        //     child: Text(
+                        //       'SLB',
+                        //       style: theme.textTheme.bodyLarge?.copyWith(
+                        //         color: Colors.white,
+                        //         fontWeight: FontWeight.bold,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                       rows: dataRows,
                     ),
