@@ -37,6 +37,7 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
   Rx<String?> selectedSlbName = Rx<String?>(null);
 
   TextEditingController requiredQuantityController = TextEditingController();
+  TextEditingController packingQuantityController = TextEditingController();
 
   final CustomerDetailsController customerDetailsController =
       Get.put(CustomerDetailsController());
@@ -160,6 +161,10 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
     salesOrderController.fetchslb(id, selectedCustomerId!.toString(), itemID!);
     print("hiiiiiiii");
     salesOrderController.fetchslbtownlocation(selectedCustomerId!.toString());
+     
+      if (selectedSupplierIds != null && item.itemId != null) {
+    salesOrderController.fetchpacking(selectedSupplierIds.toString(), item.itemId!);
+  }
     // salesOrderController.fetchslb(item.itemId!);
   }
 
@@ -1313,6 +1318,30 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
                                                               ],
                                                             ),
                                                           ),
+                                                             const SizedBox(
+                                                              width: 12),
+                                                        Expanded(
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Obx(() {
+        final packingQty = salesOrderController.globalpack.isNotEmpty
+            ? salesOrderController.globalpack.first.packingQty
+            : 'N/A';
+
+        if (packingQty.isNotEmpty && packingQty != 'N/A') {
+          packingQuantityController.text = packingQty;
+        }
+
+        return _buildTextFieldua(
+          label: 'Packing Qty'.tr,
+          hintText: 'Packing Qty',
+          controller: packingQuantityController,
+        );
+      }),
+    ],
+  ),
+),
                                                           const SizedBox(
                                                               width: 12),
                                                           Expanded(

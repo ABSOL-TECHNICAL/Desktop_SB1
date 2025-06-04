@@ -11,6 +11,7 @@ class GlobalItemsController extends GetxController {
 
   RxList<GlobalitemDetail> globalItems = <GlobalitemDetail>[].obs;
   RxList<GlobalitemDetails> globalItemStocks = <GlobalitemDetails>[].obs;
+ 
   Map<String, String> itemMappings = {};
   RxBool isLoading = false.obs;
   RxBool isLoadingStocks = false.obs;

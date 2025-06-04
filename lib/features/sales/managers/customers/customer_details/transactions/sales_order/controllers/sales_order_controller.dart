@@ -26,6 +26,8 @@ class SalesOrderController extends GetxController {
   var slbtownlocation = ''.obs;
   var slbtownid = ''.obs;
   var saleorderslb = <Dataslb>[].obs;
+  var globalpack = <Dataslb1>[].obs;
+
   var isDropdownOpen = false.obs;
   Map<String, String> itemMappings = {};
   RxBool isLoadingSales = false.obs;
@@ -211,37 +213,39 @@ class SalesOrderController extends GetxController {
       isLoadingslbpartnumber.value = false;
     }
   }
-   Future<void> fetchpacking(String supplier, String itemId) async {
-    isLoadingslbname.value = true;
-    print("$supplier  - $itemId");
+  
+ Future<void> fetchpacking(String supplier, String itemId) async {
+  isLoadingslbname.value = true;
+  print("Fetching packing for Supplier: $supplier, Item: $itemId");
 
-    final requestBody = {
-      "supplier": supplier,
-          "itemId": itemId
-    };
+  final requestBody = {
+    "Supplier": supplier,
+    "Item": itemId,
+  };
 
-    try {
-      final response = await _restletService.fetchReportData(
-          NetSuiteScripts.fetchpacking, requestBody);
+  try {
+    final response = await _restletService.fetchReportData(
+      NetSuiteScripts.fetchpacking, requestBody,
+    );
 
-      print(response);
+    print("Response: $response");
 
-      if (response is Map<String, dynamic> && response['data'] != null) {
-        List<Dataslb> fetchedData = (response['data'] as List)
-            .map((item) => Dataslb.fromJson(item))
-            .toList();
+    if (response is List) {
+      List<Dataslb1> fetchedData = response
+          .map((item) => Dataslb1.fromJson(item))
+          .toList();
 
-        saleorderslb.assignAll(fetchedData);
-      } else {
-        saleorderslb.clear();
-        AppSnackBar.alert(
-            message: "The Selected Item doesn't have the Available Quantity.");
-      }
-    } catch (e) {
-      AppSnackBar.alert(message: "Error fetching stock data: $e");
-    } finally {
-      isLoadingslbname.value = false;
+      globalpack.assignAll(fetchedData);
+    } else {
+      globalpack.clear();
+      AppSnackBar.alert(
+          message: "The selected item doesn't have packing quantity.");
     }
+  } catch (e) {
+    AppSnackBar.alert(message: "Error fetching packing data: $e");
+  } finally {
+    isLoadingslbname.value = false;
   }
+}
 
 }

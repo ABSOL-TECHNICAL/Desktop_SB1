@@ -149,6 +149,9 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     salesOrderController.fetchslb(id, customerId, itemID!);
     print("hiiiiiiii");
     salesOrderController.fetchslbtownlocation(customerId);
+      if (selectedSupplierIds != null && item.itemId != null) {
+    salesOrderController.fetchpacking(selectedSupplierIds.toString(), item.itemId!);
+  }
     // salesOrderController.fetchslb(item.itemId!);
   }
 
@@ -250,251 +253,248 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
   }
 
   void addToCart() {
-  // Immediately update the state to disable dropdown
-  setState(() {
-    isDropdownDisabled = true;
-  });
- 
-    if(ordertypeId != "4"){
-     
-
-    if (selectedSupplierIds == null) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
-    }
-    if (partnumberId.isEmpty) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
-    }
-    if (ordertypeId!.isEmpty) {
-      AppSnackBar.alert(message: 'Please choose OrderType!');
-      return;
-    }
-    if (slbvalueController.text == "No Data") {
-      AppSnackBar.alert(
-          message: '"SLB value is required. Please contact the head office!');
-      return;
-    }
-    final String slbvalue = slbvalueController.text;
-    final String partNumberID = partnumberId;
-    final String partNumber = partNumberController.text.trim();
-    final String description = descriptionController.text.trim();
-    print("Correct $requiredQuantityController");
-    final int requiredQty = int.tryParse(requiredQuantityController.text) ?? 0;
-    if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
-      AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
-      return;
-    }
-    if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
-      AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
-      return;
-    }
-    print("Wrong $requiredQty");
-    if (requiredQuantityController.text.isEmpty) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
-    }
-    // Ensure slb is selected
-    sbbl = salesOrderController.selectedSlbName.value;
-    if (sbbl == null || sbbl!.isEmpty) {
-      AppSnackBar.alert(message: 'Please select an SLB Field!');
-      return;
-    }
-
-    final int? supplierId = selectedSupplierIds;
-    final String id = supplierId.toString();
-    final String? supplierName = selectedSupplierName;
-    final String customerId = customerDetailsController.outstandingDetails[0]
-            ['CustomerID']
-        .toString();
-    final String unitprice = unitPriceController.text.trim();
-    if (description.isEmpty) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
-    }
-
-    bool isDuplicate =
-        cartItems.any((item) => item['partNumberID'] == partNumberID);
-    if (isDuplicate) {
-      AppSnackBar.alert(message: 'Item already exists in the cart!');
-      return;
-    }
-    //     final selectedSlb = salesOrderController.saleorderslb.firstWhere(
-    //   (item) => item.slbname == salesOrderController.selectedSlbName.value,
-    //   orElse: () => salesorderslb(slbid: '', slbname: ''), // Default empty if not found
-    // );
-    sbbl = salesOrderController.selectedSlbName.value;
-    slbname = salesOrderController.slbName.value;
-    final String? slb = sbbl;
-    final String? slbnames = slbname;
-    print("good  $slb");
-    print("Bad $slbnames");
-
-    // print("Hii ${selectedSlb.slbid}");
-    print(selectedPartNumberId.value);
-    // Add item to cart
-    cartItems.add({
-      'partNumberID': partNumberID,
-      'customerId': customerId,
-      'SupplierId': supplierId,
-      'partNumber': partNumber,
-      'description': description,
-      'requiredQty': requiredQty,
-      'unitprice': unitprice,
-      'selectedSlbName': slb, // Add selected SLB name
-      'slbname': slbnames,
-      'slbvalue': slbvalue
+    // Immediately update the state to disable dropdown
+    setState(() {
+      isDropdownDisabled = true;
     });
 
-    // Clear fields after adding
-    partNumberController.clear();
-    descriptionController.clear();
-    requiredQuantityController.clear();
+    if (ordertypeId != "4") {
+      if (selectedSupplierIds == null) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
+      if (partnumberId.isEmpty) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
+      if (ordertypeId!.isEmpty) {
+        AppSnackBar.alert(message: 'Please choose OrderType!');
+        return;
+      }
+      if (slbvalueController.text == "No Data") {
+        AppSnackBar.alert(
+            message: '"SLB value is required. Please contact the head office!');
+        return;
+      }
+      final String slbvalue = slbvalueController.text;
+      final String partNumberID = partnumberId;
+      final String partNumber = partNumberController.text.trim();
+      final String description = descriptionController.text.trim();
+      print("Correct $requiredQuantityController");
+      final int requiredQty =
+          int.tryParse(requiredQuantityController.text) ?? 0;
+      if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
+        AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
+        return;
+      }
+      if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
+        AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
+        return;
+      }
+      print("Wrong $requiredQty");
+      if (requiredQuantityController.text.isEmpty) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
+      // Ensure slb is selected
+      sbbl = salesOrderController.selectedSlbName.value;
+      if (sbbl == null || sbbl!.isEmpty) {
+        AppSnackBar.alert(message: 'Please select an SLB Field!');
+        return;
+      }
 
-    unitPriceController.clear();
-    availableQuantityController.clear();
-    availableQuantityController.text = '';
-    unitPriceController.text = '';
+      final int? supplierId = selectedSupplierIds;
+      final String id = supplierId.toString();
+      final String? supplierName = selectedSupplierName;
+      final String customerId = customerDetailsController.outstandingDetails[0]
+              ['CustomerID']
+          .toString();
+      final String unitprice = unitPriceController.text.trim();
+      if (description.isEmpty) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
 
-    slbtownlocationController.text = '';
-    salesOrderController.slbtownlocation.value = '';
+      bool isDuplicate =
+          cartItems.any((item) => item['partNumberID'] == partNumberID);
+      if (isDuplicate) {
+        AppSnackBar.alert(message: 'Item already exists in the cart!');
+        return;
+      }
+      //     final selectedSlb = salesOrderController.saleorderslb.firstWhere(
+      //   (item) => item.slbname == salesOrderController.selectedSlbName.value,
+      //   orElse: () => salesorderslb(slbid: '', slbname: ''), // Default empty if not found
+      // );
+      sbbl = salesOrderController.selectedSlbName.value;
+      slbname = salesOrderController.slbName.value;
+      final String? slb = sbbl;
+      final String? slbnames = slbname;
+      print("good  $slb");
+      print("Bad $slbnames");
 
-    slbvalueController.clear();
-    salesOrderController.slbValue.value = '';
+      // print("Hii ${selectedSlb.slbid}");
+      print(selectedPartNumberId.value);
+      // Add item to cart
+      cartItems.add({
+        'partNumberID': partNumberID,
+        'customerId': customerId,
+        'SupplierId': supplierId,
+        'partNumber': partNumber,
+        'description': description,
+        'requiredQty': requiredQty,
+        'unitprice': unitprice,
+        'selectedSlbName': slb, // Add selected SLB name
+        'slbname': slbnames,
+        'slbvalue': slbvalue
+      });
 
-    globalItemsController.globalItemStocks.clear();
-    salesOrderController.saleorderslb.clear();
-    salesOrderController.selectedSlbName.value = '';
-    salesOrderController.slbName.value = '';
-    // globalSupplierController.supplier.clear();
-    // globalSupplierController.fetchSupplier();
-    // salesOrderController.fetchslb(id, customerId);
+      // Clear fields after adding
+      partNumberController.clear();
+      descriptionController.clear();
+      requiredQuantityController.clear();
 
-    showPartNumberDropdown.value = false;
-    showDescriptionDropdown.value = false;
+      unitPriceController.clear();
+      availableQuantityController.clear();
+      availableQuantityController.text = '';
+      unitPriceController.text = '';
 
-    AppSnackBar.success(message: 'Item Added to the Cart');
-  } else {
-   
+      slbtownlocationController.text = '';
+      salesOrderController.slbtownlocation.value = '';
 
-        if (selectedSupplierIds == null) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
+      slbvalueController.clear();
+      salesOrderController.slbValue.value = '';
+
+      globalItemsController.globalItemStocks.clear();
+      salesOrderController.saleorderslb.clear();
+      salesOrderController.selectedSlbName.value = '';
+      salesOrderController.slbName.value = '';
+      // globalSupplierController.supplier.clear();
+      // globalSupplierController.fetchSupplier();
+      // salesOrderController.fetchslb(id, customerId);
+
+      showPartNumberDropdown.value = false;
+      showDescriptionDropdown.value = false;
+
+      AppSnackBar.success(message: 'Item Added to the Cart');
+    } else {
+      if (selectedSupplierIds == null) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
+      if (partnumberId.isEmpty) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
+      if (ordertypeId!.isEmpty) {
+        AppSnackBar.alert(message: 'Please choose OrderType!');
+        return;
+      }
+      // if (slbvalueController.text == "No Data") {
+      //   AppSnackBar.alert(
+      //       message: '"SLB value is required. Please contact the head office!');
+      //   return;
+      // }
+      // final String slbvalue = slbvalueController.text;
+      final String partNumberID = partnumberId;
+      final String partNumber = partNumberController.text.trim();
+      final String description = descriptionController.text.trim();
+      print("Correct $requiredQuantityController");
+      final int requiredQty =
+          int.tryParse(requiredQuantityController.text) ?? 0;
+      if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
+        AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
+        return;
+      }
+      if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
+        AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
+        return;
+      }
+      print("Wrong $requiredQty");
+      if (requiredQuantityController.text.isEmpty) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
+      // Ensure slb is selected
+      // sbbl = salesOrderController.selectedSlbName.value;
+      // if (sbbl == null || sbbl!.isEmpty) {
+      //   AppSnackBar.alert(message: 'Please select an SLB Field!');
+      //   return;
+      // }
+
+      final int? supplierId = selectedSupplierIds;
+      final String id = supplierId.toString();
+      final String? supplierName = selectedSupplierName;
+      final String customerId = customerDetailsController.outstandingDetails[0]
+              ['CustomerID']
+          .toString();
+      final String unitprice = unitPriceController.text.trim();
+      if (description.isEmpty) {
+        AppSnackBar.alert(message: 'Please fill in all fields!');
+        return;
+      }
+
+      bool isDuplicate =
+          cartItems.any((item) => item['partNumberID'] == partNumberID);
+      if (isDuplicate) {
+        AppSnackBar.alert(message: 'Item already exists in the cart!');
+        return;
+      }
+      //     final selectedSlb = salesOrderController.saleorderslb.firstWhere(
+      //   (item) => item.slbname == salesOrderController.selectedSlbName.value,
+      //   orElse: () => salesorderslb(slbid: '', slbname: ''), // Default empty if not found
+      // );
+      // sbbl = salesOrderController.selectedSlbName.value;
+      // slbname = salesOrderController.slbName.value;
+      // final String? slb = sbbl;
+      // final String? slbnames = slbname;
+      // print("good  $slb");
+      // print("Bad $slbnames");
+
+      // print("Hii ${selectedSlb.slbid}");
+      print(selectedPartNumberId.value);
+      // Add item to cart
+      cartItems.add({
+        'partNumberID': partNumberID,
+        'customerId': customerId,
+        'SupplierId': supplierId,
+        'partNumber': partNumber,
+        'description': description,
+        'requiredQty': requiredQty,
+        'unitprice': unitprice,
+        'selectedSlbName': "",
+        'slbname': "",
+        'slbvalue': ""
+      });
+
+      // Clear fields after adding
+      partNumberController.clear();
+      descriptionController.clear();
+      requiredQuantityController.clear();
+
+      unitPriceController.clear();
+      availableQuantityController.clear();
+      availableQuantityController.text = '';
+      unitPriceController.text = '';
+
+      slbtownlocationController.text = '';
+      salesOrderController.slbtownlocation.value = '';
+
+      slbvalueController.clear();
+      salesOrderController.slbValue.value = '';
+
+      globalItemsController.globalItemStocks.clear();
+      salesOrderController.saleorderslb.clear();
+      salesOrderController.selectedSlbName.value = '';
+      salesOrderController.slbName.value = '';
+      // globalSupplierController.supplier.clear();
+      // globalSupplierController.fetchSupplier();
+      // salesOrderController.fetchslb(id, customerId);
+
+      showPartNumberDropdown.value = false;
+      showDescriptionDropdown.value = false;
+
+      AppSnackBar.success(message: 'Item Added to the Cart');
     }
-    if (partnumberId.isEmpty) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
-    }
-    if (ordertypeId!.isEmpty) {
-      AppSnackBar.alert(message: 'Please choose OrderType!');
-      return;
-    }
-    // if (slbvalueController.text == "No Data") {
-    //   AppSnackBar.alert(
-    //       message: '"SLB value is required. Please contact the head office!');
-    //   return;
-    // }
-    // final String slbvalue = slbvalueController.text;
-    final String partNumberID = partnumberId;
-    final String partNumber = partNumberController.text.trim();
-    final String description = descriptionController.text.trim();
-    print("Correct $requiredQuantityController");
-    final int requiredQty = int.tryParse(requiredQuantityController.text) ?? 0;
-    if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
-      AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
-      return;
-    }
-    if (requiredQuantityController.text.isEmpty || requiredQty <= 0) {
-      AppSnackBar.alert(message: 'Required quantity cannot be 0 or empty!');
-      return;
-    }
-    print("Wrong $requiredQty");
-    if (requiredQuantityController.text.isEmpty) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
-    }
-    // Ensure slb is selected
-    // sbbl = salesOrderController.selectedSlbName.value;
-    // if (sbbl == null || sbbl!.isEmpty) {
-    //   AppSnackBar.alert(message: 'Please select an SLB Field!');
-    //   return;
-    // }
-
-    final int? supplierId = selectedSupplierIds;
-    final String id = supplierId.toString();
-    final String? supplierName = selectedSupplierName;
-    final String customerId = customerDetailsController.outstandingDetails[0]
-            ['CustomerID']
-        .toString();
-    final String unitprice = unitPriceController.text.trim();
-    if (description.isEmpty) {
-      AppSnackBar.alert(message: 'Please fill in all fields!');
-      return;
-    }
-
-    bool isDuplicate =
-        cartItems.any((item) => item['partNumberID'] == partNumberID);
-    if (isDuplicate) {
-      AppSnackBar.alert(message: 'Item already exists in the cart!');
-      return;
-    }
-    //     final selectedSlb = salesOrderController.saleorderslb.firstWhere(
-    //   (item) => item.slbname == salesOrderController.selectedSlbName.value,
-    //   orElse: () => salesorderslb(slbid: '', slbname: ''), // Default empty if not found
-    // );
-    // sbbl = salesOrderController.selectedSlbName.value;
-    // slbname = salesOrderController.slbName.value;
-    // final String? slb = sbbl;
-    // final String? slbnames = slbname;
-    // print("good  $slb");
-    // print("Bad $slbnames");
-
-    // print("Hii ${selectedSlb.slbid}");
-    print(selectedPartNumberId.value);
-    // Add item to cart
-    cartItems.add({
-      'partNumberID': partNumberID,
-      'customerId': customerId,
-      'SupplierId': supplierId,
-      'partNumber': partNumber,
-      'description': description,
-      'requiredQty': requiredQty,
-      'unitprice': unitprice,
-      'selectedSlbName': "", 
-      'slbname': "",
-      'slbvalue': ""
-    });
-
-    // Clear fields after adding
-    partNumberController.clear();
-    descriptionController.clear();
-    requiredQuantityController.clear();
-
-    unitPriceController.clear();
-    availableQuantityController.clear();
-    availableQuantityController.text = '';
-    unitPriceController.text = '';
-
-    slbtownlocationController.text = '';
-    salesOrderController.slbtownlocation.value = '';
-
-    slbvalueController.clear();
-    salesOrderController.slbValue.value = '';
-
-    globalItemsController.globalItemStocks.clear();
-    salesOrderController.saleorderslb.clear();
-    salesOrderController.selectedSlbName.value = '';
-    salesOrderController.slbName.value = '';
-    // globalSupplierController.supplier.clear();
-    // globalSupplierController.fetchSupplier();
-    // salesOrderController.fetchslb(id, customerId);
-
-    showPartNumberDropdown.value = false;
-    showDescriptionDropdown.value = false;
-
-    AppSnackBar.success(message: 'Item Added to the Cart');
-
-  }
   }
 
   Widget buildCartItems() {
@@ -519,13 +519,12 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
               Shimmer.fromColors(
                 baseColor: const Color.fromARGB(255, 53, 51, 51),
                 highlightColor: Colors.white,
-                child:  Text(
+                child: Text(
                   'No items have been added to the cart yet.',
-                  style: theme.textTheme.bodyLarge?.copyWith(      
-                        fontSize: 15,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 15,
                     color: Color.fromARGB(255, 10, 10, 10),
-                ),
-                 
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -651,10 +650,9 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
         },
         child: Scaffold(
             appBar: AppBar(
-              title:  Text(
+              title: Text(
                 'Estimate',
-                style: 
-                theme.textTheme.bodyLarge?.copyWith(      
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: Colors.white,
                 ),
               ),
@@ -711,11 +709,13 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                                       'CustomerName']
                                                                   .toString()
                                                               : 'Name',
-                                                          style: theme.textTheme.bodyLarge?.copyWith(      
-                     fontWeight: FontWeight.bold,
+                                                          style: theme.textTheme
+                                                              .bodyLarge
+                                                              ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                             fontSize: 19,
-                ),
-                                                         
+                                                          ),
                                                         ),
                                                       ),
                                                       const SizedBox(
@@ -726,13 +726,15 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                             .isNotEmpty) {
                                                           return Text(
                                                             'Available Credit Limit: ${customerDetailsController.outstandingDetails[0]['CanBillUpTo'].toString()}',
-                                                            style: theme.textTheme.bodyLarge?.copyWith(      
-                     fontWeight:
+                                                            style: theme
+                                                                .textTheme
+                                                                .bodyLarge
+                                                                ?.copyWith(
+                                                              fontWeight:
                                                                   FontWeight
                                                                       .bold,
                                                               fontSize: 12,
-                ),
-                                                           
+                                                            ),
                                                           );
                                                         } else {
                                                           return SizedBox
@@ -978,8 +980,10 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                                 ),
                                                               ),
                                                               if (partNumberController
-                                                                  .text
-                                                                  .isNotEmpty && ordertypeId != "4")
+                                                                      .text
+                                                                      .isNotEmpty &&
+                                                                  ordertypeId !=
+                                                                      "4")
                                                                 Expanded(
                                                                   flex: 3,
                                                                   child: Column(
@@ -1098,7 +1102,6 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                                                     style: theme.textTheme.bodyLarge?.copyWith(
                                                                                       fontSize: 16,
                                                                                     ),
-                                                                                    
                                                                                     overflow: TextOverflow.ellipsis,
                                                                                   ),
                                                                                 ),
@@ -1165,47 +1168,48 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                           ),
                                                           const SizedBox(
                                                               width: 12),
-                                                          if(ordertypeId != "4")
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Obx(() {
-                                                                  if (salesOrderController
-                                                                      .isLoadingslbvalue
-                                                                      .value) {
-                                                                    return Center(
-                                                                        child:
-                                                                            CircularProgressIndicator()); // Show loader while fetching data
-                                                                  }
+                                                          if (ordertypeId !=
+                                                              "4")
+                                                            Expanded(
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Obx(() {
+                                                                    if (salesOrderController
+                                                                        .isLoadingslbvalue
+                                                                        .value) {
+                                                                      return Center(
+                                                                          child:
+                                                                              CircularProgressIndicator()); // Show loader while fetching data
+                                                                    }
 
-                                                                  final slbvalue =
-                                                                      salesOrderController
-                                                                          .slbValue;
+                                                                    final slbvalue =
+                                                                        salesOrderController
+                                                                            .slbValue;
 
-                                                                  if (slbvalue
-                                                                      .isNotEmpty) {
-                                                                    slbvalueController
-                                                                            .text =
-                                                                        slbvalue
-                                                                            .value;
-                                                                  }
+                                                                    if (slbvalue
+                                                                        .isNotEmpty) {
+                                                                      slbvalueController
+                                                                              .text =
+                                                                          slbvalue
+                                                                              .value;
+                                                                    }
 
-                                                                  return _buildTextFieldua(
-                                                                    label:
-                                                                        'SLB Value'
-                                                                            .tr,
-                                                                    hintText:
-                                                                        '0',
-                                                                    controller:
-                                                                        slbvalueController,
-                                                                  );
-                                                                }),
-                                                              ],
+                                                                    return _buildTextFieldua(
+                                                                      label:
+                                                                          'SLB Value'
+                                                                              .tr,
+                                                                      hintText:
+                                                                          '0',
+                                                                      controller:
+                                                                          slbvalueController,
+                                                                    );
+                                                                  }),
+                                                                ],
+                                                              ),
                                                             ),
-                                                          ),
                                                           const SizedBox(
                                                               width: 12),
                                                           Expanded(
@@ -1247,47 +1251,31 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                               ],
                                                             ),
                                                           ),
-                                                           const SizedBox(
+                                                          const SizedBox(
                                                               width: 12),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Obx(() {
-                                                                  final availableQuantity = globalItemsController
-                                                                          .globalItemStocks
-                                                                          .isNotEmpty
-                                                                      ? globalItemsController
-                                                                              .globalItemStocks
-                                                                              .first
-                                                                              .availableQuantity
-                                                                              ?.toInt()
-                                                                              .toString() ??
-                                                                          '0'
-                                                                      : 'N/A';
+                                                        Expanded(
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Obx(() {
+        final packingQty = salesOrderController.globalpack.isNotEmpty
+            ? salesOrderController.globalpack.first.packingQty
+            : 'N/A';
 
-                                                                  if (availableQuantity !=
-                                                                      'N/A') {
-                                                                    availableQuantityController
-                                                                            .text =
-                                                                        availableQuantity;
-                                                                  }
+        if (packingQty.isNotEmpty && packingQty != 'N/A') {
+          packingQuantityController.text = packingQty;
+        }
 
-                                                                  return _buildTextFieldua(
-                                                                    label:
-                                                                        'Packing Qty'
-                                                                            .tr,
-                                                                    hintText:
-                                                                        'Packing Qty',
-                                                                    controller:
-                                                                        availableQuantityController,
-                                                                  );
-                                                                }),
-                                                              ],
-                                                            ),
-                                                          ),
+        return _buildTextFieldua(
+          label: 'Packing Qty'.tr,
+          hintText: 'Packing Qty',
+          controller: packingQuantityController,
+        );
+      }),
+    ],
+  ),
+),
+
                                                           const SizedBox(
                                                               width: 12),
                                                           const SizedBox(
@@ -1421,16 +1409,21 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                                         70, 40),
                                                               ),
                                                               child: Text(
-                                                                'Add To Cart'
-                                                                    .tr,
-                                                                style: theme.textTheme.bodyLarge?.copyWith(
-                                                                  color: Colors.white,
-                                                                  fontSize: 14,
-                                                                )
-                                                                //     const TextStyle(
-                                                                //   fontSize: 14,
-                                                                // ),
-                                                              ),
+                                                                  'Add To Cart'
+                                                                      .tr,
+                                                                  style: theme
+                                                                      .textTheme
+                                                                      .bodyLarge
+                                                                      ?.copyWith(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        14,
+                                                                  )
+                                                                  //     const TextStyle(
+                                                                  //   fontSize: 14,
+                                                                  // ),
+                                                                  ),
                                                             ),
                                                             // const SizedBox(
                                                             //     width: 10),
@@ -1480,15 +1473,17 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                             // ),
                                                           ]),
                                                       const Divider(),
-                                                       Text(
+                                                      Text(
                                                         'Added Items:',
-                                                        style: theme.textTheme.bodyLarge?.copyWith(
-                                                                  color: Colors.white,
-                                                                      fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold
-                                                        ),
+                                                        style: theme
+                                                            .textTheme.bodyLarge
+                                                            ?.copyWith(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 18,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
                                                         //  TextStyle(
                                                         //     fontSize: 18,
                                                         //     fontWeight:
