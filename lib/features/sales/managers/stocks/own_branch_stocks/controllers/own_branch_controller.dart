@@ -12,8 +12,11 @@ class OwnBranchController extends GetxController {
 
   RxList<Ownbranch> ownDetails = <Ownbranch>[].obs;
   RxList<GlobalitemDetail> globalItems = <GlobalitemDetail>[].obs;
-  RxBool isLoading = false.obs;
-
+  // RxBool isLoading = false.obs;
+   var selectedSlbName = ''.obs;
+  var selectedSlbId = ''.obs;
+  var slbFieldValue = ''.obs;
+  var isLoading = false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -72,4 +75,33 @@ class OwnBranchController extends GetxController {
           "Unexpected response type: ${response.runtimeType}. Expected a List.",
     );
   }
+    Future<void> fetchSlbBranchDetails(String itemId, String slbId, String branchId) async {
+    try {
+      isLoading.value = true;
+      final requestBody = {
+        "Item": itemId,
+        "Branch": branchId,
+        "slb": slbId,
+      };
+      print("Sending request: $requestBody");
+      final response = await _restletService.fetchReportData(
+        NetSuiteScripts.slbownbranchstock,
+        requestBody,
+      );
+
+      print("Response: $response");
+
+      if (response is List && response.isNotEmpty) {
+        slbFieldValue.value = response[0]['slbFieldValue'] ?? '';
+      } else {
+        slbFieldValue.value = 'No value found';
+      }
+    } catch (e) {
+      slbFieldValue.value = '';
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }
+// Example usage:
+// showSLBDropdownDialog(context, '8,9,10', '2736', '1076');

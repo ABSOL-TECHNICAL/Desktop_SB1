@@ -30,6 +30,7 @@ class _BranchStockPageState extends State<BranchStocksPage> {
   final GlobalItemsController globalItemsController =
       Get.put(GlobalItemsController());
   final LoginController loginController = Get.find<LoginController>();
+  // assuming you already created this controller
 
   final TextEditingController partNumberController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -206,44 +207,46 @@ class _BranchStockPageState extends State<BranchStocksPage> {
 
     super.dispose();
   }
- RxInt currentPage = 1.obs;
-final int itemsPerPage = 10;
-final ScrollController scrollController = ScrollController();
+
+  RxInt currentPage = 1.obs;
+  final int itemsPerPage = 10;
+  final ScrollController scrollController = ScrollController();
 
   List<Ownbranch> get filteredData {
-  if (searchQuery.isEmpty) {
-    return ownBranchController.ownDetails;
+    if (searchQuery.isEmpty) {
+      return ownBranchController.ownDetails;
+    }
+    return ownBranchController.ownDetails.where((item) {
+      return (item.partno?.toLowerCase().contains(searchQuery.toLowerCase()) ??
+              false) ||
+          (item.desc?.toLowerCase().contains(searchQuery.toLowerCase()) ??
+              false);
+    }).toList();
   }
-  return ownBranchController.ownDetails.where((item) {
-    return (item.partno?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
-           (item.desc?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
-  }).toList();
-}
 
 // Update your getPaginatedData method to use filteredData
-List<Ownbranch> getPaginatedData() {
-  final startIndex = (currentPage.value - 1) * itemsPerPage;
-  final endIndex = startIndex + itemsPerPage;
-  return filteredData.sublist(
-    startIndex,
-    endIndex > filteredData.length ? filteredData.length : endIndex,
-  );
-}
-
+  List<Ownbranch> getPaginatedData() {
+    final startIndex = (currentPage.value - 1) * itemsPerPage;
+    final endIndex = startIndex + itemsPerPage;
+    return filteredData.sublist(
+      startIndex,
+      endIndex > filteredData.length ? filteredData.length : endIndex,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     double screenWidth = MediaQuery.of(context).size.width;
-      final totalPages = (filteredData.length / itemsPerPage).ceil();
+    final totalPages = (filteredData.length / itemsPerPage).ceil();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Own Branch Stocks',
-          style: theme.textTheme.bodyLarge?.copyWith(      
-                  color: Colors.white,
-                ),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF161717),
@@ -306,7 +309,7 @@ List<Ownbranch> getPaginatedData() {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                  Expanded(
+                                Expanded(
                                   child: _buildTextField(
                                       label: 'Enter Part No',
                                       hintText: 'Enter Part No...',
@@ -474,7 +477,7 @@ List<Ownbranch> getPaginatedData() {
                           ? _buildShimmerTable()
                           : _buildDataTable();
                     }),
-                     Obx(() {
+                    Obx(() {
                       if (ownBranchController.ownDetails.isEmpty) {
                         return const SizedBox.shrink();
                       }
@@ -489,119 +492,120 @@ List<Ownbranch> getPaginatedData() {
       ),
     );
   }
-  
-// Update your _buildPaginationControls method
-Widget _buildPaginationControls() {
-  final theme = Theme.of(context);
-  final isDarkMode = theme.brightness == Brightness.dark;
-  final totalPages = (filteredData.length / itemsPerPage).ceil();
 
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.first_page),
-          onPressed: currentPage.value > 1
-              ? () {
-                  currentPage.value = 1;
-                  scrollController.animateTo(
-                    0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                  );
-                }
-              : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed: currentPage.value > 1
-              ? () {
-                  currentPage.value--;
-                  scrollController.animateTo(
-                    0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                  );
-                }
-              : null,
-        ),
-        Container(
-          width: 80,
-          height: 36,
-          margin: const EdgeInsets.symmetric(horizontal: 3),
-          child: TextField(
-            controller: TextEditingController(text: currentPage.value.toString()),
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-            ),
-            onSubmitted: (value) {
-              final page = int.tryParse(value) ?? currentPage.value;
-              if (page >= 1 && page <= totalPages) {
-                currentPage.value = page;
-                scrollController.animateTo(
-                  0,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                );
-              }
-            },
+// Update your _buildPaginationControls method
+  Widget _buildPaginationControls() {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final totalPages = (filteredData.length / itemsPerPage).ceil();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.first_page),
+            onPressed: currentPage.value > 1
+                ? () {
+                    currentPage.value = 1;
+                    scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                : null,
           ),
-        ),
-        Text(
-          'of $totalPages',
-          style: theme.textTheme.bodyMedium,
-        ),
-        IconButton(
-          icon: const Icon(Icons.chevron_right),
-          onPressed: currentPage.value < totalPages
-              ? () {
-                  currentPage.value++;
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: currentPage.value > 1
+                ? () {
+                    currentPage.value--;
+                    scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                : null,
+          ),
+          Container(
+            width: 80,
+            height: 36,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            child: TextField(
+              controller:
+                  TextEditingController(text: currentPage.value.toString()),
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+              ),
+              onSubmitted: (value) {
+                final page = int.tryParse(value) ?? currentPage.value;
+                if (page >= 1 && page <= totalPages) {
+                  currentPage.value = page;
                   scrollController.animateTo(
                     0,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOut,
                   );
                 }
-              : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.last_page),
-          onPressed: currentPage.value < totalPages
-              ? () {
-                  currentPage.value = totalPages;
-                  scrollController.animateTo(
-                    0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                  );
-                }
-              : null,
-        ),
-        const SizedBox(width: 16),
-        Text(
-          'Total: ${filteredData.length} items',
-          style: theme.textTheme.bodyMedium,
-        ),
-      ],
-    ),
-  );
-}
+              },
+            ),
+          ),
+          Text(
+            'of $totalPages',
+            style: theme.textTheme.bodyMedium,
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: currentPage.value < totalPages
+                ? () {
+                    currentPage.value++;
+                    scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.last_page),
+            onPressed: currentPage.value < totalPages
+                ? () {
+                    currentPage.value = totalPages;
+                    scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                : null,
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'Total: ${filteredData.length} items',
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSuggestionsList() {
     if (globalItemsController.globalItems.isEmpty) {
       return const SizedBox.shrink();
     }
-      final theme = Theme.of(context);
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
@@ -652,7 +656,7 @@ Widget _buildPaginationControls() {
     if (globalItemsController.globalItems.isEmpty) {
       return const SizedBox.shrink();
     }
-     final theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -742,206 +746,232 @@ Widget _buildPaginationControls() {
       ),
     );
   }
-Widget _buildDataTable() {
-  final theme = Theme.of(context);
-  final isDarkMode = theme.brightness == Brightness.dark;
-  double screenWidth = MediaQuery.of(context).size.width;
 
-  return Obx(() {
-    if (ownBranchController.isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  Widget _buildDataTable() {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    double screenWidth = MediaQuery.of(context).size.width;
 
-    if (filteredData.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 70),
-            Shimmer.fromColors(
-              baseColor: const Color.fromARGB(255, 53, 51, 51),
-              highlightColor: Colors.white,
-              child: Icon(
-                Icons.search_off,
-                size: 100,
-                color: Colors.grey.shade700,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Shimmer.fromColors(
-              baseColor: const Color.fromARGB(255, 53, 51, 51),
-              highlightColor: Colors.white,
-              child: Text(
-                'No results found.\nPlease refine your search criteria.',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontSize: 20,
-                  color: const Color.fromARGB(255, 10, 10, 10),
+    return Obx(() {
+      if (ownBranchController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (filteredData.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 70),
+              Shimmer.fromColors(
+                baseColor: const Color.fromARGB(255, 53, 51, 51),
+                highlightColor: Colors.white,
+                child: Icon(
+                  Icons.search_off,
+                  size: 100,
+                  color: Colors.grey.shade700,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      List<DataRow> dataRows = getPaginatedData().map((detail) {
-        int index = filteredData.indexOf(detail) + 1;
-
-        return DataRow(
-          color: WidgetStateProperty.resolveWith<Color?>(
-            (Set<WidgetState> states) {
-              return (index % 2 == 0)
-                  ? const Color(0xFFEAEFFF)
-                  : const Color(0xFFFAF9FF);
-            },
+              const SizedBox(height: 20),
+              Shimmer.fromColors(
+                baseColor: const Color.fromARGB(255, 53, 51, 51),
+                highlightColor: Colors.white,
+                child: Text(
+                  'No results found.\nPlease refine your search criteria.',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 20,
+                    color: const Color.fromARGB(255, 10, 10, 10),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
-          cells: <DataCell>[
-            DataCell(Text(index.toString())),
-            DataCell(Text(detail.partno?.toString() ?? '0')),
-            DataCell(Text(detail.desc?.toString() ?? '0')),
-            DataCell(Text(detail.availableStock?.toString() ?? '0')),
-            DataCell(Text(detail.mRP?.toStringAsFixed(2) ?? '0.00')),
-             DataCell(Text(detail.listPrice?.toStringAsFixed(2) ?? '0.00')),
-              DataCell(Text(detail.gSTRate?.toString() ?? '0')),
-          ],
         );
-      }).toList();
+      } else {
+        List<DataRow> dataRows = getPaginatedData().map((detail) {
+          int index = filteredData.indexOf(detail) + 1;
 
-      return Expanded(
-        child: SingleChildScrollView(
-          controller: scrollController,
-          scrollDirection: Axis.vertical,
+          return DataRow(
+            color: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+                return (index % 2 == 0)
+                    ? const Color(0xFFEAEFFF)
+                    : const Color(0xFFFAF9FF);
+              },
+            ),
+            cells: <DataCell>[
+              DataCell(Text(index.toString())),
+              DataCell(Text(detail.partno?.toString() ?? '0')),
+              DataCell(Text(detail.desc?.toString() ?? '0')),
+              DataCell(Text(detail.availableStock?.toString() ?? '0')),
+              DataCell(Text(detail.mRP?.toStringAsFixed(2) ?? '0.00')),
+              DataCell(Text(detail.listPrice?.toStringAsFixed(2) ?? '0.00')),
+              DataCell(Text(detail.gSTRate?.toString() ?? '0')),
+             DataCell(
+  IconButton(
+    icon: const Icon(Icons.more_vert),
+    tooltip: 'View SLB options',
+    onPressed: () {
+      if ((detail.sLB ?? '').isNotEmpty) {
+        showSLBDropdownDialog(context, detail);
+      } else {
+         ownBranchController.slbFieldValue.value = '';
+        AppSnackBar.alert(message: 'No SLB options available');
+      }
+    },
+  ),
+),
+            ],
+          );
+        }).toList();
+
+        return Expanded(
           child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Column(
-              children: [
-                Container(
-                  width: screenWidth * 0.8,
-                  decoration: BoxDecoration(
-                    gradient: isDarkMode
-                        ? LinearGradient(
-                            colors: [
-                              Colors.redAccent.shade400,
-                              Colors.pink.shade900,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : const LinearGradient(
-                            colors: [
-                              Color(0xFF57AEFE),
-                              Color(0xFF6B71FF),
-                              Color(0xFF6B71FF),
-                              Color(0xFF57AEFE),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                  ),
-                  child: DataTable(
-                    columnSpacing: 16.0,
-                    headingRowHeight: 40.0,
-                    columns: <DataColumn>[
-                      DataColumn(
-                        label: Center(
-                          child: Text(
-                            'S.No',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+            controller: scrollController,
+            scrollDirection: Axis.vertical,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                children: [
+                  Container(
+                    width: screenWidth * 0.8,
+                    decoration: BoxDecoration(
+                      gradient: isDarkMode
+                          ? LinearGradient(
+                              colors: [
+                                Colors.redAccent.shade400,
+                                Colors.pink.shade900,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                          : const LinearGradient(
+                              colors: [
+                                Color(0xFF57AEFE),
+                                Color(0xFF6B71FF),
+                                Color(0xFF6B71FF),
+                                Color(0xFF57AEFE),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Center(
-                          child: Text(
-                            'Part No',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Center(
-                          child: Text(
-                            'Desc',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Center(
-                          child: Text(
-                            'Available Stock',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      // DataColumn(
-                      //   label: Center(
-                      //     child: Text(
-                      //       'Unit Price',
-                      //       style: theme.textTheme.bodyLarge?.copyWith(
-                      //         color: Colors.white,
-                      //         fontWeight: FontWeight.bold,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      DataColumn(
-                        label: Center(
-                          child: Text(
-                            'MRP',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
+                    ),
+                    child: DataTable(
+                      columnSpacing: 16.0,
+                      headingRowHeight: 40.0,
+                      columns: <DataColumn>[
                         DataColumn(
-                        label: Center(
-                          child: Text(
-                            'List Price',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                          label: Center(
+                            child: Text(
+                              'S.No',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                       DataColumn(
-                        label: Center(
-                          child: Text(
-                            'Gst %',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'Part No',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                    rows: dataRows,
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'Desc',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'Available Stock',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // DataColumn(
+                        //   label: Center(
+                        //     child: Text(
+                        //       'Unit Price',
+                        //       style: theme.textTheme.bodyLarge?.copyWith(
+                        //         color: Colors.white,
+                        //         fontWeight: FontWeight.bold,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'MRP',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'List Price',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'Gst %',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'SLB',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      rows: dataRows,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    }
-  });
-}
+        );
+      }
+    });
+  }
 
   Widget _buildTextField({
     required String label,
@@ -1006,6 +1036,139 @@ Widget _buildDataTable() {
     );
   }
 }
+Future<void> showSLBDropdownDialog(BuildContext context, Ownbranch item) async {
+  final ownBranchController = Get.find<OwnBranchController>();
+  final loginController = Get.find<LoginController>();
+  final theme = Theme.of(context);
+  final isDarkMode = theme.brightness == Brightness.dark;
+
+  // SLB dropdown options
+  final slbOptions = [
+    SlbOption(name: 'Basic', id: '1'),
+    SlbOption(name: 'Bulk', id: '2'),
+    SlbOption(name: 'Bulk 1', id: '3'),
+    SlbOption(name: 'Export', id: '4'),
+    SlbOption(name: 'Net Rate', id: '5'),
+    SlbOption(name: 'Net Rate Bulk', id: '6'),
+    SlbOption(name: 'Net Rate Bulk 1', id: '7'),
+    SlbOption(name: 'QBS', id: '8'),
+    SlbOption(name: 'STU Basic', id: '9'),
+    SlbOption(name: 'STU RC', id: '10'),
+  ];
+
+  SlbOption? selectedSlb;
+
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+        // title: Text(
+        //   'Select SLB Option',
+        //   style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+        // ),
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<SlbOption>(
+                    value: selectedSlb,
+                    style: const TextStyle(fontSize: 15,
+                    color: Colors.black),
+                     items: slbOptions.map((option) {
+                      return DropdownMenuItem<SlbOption>(
+                        value: option,
+                        child: Text(option.name),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedSlb = newValue;
+                        ownBranchController.selectedSlbName.value = newValue?.name ?? '';
+                        ownBranchController.selectedSlbId.value = newValue?.id ?? '';
+                        ownBranchController.slbFieldValue.value = ''; // Clear previous value
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'SLB Options',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  Obx(() {
+                    if (ownBranchController.isLoading.value) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    if (ownBranchController.slbFieldValue.isNotEmpty) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'SLB Value',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              ownBranchController.slbFieldValue.value,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  }),
+                ],
+              ),
+            );
+          },
+        ),
+        actions: [
+           
+          ElevatedButton(
+            onPressed: () async {
+              
+              if (selectedSlb != null) {
+                ownBranchController.isLoading.value = true;
+
+                await ownBranchController.fetchSlbBranchDetails(
+                  item.partNoId ?? '',
+                  selectedSlb!.id,
+                  loginController.location ?? '',
+                );
+
+                print('Fetched SLB Value: ${ownBranchController.slbFieldValue.value}');
+
+                ownBranchController.isLoading.value = false;
+
+                // setState(() {}); // Refresh the dialog UI
+              } else {
+                AppSnackBar.alert(message: 'Please select an SLB option');
+              }
+            },
+            child: const Text('Get SLB Value'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 // import 'package:get/get.dart';
