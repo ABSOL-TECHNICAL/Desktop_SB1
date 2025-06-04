@@ -4,6 +4,7 @@ import 'package:impal_desktop/features/login/controllers/login_controller.dart';
 import 'package:impal_desktop/features/sales/managers/stocks/all_branch_stocks/all_branch_stocks.dart';
 import 'package:impal_desktop/features/sales/managers/stocks/new_arrival/material_arrival.dart';
 import 'package:impal_desktop/features/sales/managers/stocks/own_branch_stocks/view/own_branch_stocks.dart';
+import 'package:impal_desktop/features/sales/managers/stocks/own_branch_stocks_with_Estimate/view/own_branch_stocks_with_estimate.dart';
 import 'package:impal_desktop/features/sales/managers/stocks/surplus_stocks_manager/surplus_stocks_manager.dart';
 
 class Stocks extends StatefulWidget {
@@ -53,8 +54,11 @@ class _StocksState extends State<Stocks> {
                       5),
                   _buildReportCard(context, Icons.receipt, 'Own Branch Stocks',
                       BranchStocksPage(), Colors.green, 1),
+                  _buildReportCard(context, Icons.request_quote, 'Own Branch Stocks With Estimate',
+                      OwnBranchStocksWithEstimatePage(), Colors.deepPurple, 4),
                   _buildReportCard(context, Icons.receipt, 'Surplus Stocks',
                       SurplusStocksM(), Colors.red, 3),
+
                 ],
               ),
             ),
