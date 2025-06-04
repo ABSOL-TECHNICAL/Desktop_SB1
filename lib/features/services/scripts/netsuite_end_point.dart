@@ -1,6 +1,6 @@
 class NetSuiteScripts {
   // Login page
-  static const String loginScriptId = '1751';
+  static const String   loginScriptId = '1751';
   static const String liquidationofstocksScriptId = '4551';
   static const String newCustomerScriptId = '1776';
   static const String targetVsActualScriptId = '1757';
@@ -31,6 +31,8 @@ class NetSuiteScripts {
   static const String zonesScriptId = '1785';
   static const String globalitemScriptId = '1764';
   static const String ownbranchStocksScriptId = '1808';
+  static const String slbownbranchstock = '8217';
+// static const String slbownbranchstock = '1808';
   static const String defaultBranchStocksId = '1758';
   static const String locationsScriptId = '1799';
   static const String collectiondetailsmanagerScriptId = '1771';
@@ -44,6 +46,7 @@ class NetSuiteScripts {
   static const String availablestocksunitpricescriptId = '6786';
   static const String tempreceiptscriptId = '1780';
   static const String fetchslbscriptId = '6785';
+    static const String fetchpacking= '8219';
   static const String fetchslbvaluescriptId = '6084';
   static const String fetchslbtownlocationscriptId = '6185';
   static const String fetchslbPartnumberValuescriptId = '4751';
@@ -72,6 +75,7 @@ class NetSuiteScripts {
     'Zone': zonesScriptId,
     'GlobalItem': globalitemScriptId,
     'OwnBranchStocks': ownbranchStocksScriptId,
+    'slbownbranchstock':slbownbranchstock,
     'DefaultBranchtransfer': defaultBranchStocksId,
     'Location': locationsScriptId,
     'CollectionDetailsManager': collectiondetailsmanagerScriptId,

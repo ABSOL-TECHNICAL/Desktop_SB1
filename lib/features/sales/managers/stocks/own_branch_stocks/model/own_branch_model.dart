@@ -9,6 +9,7 @@ class Ownbranch {
   String? partNoId;
   double? listPrice;
   String? gSTRate;
+  String? sLB;
 
   Ownbranch({
     this.location,
@@ -21,6 +22,7 @@ class Ownbranch {
     this.partNoId,
     this.listPrice,
     this.gSTRate,
+    this.sLB,
   });
 
   Ownbranch.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class Ownbranch {
     partNoId = json['Internalid'];
      listPrice = json['ListPrice'] != null ? double.tryParse(json['ListPrice'].toString()) : null;
      gSTRate=json['GSTRate'];
+     sLB=json['SLB'];
   }
 
   Map<String, dynamic> toJson() {
@@ -54,6 +57,7 @@ class Ownbranch {
       'Internalid': partNoId,
       'ListPrice':listPrice,
       'GSTRate':gSTRate,
+      'SLB':sLB,
     };
   }
 
@@ -61,4 +65,13 @@ class Ownbranch {
   static List<Ownbranch> listFromJson(List<dynamic> jsonList) {
     return jsonList.map((json) => Ownbranch.fromJson(json)).toList();
   }
+}
+class SlbOption {
+  final String name;
+  final String id;
+
+  SlbOption({required this.name, required this.id});
+  
+  @override
+  String toString() => name;
 }

@@ -9,7 +9,6 @@ import 'package:impal_desktop/features/sales/managers/customers/customer_details
 import 'package:impal_desktop/features/sales/salesperson/stocks/surplus_stocks/controllers/surplus_stocks_controller.dart';
 import 'package:impal_desktop/version_controller.dart';
 import 'package:shimmer/shimmer.dart';
-
 import 'package:impal_desktop/features/global/theme/controller/items_controller.dart';
 import 'package:impal_desktop/features/global/theme/controller/supplier_controller.dart';
 import 'package:impal_desktop/features/global/theme/model/item_model.dart';
@@ -35,6 +34,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
   Rx<String?> selectedSlbName = Rx<String?>(null);
 
   TextEditingController requiredQuantityController = TextEditingController();
+  TextEditingController packingQuantityController = TextEditingController();
 
   final CustomerDetailsController customerDetailsController =
       Get.put(CustomerDetailsController());
@@ -1240,6 +1240,47 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                                             .tr,
                                                                     hintText:
                                                                         'Available Qty',
+                                                                    controller:
+                                                                        availableQuantityController,
+                                                                  );
+                                                                }),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                           const SizedBox(
+                                                              width: 12),
+                                                          Expanded(
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Obx(() {
+                                                                  final availableQuantity = globalItemsController
+                                                                          .globalItemStocks
+                                                                          .isNotEmpty
+                                                                      ? globalItemsController
+                                                                              .globalItemStocks
+                                                                              .first
+                                                                              .availableQuantity
+                                                                              ?.toInt()
+                                                                              .toString() ??
+                                                                          '0'
+                                                                      : 'N/A';
+
+                                                                  if (availableQuantity !=
+                                                                      'N/A') {
+                                                                    availableQuantityController
+                                                                            .text =
+                                                                        availableQuantity;
+                                                                  }
+
+                                                                  return _buildTextFieldua(
+                                                                    label:
+                                                                        'Packing Qty'
+                                                                            .tr,
+                                                                    hintText:
+                                                                        'Packing Qty',
                                                                     controller:
                                                                         availableQuantityController,
                                                                   );

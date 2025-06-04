@@ -211,4 +211,37 @@ class SalesOrderController extends GetxController {
       isLoadingslbpartnumber.value = false;
     }
   }
+   Future<void> fetchpacking(String supplier, String itemId) async {
+    isLoadingslbname.value = true;
+    print("$supplier  - $itemId");
+
+    final requestBody = {
+      "supplier": supplier,
+          "itemId": itemId
+    };
+
+    try {
+      final response = await _restletService.fetchReportData(
+          NetSuiteScripts.fetchpacking, requestBody);
+
+      print(response);
+
+      if (response is Map<String, dynamic> && response['data'] != null) {
+        List<Dataslb> fetchedData = (response['data'] as List)
+            .map((item) => Dataslb.fromJson(item))
+            .toList();
+
+        saleorderslb.assignAll(fetchedData);
+      } else {
+        saleorderslb.clear();
+        AppSnackBar.alert(
+            message: "The Selected Item doesn't have the Available Quantity.");
+      }
+    } catch (e) {
+      AppSnackBar.alert(message: "Error fetching stock data: $e");
+    } finally {
+      isLoadingslbname.value = false;
+    }
+  }
+
 }
