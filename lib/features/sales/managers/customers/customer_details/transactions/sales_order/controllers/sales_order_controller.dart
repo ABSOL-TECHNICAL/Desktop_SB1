@@ -26,7 +26,7 @@ class SalesOrderController extends GetxController {
   var slbtownlocation = ''.obs;
   var slbtownid = ''.obs;
   var saleorderslb = <Dataslb>[].obs;
-  var globalpack = <Dataslb1>[].obs;
+  var globalpack = <PackingQuantity>[].obs;
 
   var isDropdownOpen = false.obs;
   Map<String, String> itemMappings = {};
@@ -231,8 +231,8 @@ class SalesOrderController extends GetxController {
     print("Response: $response");
 
     if (response is List) {
-      List<Dataslb1> fetchedData = response
-          .map((item) => Dataslb1.fromJson(item))
+      List<PackingQuantity> fetchedData = response
+          .map((item) => PackingQuantity.fromJson(item))
           .toList();
 
       globalpack.assignAll(fetchedData);

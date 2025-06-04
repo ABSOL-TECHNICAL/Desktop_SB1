@@ -42,14 +42,14 @@ class Dataslb {
     return data;
   }
 }
-class Dataslb1 {
+class PackingQuantity {
   final String name;
   final String packingQty;
 
-  Dataslb1({required this.name, required this.packingQty});
+  PackingQuantity({required this.name, required this.packingQty});
 
-  factory Dataslb1.fromJson(Map<String, dynamic> json) {
-    return Dataslb1(
+  factory PackingQuantity.fromJson(Map<String, dynamic> json) {
+    return PackingQuantity(
       name: json['name']?.toString() ?? '',
       packingQty: json['packingQty']?.toString() ?? '0',
     );
