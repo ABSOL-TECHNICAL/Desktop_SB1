@@ -133,6 +133,9 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     slbtownlocationController.text = '';
     salesOrderController.slbtownlocation.value = '';
 
+    packingQuantityController.text = '';
+    packingQuantityController.clear();
+
     slbvalueController.clear();
     salesOrderController.slbValue.value = '';
     salesOrderController.saleorderslb.clear();
@@ -149,9 +152,10 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     salesOrderController.fetchslb(id, customerId, itemID!);
     print("hiiiiiiii");
     salesOrderController.fetchslbtownlocation(customerId);
-      if (selectedSupplierIds != null && item.itemId != null) {
-    salesOrderController.fetchpacking(selectedSupplierIds.toString(), item.itemId!);
-  }
+    if (selectedSupplierIds != null && item.itemId != null) {
+      salesOrderController.fetchpacking(
+          selectedSupplierIds.toString(), item.itemId!);
+    }
     // salesOrderController.fetchslb(item.itemId!);
   }
 
@@ -207,6 +211,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     } else {
       partNumberController.clear();
       availableQuantityController.text = '';
+      packingQuantityController.text = '';
       unitPriceController.text = '';
       globalItemsController.globalItemStocks.clear();
       selectedPartNumberId.value = null;
@@ -219,7 +224,8 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
 
   void clear() {
     bool hasCartItems = cartItems.isNotEmpty; // Check if items are added
-
+    packingQuantityController.clear();
+    packingQuantityController.text = '';
     partNumberController.clear();
     descriptionController.clear();
     requiredQuantityController.clear();
@@ -347,6 +353,8 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
         'slbname': slbnames,
         'slbvalue': slbvalue
       });
+       packingQuantityController.clear();
+         packingQuantityController.text = '';
 
       // Clear fields after adding
       partNumberController.clear();
@@ -356,6 +364,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
       unitPriceController.clear();
       availableQuantityController.clear();
       availableQuantityController.text = '';
+     
       unitPriceController.text = '';
 
       slbtownlocationController.text = '';
@@ -474,6 +483,8 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
       unitPriceController.clear();
       availableQuantityController.clear();
       availableQuantityController.text = '';
+      packingQuantityController.clear();
+      packingQuantityController.text = '';
       unitPriceController.text = '';
 
       slbtownlocationController.text = '';
@@ -606,6 +617,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     requiredQuantityController.dispose();
     availableQuantityController.dispose();
     unitPriceController.dispose();
+    packingQuantityController.dispose();
 
     globalItemsController.globalItems.clear();
     Get.delete<GlobalItemsController>();
@@ -1253,29 +1265,44 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                                                           ),
                                                           const SizedBox(
                                                               width: 12),
-                                                        Expanded(
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Obx(() {
-        final packingQty = salesOrderController.globalpack.isNotEmpty
-            ? salesOrderController.globalpack.first.packingQty
-            : 'N/A';
+                                                          Expanded(
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Obx(() {
+                                                                  final packingQty = salesOrderController
+                                                                          .globalpack
+                                                                          .isNotEmpty
+                                                                      ? salesOrderController
+                                                                          .globalpack
+                                                                          .first
+                                                                          .packingQty
+                                                                      : 'N/A';
 
-        if (packingQty.isNotEmpty && packingQty != 'N/A') {
-          packingQuantityController.text = packingQty;
-        }
+                                                                  if (packingQty
+                                                                          .isNotEmpty &&
+                                                                      packingQty !=
+                                                                          'N/A') {
+                                                                    packingQuantityController
+                                                                            .text =
+                                                                        packingQty;
+                                                                  }
 
-        return _buildTextFieldua(
-          label: 'Packing Qty'.tr,
-          hintText: 'Packing Qty',
-          controller: packingQuantityController,
-        );
-      }),
-    ],
-  ),
-),
-
+                                                                  return _buildTextFieldua(
+                                                                    label:
+                                                                        'Packing Qty'
+                                                                            .tr,
+                                                                    hintText:
+                                                                        'Packing Qty',
+                                                                    controller:
+                                                                        packingQuantityController,
+                                                                  );
+                                                                }),
+                                                              ],
+                                                            ),
+                                                          ),
                                                           const SizedBox(
                                                               width: 12),
                                                           const SizedBox(
