@@ -89,8 +89,8 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
   final List<Map<String, dynamic>> salesOptions = [
     {"name": "Cash Sales", "id": 1},
     {"name": "Credit Sales", "id": 2},
-    {"name": "Distress Sale", "id": 4},
-    {"name": "Advance Sale", "id": 5},
+    {"name": "Advance Sale", "id": 5}
+    // {"name": "Distress Sale", "id": 4},
   ];
 
   @override
@@ -134,7 +134,7 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
     requiredQuantityController.text = '';
     requiredQuantityController.clear();
 
-    descriptionController.text = item.desc ?? '';
+    descriptionController.text = item.vehicalApplication ?? '';
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear();
@@ -181,12 +181,12 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
 
   void onSelectDescription(GlobalitemDetail item) {
     FocusScope.of(context).unfocus();
-    descriptionController.text = item.desc ?? '';
+    descriptionController.text = item.vehicalApplication ?? '';
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear();
 
-    fetchPartNumbersByDescription(item.desc!);
+    fetchPartNumbersByDescription(item.vehicalApplication!);
     showDescriptionDropdown.value = false;
     // salesOrderController.fetchslb(item.itemId!);
     // salesOrderController.fetchslb(item.itemId!);
@@ -1004,83 +1004,30 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
                                                                       CrossAxisAlignment
                                                                           .start,
                                                                   children: [
-                                                                    // _buildTextFields(
-                                                                    //   label:
-                                                                    //       'Enter Part No / Description',
-                                                                    //   hintText:
-                                                                    //       'Enter Part No /  Description...',
-                                                                    //   controller:
-                                                                    //       partNumberController,
-                                                                    //   onChanged:
-                                                                    //       onPartNumberChanged,
-                                                                    //   enabled:
-                                                                    //       true,
-                                                                    //   onFocusChange:
-                                                                    //       (hasFocus) {
-                                                                    //     if (hasFocus) {
-                                                                    //       toggleFields(
-                                                                    //           'partNo');
-                                                                    //       showPartNumberDropdown.value =
-                                                                    //           false;
-                                                                    //     } else {
-                                                                    //       showPartNumberDropdown.value =
-                                                                    //           true;
-                                                                    //     }
-                                                                    //   },
-                                                                    // ),
-                                                                      const SizedBox(width: 8),
-                                          Expanded(
-                                            child: _buildTextFields(
-                                                label: 'Enter Part No / Description',
-                                                hintText: 'Enter Part No / Description',
-                                                controller:
-                                                    partNumberController,
-                                                // onChanged: onPartNumberChanged,
-                                                onChanged: (value) {
-                                                  final globalsupplierController =
-                                                      Get.find<
-                                                          GlobalsupplierController>();
-                                                  final selectedSupplierId =
-                                                      globalsupplierController
-                                                          .selectedSupplierId
-                                                          .value;
-
-                                                  if (selectedSupplierId ==
-                                                          null ||
-                                                      selectedSupplierId
-                                                          .isEmpty) {
-                                                    AppSnackBar.alert(
-                                                        message:
-                                                            "Please select a supplier first.");
-                                                    return;
-                                                  }
-                                                  onPartNumberChanged(value);
-                                                },
-                                                enabled: true,
-                                                onFocusChange: (hasFocus) {
-                                                  final globalsupplierController =
-                                                      Get.find<
-                                                          GlobalsupplierController>();
-                                                  final selectedSupplierId =
-                                                      globalsupplierController
-                                                          .selectedSupplierId
-                                                          .value;
-
-                                                  if (hasFocus) {
-                                                    toggleFields('desc');
-                                                    showDescriptionDropdown
-                                                        .value = false;
-                                                  } else {
-                                                    if (selectedSupplierId !=
-                                                            null &&
-                                                        selectedSupplierId
-                                                            .isNotEmpty) {
-                                                      showDescriptionDropdown
-                                                          .value = true;
-                                                    }
-                                                  }
-                                                }),
-                                          ),
+                                                                    _buildTextFields(
+                                                                      label:
+                                                                          'Enter Part No / Description',
+                                                                      hintText:
+                                                                          'Enter Part No /  Description...',
+                                                                      controller:
+                                                                          partNumberController,
+                                                                      onChanged:
+                                                                          onPartNumberChanged,
+                                                                      enabled:
+                                                                          true,
+                                                                      onFocusChange:
+                                                                          (hasFocus) {
+                                                                        if (hasFocus) {
+                                                                          toggleFields(
+                                                                              'partNo');
+                                                                          showPartNumberDropdown.value =
+                                                                              false;
+                                                                        } else {
+                                                                          showPartNumberDropdown.value =
+                                                                              true;
+                                                                        }
+                                                                      },
+                                                                    ),
                                                                     Obx(() => showPartNumberDropdown
                                                                             .value
                                                                         ? _buildSuggestionsList()

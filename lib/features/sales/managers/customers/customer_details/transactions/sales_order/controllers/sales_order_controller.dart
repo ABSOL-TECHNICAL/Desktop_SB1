@@ -57,20 +57,28 @@ class SalesOrderController extends GetxController {
               message: "Estimate Created: ${salesOrderId.value}");
 
           showDialog(
-            context: Get.context!,
-            builder: (BuildContext context) {
-              return CustomAlertDialog(
-                title: "Estimate Created",
-                message:
-                    "Estimate Created successfully with ID: ${salesOrderId.value}",
-                showOkButton: true,
-                onOk: () {
-                  Get.back();
-                  Get.back();
-                },
-              );
-            },
-          );
+  context: Get.context!,
+  barrierDismissible: true, // Allows clicking outside to dismiss
+  builder: (BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        // Handle back or outside tap
+        Get.back(); // close dialog
+        Get.back(); // go back to previous screen
+        return false; // prevent default pop
+      },
+      child: CustomAlertDialog(
+        title: "Estimate Created",
+        message: "Estimate Created successfully with ID: ${salesOrderId.value}",
+        showOkButton: true,
+        onOk: () {
+          Get.back(); // close dialog
+          Get.back(); // go back to previous screen
+        },
+      ),
+    );
+  },
+);
         }
       } else {
         AppSnackBar.alert(message: 'Server error! Please try submitting again within 2 minutes.');
