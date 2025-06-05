@@ -1029,6 +1029,7 @@ String _getSalesTypeName(int? id) {
     final String id = selectedSupplierIds.toString();
     final String itemID = item.itemId!;
     salesOrderController.fetchslb(id, selectedCustomerId.toString(), itemID);
+    globalItemsController.selectPartNumber(item.itemId!);
 
     showDialog(
       context: context,
