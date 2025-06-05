@@ -20,8 +20,8 @@ class RestletService {
     try {
       final encodedScriptId = Uri.encodeComponent(scriptId);
       final uri = Uri.parse(
-          'https://8154332-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
-      // 'https://8154332.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
+          // 'https://8154332-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
+       'https://8154332.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
 
       print('Requested Url : $uri');
       print('Script ID: $scriptId');
@@ -57,8 +57,8 @@ class RestletService {
     try {
       final encodedScriptId = Uri.encodeComponent(scriptId);
       final uri = Uri.parse(
-          // 'https://8154332.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
-          'https://8154332-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
+           'https://8154332.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
+          // 'https://8154332-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
 
       print('Request URL for script ID: $scriptId');
       print(uri);
@@ -104,8 +104,8 @@ class RestletService {
       final encodedScriptId = Uri.encodeComponent(scriptId);
 
       final uri = Uri.parse(
-          // 'https://8154332.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
-          'https://8154332-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
+          'https://8154332.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
+          // 'https://8154332-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=$encodedScriptId&deploy=1');
 
       print('Request URL for script ID: $scriptId');
       print(uri);

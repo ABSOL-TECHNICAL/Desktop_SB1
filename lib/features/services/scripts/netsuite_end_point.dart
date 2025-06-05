@@ -33,7 +33,8 @@ class NetSuiteScripts {
   static const String ownbranchStocksScriptId = '1808';
   static const String slbownbranchstock = '8217';
 // static const String slbownbranchstock = '1808';
-  static const String defaultBranchStocksId = '1758';
+  // static const String defaultBranchStocksId = '1758';
+  static const String defaultBranchStocksId = '8298';
   static const String locationsScriptId = '1799';
   static const String collectiondetailsmanagerScriptId = '1771';
   static const String createreportscriptId = '1755';
@@ -46,7 +47,8 @@ class NetSuiteScripts {
   static const String availablestocksunitpricescriptId = '6786';
   static const String tempreceiptscriptId = '1780';
   static const String fetchslbscriptId = '6785';
-    static const String fetchpacking= '8219';
+    // static const String fetchpacking= '8219';
+        static const String fetchpacking= '8297';
   static const String fetchslbvaluescriptId = '6084';
   static const String fetchslbtownlocationscriptId = '6185';
   static const String fetchslbPartnumberValuescriptId = '4751';

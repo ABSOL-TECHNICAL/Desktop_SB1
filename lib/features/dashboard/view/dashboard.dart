@@ -24,14 +24,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final DashboardController dashboardController = Get.put(DashboardController());
+  final DashboardController dashboardController =
+      Get.put(DashboardController());
   final TargetVsActualController target = Get.put(TargetVsActualController());
-  final LiquidationStocksController liquidsurplusstock = Get.put(LiquidationStocksController());
+  final LiquidationStocksController liquidsurplusstock =
+      Get.put(LiquidationStocksController());
   final LoginController loginController = Get.find<LoginController>();
-  final NewCustomerController newCustomerController = Get.put(NewCustomerController());
+  final NewCustomerController newCustomerController =
+      Get.put(NewCustomerController());
 
   bool get isManager => loginController.employeeModel.isManager ?? false;
- @override
+  @override
   void initState() {
     super.initState();
     target.fetchTargetVsActualData();
@@ -42,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _checkAndShowWelcomePopup() async {
     final prefs = await SharedPreferences.getInstance();
     bool shouldShowPopup = prefs.getBool('show_welcome_popup') ?? false;
-    
+
     if (shouldShowPopup) {
       await prefs.setBool('show_welcome_popup', false); // Clear the flag
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,97 +54,110 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
- void _showPopup() {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Prevent dismissing by tapping outside
-    builder: (context) => AlertDialog(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      title: const Text(
-        "What's New",
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-      ),
-      content: const SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            Text("• E-Credit Enhancements:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-            Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("•Remove Unwanted Fields", style: TextStyle(color: Colors.black)),
-                  Text("•Page Refresh Button", style: TextStyle(color: Colors.black)),
-                   Text("•Page Scroll up & down for Dealer Approval", style: TextStyle(color: Colors.black)),
-                   Text("•Page Scroll up & down for Dealer Approval", style: TextStyle(color: Colors.black)),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 10),
-
-            Text("•View Order:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-            Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("• Table view on expansion Tile", style: TextStyle(color: Colors.black)),
-                  Text("• Change description to Vehicle application", style: TextStyle(color: Colors.black)),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 10),
-
-            Text("• Estimate Page Updates:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-            Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("• Added new input fields", style: TextStyle(color: Colors.black)),
-                  Text("• Improved layout and validation", style: TextStyle(color: Colors.black)),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 10),
-
-            Text("• View Order Feature:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-            Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 4),
-              child: Text("• Quickly access order details from dashboard", style: TextStyle(color: Colors.black)),
-            ),
-
-          ],
+  void _showPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Text(
+          "What's New version Change 1.0.3",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
+        content: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+               SizedBox(height: 10),
+              Text("•Sales Man:",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black)),
+              Padding(
+                padding: EdgeInsets.only(left: 16.0, top: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("• Merged Temp Receipt and Create Report into a single Report Page.",
+                        style: TextStyle(color: Colors.black)),
+                    Text("• Introduced a Date Filter on the Branch Transfer Page",
+                        style: TextStyle(color: Colors.black)),
+                    Text("• Own Branch Stocks now include List Price, and GST Percentage",
+                        style: TextStyle(color: Colors.black)), 
+                    Text("• Implemented Expansion Tile Layout on the View Order Page",
+                        style: TextStyle(color: Colors.black)),
+                        Text("•Implemented Vehicle Application Filter.",
+                        style: TextStyle(color: Colors.black)),
+                           Text("•Implemented a New page directly create estimate from Own Branch Stocks .",
+                        style: TextStyle(color: Colors.black)),
+                         
+
+                  ],
+                ),
+              ),
+               Text("•Estimate Page:",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black)),
+              Padding(
+                padding: EdgeInsets.only(left: 16.0, top: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("•Added Package Quantity field on the Estimate Page",
+                        style: TextStyle(color: Colors.black)),
+                    Text("• Replaced 'Distress Sales' with 'Advance Sales'",
+                        style: TextStyle(color: Colors.black)),
+                   
+                  ],
+                ),
+              ),
+            
+              Text("• E-Credit Enhancements:",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black)),
+              Padding(
+                padding: EdgeInsets.only(left: 16.0, top: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("•Enabled Page Up/Down navigation on the Dealer Approval Page",
+                        style: TextStyle(color: Colors.black)),
+                    Text("•Merged KYC and Commercial Matters into the Dealer Approval workflow",
+                        style: TextStyle(color: Colors.black)),
+                    Text("•Command some field across New Customer Page",
+                        style: TextStyle(color: Colors.black)),
+                    Text("•Page Refresh Button",
+                        style: TextStyle(color: Colors.black)),
+                        Text("•Mandatory fields are now highlighted if left empty",
+                        style: TextStyle(color: Colors.black)),
+                  ],
+                ),
+              ),
+             
+             
+            ],
+          ),
+        ),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.black), // Border color
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Rounded corners
+              ),
+              backgroundColor: Colors.white, // Optional background
+            ),
+            child: const Text(
+              "Close",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ],
       ),
-      actions: [
-       OutlinedButton(
-  onPressed: () => Navigator.of(context).pop(),
-  style: OutlinedButton.styleFrom(
-    side: const BorderSide(color: Colors.black), // Border color
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8), // Rounded corners
-    ),
-    backgroundColor: Colors.white, // Optional background
-  ),
-  child: const Text(
-    "Close",
-    style: TextStyle(color: Colors.black),
-  ),
-),
-
-      ],
-    ),
-  );
-}
-
+    );
+  }
 
   Future<void> _loadData() async {}
 
@@ -190,8 +206,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Expanded(
                               child: CustomerStatsPieChart(
-                                monthlyCount: newCustomerController.customerCount.value,
-                                yearlyCount: newCustomerController.currentYearCustomerCount.value,
+                                monthlyCount:
+                                    newCustomerController.customerCount.value,
+                                yearlyCount: newCustomerController
+                                    .currentYearCustomerCount.value,
                               ),
                             ),
                             const SizedBox(width: 8),
