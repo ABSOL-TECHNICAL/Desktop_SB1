@@ -476,134 +476,134 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
     );
   }
 
-  Widget _buildDynamicTable(
-      BuildContext context, RxList<ViewOrderDetails> data) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+  // Widget _buildDynamicTable(
+  //     BuildContext context, RxList<ViewOrderDetails> data) {
+  //   final theme = Theme.of(context);
+  //   final isDarkMode = theme.brightness == Brightness.dark;
 
-    return Obx(() {
-      if (viewController.isLoading.value) {
-        return _buildShimmerTable(); // Show shimmer effect while loading
-      }
+  //   return Obx(() {
+  //     if (viewController.isLoading.value) {
+  //       return _buildShimmerTable(); // Show shimmer effect while loading
+  //     }
 
-      if (data.isNotEmpty) {
-        return Expanded(
-          child: Column(
-            children: [
-              // Show Date Range Widget only when first entering the page
-              if (!showSelectedDateWidget) _buildDateRangeWidget(),
+  //     if (data.isNotEmpty) {
+  //       return Expanded(
+  //         child: Column(
+  //           children: [
+  //             // Show Date Range Widget only when first entering the page
+  //             if (!showSelectedDateWidget) _buildDateRangeWidget(),
 
-              // Show Selected Date Widget only after search
-              if (showSelectedDateWidget)
-                _buildSelectedDateWidget(fromDate, toDate),
+  //             // Show Selected Date Widget only after search
+  //             if (showSelectedDateWidget)
+  //               _buildSelectedDateWidget(fromDate, toDate),
 
-              // Data Table
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Table(
-                      defaultColumnWidth: const IntrinsicColumnWidth(),
-                      children: [
-                        // Build the header row directly in the table
-                        TableRow(
-                          decoration: BoxDecoration(
-                            gradient: isDarkMode
-                                ? LinearGradient(
-                                    colors: [
-                                      Colors.redAccent.shade400,
-                                      Colors.pink.shade900,
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  )
-                                : const LinearGradient(
-                                    colors: [
-                                      Color(0xFF57AEFE),
-                                      Color(0xFF6B71FF)
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                          ),
-                          children: [
-                            _buildHeaderCell("S.No", context),
-                            _buildHeaderCell("Supplier", context),
-                            _buildHeaderCell("Document Number", context),
-                            _buildHeaderCell("Document Date", context),
-                            _buildHeaderCell("Item", context),
-                            _buildHeaderCell("Order Quantity", context),
-                            _buildHeaderCell("Quantity Billed", context),
-                            _buildHeaderCell("Balance Qty", context),
-                          ],
-                        ),
-                        ...data.map<TableRow>((orderDetail) {
-                          int orderQuantity =
-                              (orderDetail.totalQuantity ?? 0).toInt();
-                          int billedQuantity =
-                              (orderDetail.quantityBilled ?? 0).toInt();
-                          int balanceQuantity = (orderQuantity - billedQuantity)
-                              .clamp(0, double.infinity)
-                              .toInt();
+  //             // Data Table
+  //             Expanded(
+  //               child: SingleChildScrollView(
+  //                 scrollDirection: Axis.vertical,
+  //                 child: SingleChildScrollView(
+  //                   scrollDirection: Axis.horizontal,
+  //                   child: Table(
+  //                     defaultColumnWidth: const IntrinsicColumnWidth(),
+  //                     children: [
+  //                       // Build the header row directly in the table
+  //                       TableRow(
+  //                         decoration: BoxDecoration(
+  //                           gradient: isDarkMode
+  //                               ? LinearGradient(
+  //                                   colors: [
+  //                                     Colors.redAccent.shade400,
+  //                                     Colors.pink.shade900,
+  //                                   ],
+  //                                   begin: Alignment.topLeft,
+  //                                   end: Alignment.bottomRight,
+  //                                 )
+  //                               : const LinearGradient(
+  //                                   colors: [
+  //                                     Color(0xFF57AEFE),
+  //                                     Color(0xFF6B71FF)
+  //                                   ],
+  //                                   begin: Alignment.topLeft,
+  //                                   end: Alignment.bottomRight,
+  //                                 ),
+  //                         ),
+  //                         children: [
+  //                           _buildHeaderCell("S.No", context),
+  //                           _buildHeaderCell("Supplier", context),
+  //                           _buildHeaderCell("Document Number", context),
+  //                           _buildHeaderCell("Document Date", context),
+  //                           _buildHeaderCell("Item", context),
+  //                           _buildHeaderCell("Order Quantity", context),
+  //                           _buildHeaderCell("Quantity Billed", context),
+  //                           _buildHeaderCell("Balance Qty", context),
+  //                         ],
+  //                       ),
+  //                       ...data.map<TableRow>((orderDetail) {
+  //                         int orderQuantity =
+  //                             (orderDetail.totalQuantity ?? 0).toInt();
+  //                         int billedQuantity =
+  //                             (orderDetail.quantityBilled ?? 0).toInt();
+  //                         int balanceQuantity = (orderQuantity - billedQuantity)
+  //                             .clamp(0, double.infinity)
+  //                             .toInt();
 
-                          return _buildTableRow1(
-                            [
-                              (data.indexOf(orderDetail) + 1).toString(),
-                              orderDetail.supplier ?? "N/A",
-                              orderDetail.documentNumber ?? "N/A",
-                              orderDetail.documentDate ?? "N/A",
-                              orderDetail.item ?? "N/A",
-                              orderQuantity.toString(),
-                              billedQuantity.toString(),
-                              balanceQuantity.toString(),
-                            ],
-                            isHeader: false,
-                            context: context,
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      } else {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(height: 70),
-              Shimmer.fromColors(
-                baseColor: const Color.fromARGB(255, 53, 51, 51),
-                highlightColor: Colors.white,
-                child: Icon(
-                  Icons.search_off,
-                  size: 100,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              SizedBox(height: 20),
-              Shimmer.fromColors(
-                baseColor: const Color.fromARGB(255, 53, 51, 51),
-                highlightColor: Colors.white,
-                child: Text(
-                  'No results found for last three days.\nPlease refine your search criteria.',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                     fontSize: 20,
-                  ),
+  //                         return _buildTableRow1(
+  //                           [
+  //                             (data.indexOf(orderDetail) + 1).toString(),
+  //                             orderDetail.supplier ?? "N/A",
+  //                             orderDetail.documentNumber ?? "N/A",
+  //                             orderDetail.documentDate ?? "N/A",
+  //                             orderDetail.item ?? "N/A",
+  //                             orderQuantity.toString(),
+  //                             billedQuantity.toString(),
+  //                             balanceQuantity.toString(),
+  //                           ],
+  //                           isHeader: false,
+  //                           context: context,
+  //                         );
+  //                       }),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     } else {
+  //       return Center(
+  //         child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.start,
+  //           children: [
+  //             SizedBox(height: 70),
+  //             Shimmer.fromColors(
+  //               baseColor: const Color.fromARGB(255, 53, 51, 51),
+  //               highlightColor: Colors.white,
+  //               child: Icon(
+  //                 Icons.search_off,
+  //                 size: 100,
+  //                 color: Colors.grey.shade700,
+  //               ),
+  //             ),
+  //             SizedBox(height: 20),
+  //             Shimmer.fromColors(
+  //               baseColor: const Color.fromARGB(255, 53, 51, 51),
+  //               highlightColor: Colors.white,
+  //               child: Text(
+  //                 'No results found for last three days.\nPlease refine your search criteria.',
+  //                 style: theme.textTheme.bodyLarge?.copyWith(
+  //                    fontSize: 20,
+  //                 ),
                   
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    });
-  }
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     }
+  //   });
+  // }
 
   Widget _buildHeaderCell(String text, BuildContext context) {
     final theme = Theme.of(context);

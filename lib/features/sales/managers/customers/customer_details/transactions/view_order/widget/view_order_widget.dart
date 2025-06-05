@@ -100,7 +100,7 @@ class ViewOrderWidget extends StatelessWidget {
 
     // Table headers
     rows.add(_buildTableRow(
-      ["#", "Part No", "Doc No", "Qty", "Unit Price", "Sales Price"],
+      ["#", "Supplier", "Doc No", "Doc date", "Qty"],
       context,
       isHeader: true,
     ));
@@ -113,11 +113,12 @@ class ViewOrderWidget extends StatelessWidget {
           rows.add(_buildTableRow(
             [
               rowIndex.toString(),
+               detail.supplier  ?? '0.00',
+               detail.documentNumber ?? 'N/A',
               detail.documentDate ?? 'N/A',
-              detail.documentNumber ?? 'N/A',
                detail.totalQuantity.toString(),
-              detail.supplier  ?? '0.00',
-               detail.documentNumber  ?? '0.00',
+              
+              
             ],
             context,
             isHeader: false,
