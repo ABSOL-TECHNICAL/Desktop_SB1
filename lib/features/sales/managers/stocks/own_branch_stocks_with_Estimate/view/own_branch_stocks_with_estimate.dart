@@ -5,11 +5,13 @@ import 'package:impal_desktop/features/global/theme/controller/customer_controll
 import 'package:impal_desktop/features/global/theme/model/item_model.dart';
 import 'package:impal_desktop/features/global/theme/widgets/custom_alert.dart';
 import 'package:impal_desktop/features/global/theme/widgets/customerdropdown.dart';
+import 'package:impal_desktop/features/global/theme/widgets/customerdropdownestimate.dart';
 
 import 'package:impal_desktop/features/global/theme/widgets/search.dart';
 import 'package:impal_desktop/features/sales/managers/customers/customer_details/controllers/customer_details_controller.dart';
 import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/sales_order/controllers/sales_order_controller.dart';
 import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/sales_order/model/saleorderslb_model.dart';
+import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/sales_order/widget/sales_order_ownbranchstocks_widget.dart';
 import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/sales_order/widget/sales_order_widget.dart';
 import 'package:impal_desktop/version_controller.dart';
 
@@ -394,7 +396,7 @@ String _getSalesTypeName(int? id) {
                                                                 AbsorbPointer(
                                                               absorbing:
                                                                   isDisabledDropdown,
-                                  child: CustomerDropdown(
+                                  child: CustomerDropdownestimate(
                                     label: "Customer",
                                     hintText: "Select Customer",
                                     controller: _customerController,
@@ -415,7 +417,7 @@ String _getSalesTypeName(int? id) {
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
-                                  child: SalesorderSupplierdropdown(
+                                  child: SalesorderSupplierEstimatedropdown(
                                     label: 'Supplier Name'.tr,
                                     hintText: 'Choose Supplier Name...'.tr,
                                     controller: _supplierController,
