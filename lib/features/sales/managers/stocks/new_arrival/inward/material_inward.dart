@@ -346,7 +346,7 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: _buildTextField(
-                                    label: 'Enter Vehicle Application No',
+                                    label: 'Enter Vehicle Application',
                                     hintText: 'Enter Vehicle...',
                                     controller: descriptionController,
                                     // onChanged: onDescriptionChanged,
@@ -806,7 +806,7 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: Text(
-                  item.desc ?? '',
+                  item.vehicalApplication ?? '',
                   style: theme.textTheme.bodyLarge?.copyWith(       fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,

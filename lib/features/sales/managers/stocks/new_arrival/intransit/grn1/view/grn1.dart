@@ -138,7 +138,7 @@ class _Grn1PageState extends State<Grn1Page> {
   void onSelectDescription(GlobalitemDetail item) {
     FocusScope.of(context).unfocus(); // Close the keyboard
     descriptionController.text =
-        item.desc ?? ''; // Set selected description in the field
+        item.vehicalApplication ?? ''; // Set selected description in the field
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear(); // Clear current items
@@ -309,7 +309,7 @@ class _Grn1PageState extends State<Grn1Page> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: _buildTextField(
-                                    label: 'Enter Vehicle Application No',
+                                    label: 'Enter Vehicle Application',
                                     hintText: 'Enter Vehicle...',
                                     controller: descriptionController,
                                     // onChanged: onDescriptionChanged,
@@ -840,7 +840,7 @@ class _Grn1PageState extends State<Grn1Page> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: Text(
-                  item.desc ?? '',
+                  item.vehicalApplication ?? '',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

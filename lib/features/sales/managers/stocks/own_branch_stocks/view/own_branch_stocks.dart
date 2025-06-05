@@ -352,7 +352,7 @@ class _BranchStockPageState extends State<BranchStocksPage> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: _buildTextField(
-                                    label: 'Enter Vehicle Application No',
+                                    label: 'Enter Vehicle Application',
                                     hintText: 'Enter Vehicle...',
                                     controller: descriptionController,
                                     // onChanged: onDescriptionChanged,
@@ -687,7 +687,7 @@ class _BranchStockPageState extends State<BranchStocksPage> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: Text(
-                  item.desc ?? '',
+                  item.vehicalApplication ?? '',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

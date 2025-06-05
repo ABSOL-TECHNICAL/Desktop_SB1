@@ -371,7 +371,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             children: [
-                              const SizedBox(height: 15),
+                              const SizedBox(height: 10),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
@@ -428,7 +428,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: _buildTextField1(
-                                      label: 'Enter Vehicle Application No',
+                                      label: 'Enter Vehicle Application',
                                       hintText: 'Enter vehicle No...',
                                       controller: descriptionController,
                                       onChanged: (value) {
@@ -589,7 +589,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                   )
                                 ],
                               ),
-                              const SizedBox(height: 15),
+                              const SizedBox(height: 6),
                               Obx(() => showPartNumberDropdown.value
                                   ? _buildSuggestionsList()
                                   : const SizedBox.shrink()),
@@ -597,7 +597,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                   ? _buildDescriptionSuggestionsList()
                                   : const SizedBox.shrink()),
                               SizedBox(
-                                height: 10,
+                                height: 1,
                               ),
                               Row(
                                 children: [
@@ -901,7 +901,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 2),
         _buildPaginationControls(totalPages),
       ],
     );
@@ -1031,7 +1031,7 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
   Widget _buildDateRangeWidget() {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(2.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -1044,10 +1044,11 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 1),
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width / 2,
+              
               child: GlobalSearchField(
                 hintText: 'Search Tranfser Order or Supplier Name...'.tr,
                 onChanged: (value) {

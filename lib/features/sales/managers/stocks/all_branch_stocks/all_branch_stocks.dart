@@ -456,7 +456,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
                                           Expanded(
                                             child: _buildTextField(
                                               label:
-                                                  'Enter Vehicle Application No',
+                                                  'Enter Vehicle Application ',
                                               hintText: 'Enter Vehicle...',
                                               controller: descriptionController,
                                               // onChanged: onDescriptionChanged,
@@ -689,7 +689,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
             return SizedBox(
               height: 40,
               child: ListTile(
-                title: Text(item.desc ?? '',
+                title: Text(item.vehicalApplication ?? '',
                     style: const TextStyle(fontSize: 14.0)),
                 onTap: () {
                   onSelectDescription(item);
