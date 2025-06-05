@@ -90,7 +90,7 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
   final List<Map<String, dynamic>> salesOptions = [
     {"name": "Cash Sales", "id": 1},
     {"name": "Credit Sales", "id": 2},
-    {"name": "Advance Sale", "id": 5}
+    {"name": "Advance Sales", "id": 5}
     // {"name": "Distress Sale", "id": 4},
   ];
 
