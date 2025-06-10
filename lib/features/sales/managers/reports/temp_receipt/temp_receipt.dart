@@ -77,8 +77,8 @@ class _TempReceiptState extends State<TempReceipt> {
     }
     if (selectedPaymentMethod != null &&
         selectedCustomerId != null &&
-        amountController.text.isNotEmpty &&
-        invoiceNoController.text.isNotEmpty) {
+        amountController.text.isNotEmpty 
+       ) {
       // Start loading
       isLoading.value = true;
 
@@ -677,7 +677,7 @@ class _TempReceiptState extends State<TempReceipt> {
                                           const SizedBox(width: 16),
                                           Expanded(
                                             child: _buildInvoiceField(
-                                              label: 'Invoice No*',
+                                              label: 'Invoice No',
                                               hintText: 'Enter Invoice No...',
                                               controller: invoiceNoController,
                                             ),
@@ -1137,14 +1137,14 @@ class _TempReceiptState extends State<TempReceipt> {
                   ? Colors.white
                   : Colors.black, // Color adjusted for dark mode
             ),
-            children: [
-              TextSpan(
-                  text: ' *', // Add * separately with red color
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ],
+            // children: [
+            //   TextSpan(
+            //       text: ' *', // Add * separately with red color
+            //       style: theme.textTheme.bodyLarge?.copyWith(
+            //         color: Colors.red,
+            //         fontWeight: FontWeight.bold,
+            //       )),
+            // ],
           ),
         ),
         const SizedBox(height: 8),

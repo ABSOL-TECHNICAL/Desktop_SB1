@@ -130,7 +130,7 @@ class TempReceiptController extends GetxController {
     required int customerId,
     required int modeofCollection,
     required String amount,
-    required String invoiceNo,
+    String? invoiceNo,
     required String remarks,
     String? checkno,
     String? checkdate,

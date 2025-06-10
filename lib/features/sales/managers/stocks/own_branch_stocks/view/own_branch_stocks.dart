@@ -806,20 +806,20 @@ class _BranchStockPageState extends State<BranchStocksPage> {
               DataCell(Text(detail.mRP?.toStringAsFixed(2) ?? '0.00')),
               DataCell(Text(detail.listPrice?.toStringAsFixed(2) ?? '0.00')),
               DataCell(Text(detail.gSTRate?.toString() ?? '0')),
-//              DataCell(
-//   IconButton(
-//     icon: const Icon(Icons.more_vert),
-//     tooltip: 'View SLB options',
-//     onPressed: () {
-//       if ((detail.sLB ?? '').isNotEmpty) {
-//         showSLBDropdownDialog(context, detail);
-//       } else {
-//          ownBranchController.slbFieldValue.value = '';
-//         AppSnackBar.alert(message: 'No SLB options available');
-//       }
-//     },
-//   ),
-// ),
+                      DataCell(
+            IconButton(
+              icon: const Icon(Icons.more_vert),
+              tooltip: 'View SLB options',
+              onPressed: () {
+                if ((detail.sLB ?? '').isNotEmpty) {
+                  showSLBDropdownDialog(context, detail);
+                } else {
+                  ownBranchController.slbFieldValue.value = '';
+                  AppSnackBar.alert(message: 'No SLB options available');
+                }
+              },
+            ),
+          ),
             ],
           );
         }).toList();
@@ -947,17 +947,17 @@ class _BranchStockPageState extends State<BranchStocksPage> {
                             ),
                           ),
                         ),
-                        // DataColumn(
-                        //   label: Center(
-                        //     child: Text(
-                        //       'SLB',
-                        //       style: theme.textTheme.bodyLarge?.copyWith(
-                        //         color: Colors.white,
-                        //         fontWeight: FontWeight.bold,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
+                        DataColumn(
+                          label: Center(
+                            child: Text(
+                              'SLB',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                       rows: dataRows,
                     ),
@@ -1039,32 +1039,34 @@ Future<void> showSLBDropdownDialog(BuildContext context, Ownbranch item) async {
   final loginController = Get.find<LoginController>();
   final theme = Theme.of(context);
   final isDarkMode = theme.brightness == Brightness.dark;
+   ownBranchController.selectedSlbId.value = '';
+  ownBranchController.selectedSlbName.value = '';
+  ownBranchController.slbFieldValue.value = '';
 
-  // SLB dropdown options
   final slbOptions = [
     SlbOption(name: 'Basic', id: '1'),
     SlbOption(name: 'Bulk', id: '2'),
     SlbOption(name: 'Bulk 1', id: '3'),
-    SlbOption(name: 'Export', id: '4'),
-    SlbOption(name: 'Net Rate', id: '5'),
-    SlbOption(name: 'Net Rate Bulk', id: '6'),
-    SlbOption(name: 'Net Rate Bulk 1', id: '7'),
-    SlbOption(name: 'QBS', id: '8'),
-    SlbOption(name: 'STU Basic', id: '9'),
-    SlbOption(name: 'STU RC', id: '10'),
+    SlbOption(name: 'Net Rate', id: '4'),
+    SlbOption(name: 'Net Rate Bulk', id: '5'),
+    SlbOption(name: 'Net Rate Bulk 1', id: '6'),
+    SlbOption(name: 'STU Basic', id: '7'),
+    SlbOption(name: 'STU RC', id: '8'),
+    SlbOption(name: 'Export', id: '9'),
+    SlbOption(name: 'QBS', id: '10'),
   ];
 
-  SlbOption? selectedSlb;
+  // Get previous selection if available
+  SlbOption? selectedSlb = slbOptions.firstWhereOrNull(
+    (option) => option.id == ownBranchController.selectedSlbId.value,
+  );
 
   await showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
         backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
-        // title: Text(
-        //   'SLB',
-        //   style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-        // ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: StatefulBuilder(
           builder: (context, setState) {
             return SingleChildScrollView(
@@ -1073,9 +1075,13 @@ Future<void> showSLBDropdownDialog(BuildContext context, Ownbranch item) async {
                 children: [
                   DropdownButtonFormField<SlbOption>(
                     value: selectedSlb,
-                    style: const TextStyle(fontSize: 15,
-                    color: Colors.black),
-                     items: slbOptions.map((option) {
+                    isExpanded: true,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                    dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                    items: slbOptions.map((option) {
                       return DropdownMenuItem<SlbOption>(
                         value: option,
                         child: Text(option.name),
@@ -1086,7 +1092,6 @@ Future<void> showSLBDropdownDialog(BuildContext context, Ownbranch item) async {
                         selectedSlb = newValue;
                         ownBranchController.selectedSlbName.value = newValue?.name ?? '';
                         ownBranchController.selectedSlbId.value = newValue?.id ?? '';
-                        ownBranchController.slbFieldValue.value = ''; // Clear previous value
                       });
                     },
                     decoration: const InputDecoration(
@@ -1095,7 +1100,6 @@ Future<void> showSLBDropdownDialog(BuildContext context, Ownbranch item) async {
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   Obx(() {
                     if (ownBranchController.isLoading.value) {
                       return const CircularProgressIndicator();
@@ -1129,7 +1133,7 @@ Future<void> showSLBDropdownDialog(BuildContext context, Ownbranch item) async {
                       );
                     }
 
-                    return const SizedBox.shrink();
+                    return const Text('No value found');
                   }),
                 ],
               ),
@@ -1137,29 +1141,32 @@ Future<void> showSLBDropdownDialog(BuildContext context, Ownbranch item) async {
           },
         ),
         actions: [
-           
           ElevatedButton(
             onPressed: () async {
-              
               if (selectedSlb != null) {
                 ownBranchController.isLoading.value = true;
 
+                // Fetch SLB value again
                 await ownBranchController.fetchSlbBranchDetails(
                   item.partNoId ?? '',
                   selectedSlb!.id,
                   loginController.location ?? '',
                 );
 
-                print('Fetched SLB Value: ${ownBranchController.slbFieldValue.value}');
-
                 ownBranchController.isLoading.value = false;
-
-                // setState(() {}); // Refresh the dialog UI
               } else {
                 AppSnackBar.alert(message: 'Please select an SLB option');
               }
             },
-            child: const Text('Get SLB Value'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text(
+              'Get SLB Value',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       );
