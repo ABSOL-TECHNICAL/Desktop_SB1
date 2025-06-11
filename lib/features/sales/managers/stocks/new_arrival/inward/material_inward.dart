@@ -32,6 +32,7 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
   TextEditingController partNumberController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController chooseDateController = TextEditingController();
+   final ScrollController _scrollController = ScrollController();
   RxList<MaterialInwardDefault> searchedMaterialInward =
       <MaterialInwardDefault>[].obs;
   final GlobalItemsController globalItemsController =
@@ -44,12 +45,18 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
   List<Map<String, dynamic>> fetchMaterialInwardDetails = [];
   List<MaterialEntry> materialInward = [];
   bool hasSearched = false;
+    int _currentPage = 1;
+  final int _itemsPerPage = 10;
 
   List<String> get supplierName {
     return globalSupplierController.globalsupplierController
         .map((item) => item['Supplier'].toString())
         .toList();
   }
+   String fromDate = 'Choose From Date';
+  String toDate = 'Choose To Date';
+  RxString fromdate = ''.obs;
+  RxString todate = ''.obs;
 
   @override
   void initState() {
@@ -194,36 +201,117 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
 
     showDescriptionDropdown.value = false;
   }
+  List<MaterialInwardController> _getPaginatedData(List<MaterialInwardController> fullData) {
+    final startIndex = (_currentPage - 1) * _itemsPerPage;
+    final endIndex = startIndex + _itemsPerPage;
+    return fullData.sublist(
+      startIndex,
+      endIndex > fullData.length ? fullData.length : endIndex,
+    );
+  }
+   Future<void> _pickFromDate() async {
+    DateTime pickedDate;
+    if (fromDate != 'Choose From Date') {
+      pickedDate = DateFormat('dd/MM/yyyy').parse(fromDate);
+    } else {
+      pickedDate = DateTime.now();
+    }
 
-  void onSearchPressed() async {
-    String? itemId = selectedPartNumberId.value;
+    DateTime? newPickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
 
-    print("Selected Item ID: $itemId");
-    print("Chosen Date: $chooseDate");
+    if (newPickedDate != null) {
+      _onFromDatePicked(newPickedDate);
+    }
+  }
 
-    if (itemId == null) {
-      AppSnackBar.alert(message: "Please Select All fields.");
+  Future<void> _pickToDate() async {
+    DateTime pickedDate;
+    if (toDate != 'Choose To Date') {
+      pickedDate = DateFormat('dd/MM/yyyy').parse(toDate);
+    } else {
+      pickedDate = DateTime.now();
+    }
+
+    DateTime? newPickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime(2000), // Ensure a valid date
+      lastDate: DateTime(2100),
+    );
+
+    if (newPickedDate != null) {
+      _onToDatePicked(newPickedDate);
+    }
+  }
+
+  void _onFromDatePicked(DateTime pickedDate) {
+    if (toDate != 'Choose To Date' &&
+        pickedDate.isAfter(DateFormat('dd/MM/yyyy').parse(toDate))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("From Date cannot be later than To Date.")),
+      );
       return;
     }
 
-    materialInwardController.isLoading.value = true;
-
-    try {
-      searchedMaterialInward.clear();
-
-      await materialInwardController.fetchMaterialInwardDetails(
-          itemId, chooseDate, searchedMaterialInward);
-
-      print("Fetched Material Inward Details: $searchedMaterialInward");
-
-      materialInwardController.isLoading.value = false;
-      setState(() {});
-    } catch (error) {
-      AppSnackBar.alert(
-          message: "An error occurred while fetching details: $error");
-      materialInwardController.isLoading.value = false;
-    }
+    setState(() {
+      fromDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+    });
   }
+
+  void _onToDatePicked(DateTime pickedDate) {
+    if (fromDate != 'Choose From Date' &&
+        pickedDate.isBefore(DateFormat('dd/MM/yyyy').parse(fromDate))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("To Date cannot be earlier than From Date.")),
+      );
+      return;
+    }
+
+    setState(() {
+      toDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+    });
+  }
+
+void  onSearchPressed() async {
+    final selectedSupplierId = globalSupplierController.selectedSupplierId.value;
+   
+    
+    if (selectedSupplierId == null || selectedSupplierId.isEmpty) {
+      AppSnackBar.alert(message: "Please select a supplier first");
+      return;
+    }
+
+   try {
+      if (fromDate == 'Choose From Date' && toDate == 'Choose To Date') {
+        // Search by supplier only
+        await materialInwardController.fetchMaterialInwardDetails(
+  selectedSupplierId,
+  fromDate == 'Choose From Date' ? '' : fromDate,
+  toDate == 'Choose To Date' ? '' : toDate,
+  searchedMaterialInward,
+);
+
+      } else if (fromDate != 'Choose From Date' && toDate != 'Choose To Date') {
+        // Search by supplier + date range
+       await materialInwardController.fetchMaterialInwardDetails(
+  selectedSupplierId,
+  fromDate == 'Choose From Date' ? '' : fromDate,
+  toDate == 'Choose To Date' ? '' : toDate,
+  searchedMaterialInward,
+);
+
+      } else {
+        AppSnackBar.alert(message: "Please select both From Date and To Date or none");
+      }
+    } catch (e) {
+      AppSnackBar.alert(message: "Error fetching GRN data: ${e.toString()}");
+    }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -301,80 +389,129 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                 Expanded(
-                                  child: _buildTextField(
-                                      label: 'Enter Part No',
-                                      hintText: 'Enter Part No...',
-                                      controller: partNumberController,
-                                      // onChanged: onPartNumberChanged,
-                                      onChanged: (value) {
-                                        final globalsupplierController = Get
-                                            .find<GlobalsupplierController>();
-                                        final selectedSupplierId =
-                                            globalsupplierController
-                                                .selectedSupplierId.value;
+                                //  Expanded(
+                                //   child: _buildTextField(
+                                //       label: 'Enter Part No',
+                                //       hintText: 'Enter Part No...',
+                                //       controller: partNumberController,
+                                //       // onChanged: onPartNumberChanged,
+                                //       onChanged: (value) {
+                                //         final globalsupplierController = Get
+                                //             .find<GlobalsupplierController>();
+                                //         final selectedSupplierId =
+                                //             globalsupplierController
+                                //                 .selectedSupplierId.value;
 
-                                        if (selectedSupplierId == null ||
-                                            selectedSupplierId.isEmpty) {
-                                          AppSnackBar.alert(
-                                              message:
-                                                  "Please select a supplier first.");
-                                          return;
-                                        }
-                                        onPartNumberChanged(value);
-                                      },
-                                      enabled: true,
-                                      onFocusChange: (hasFocus) {
-                                        final globalsupplierController = Get
-                                            .find<GlobalsupplierController>();
-                                        final selectedSupplierId =
-                                            globalsupplierController
-                                                .selectedSupplierId.value;
+                                //         if (selectedSupplierId == null ||
+                                //             selectedSupplierId.isEmpty) {
+                                //           AppSnackBar.alert(
+                                //               message:
+                                //                   "Please select a supplier first.");
+                                //           return;
+                                //         }
+                                //         onPartNumberChanged(value);
+                                //       },
+                                //       enabled: true,
+                                //       onFocusChange: (hasFocus) {
+                                //         final globalsupplierController = Get
+                                //             .find<GlobalsupplierController>();
+                                //         final selectedSupplierId =
+                                //             globalsupplierController
+                                //                 .selectedSupplierId.value;
 
-                                        if (hasFocus) {
-                                          toggleFields('desc');
-                                          showDescriptionDropdown.value = false;
-                                        } else {
-                                          if (selectedSupplierId != null &&
-                                              selectedSupplierId.isNotEmpty) {
-                                            showDescriptionDropdown.value =
-                                                true;
-                                          }
-                                        }
-                                      }),
-                                ),
-                                const SizedBox(width: 8),
+                                //         if (hasFocus) {
+                                //           toggleFields('desc');
+                                //           showDescriptionDropdown.value = false;
+                                //         } else {
+                                //           if (selectedSupplierId != null &&
+                                //               selectedSupplierId.isNotEmpty) {
+                                //             showDescriptionDropdown.value =
+                                //                 true;
+                                //           }
+                                //         }
+                                //       }),
+                                // ),
                                 Expanded(
-                                  child: _buildTextField(
-                                    label: 'Enter Vehicle Application',
-                                    hintText: 'Enter Vehicle...',
-                                    controller: descriptionController,
-                                    // onChanged: onDescriptionChanged,
-                                    onChanged: (value) {
-                                      final globalsupplierController =
-                                          Get.find<GlobalsupplierController>();
-                                      final selectedSupplierId =
-                                          globalsupplierController
-                                              .selectedSupplierId.value;
-
-                                      if (selectedSupplierId == null ||
-                                          selectedSupplierId.isEmpty) {
-                                        AppSnackBar.alert(
-                                            message:
-                                                "Please select a supplier first.");
-                                        return;
-                                      }
-                                      onDescriptionChanged(value);
-                                    },
-                                    enabled: true,
-                                    onFocusChange: (hasFocus) {
-                                      if (hasFocus) {
-                                        toggleFields('desc');
-                                      } else {
-                                        showDescriptionDropdown.value = true;
-                                      }
-                                    },
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('From Date',
+                                            style: theme.textTheme.bodySmall),
+                                        const SizedBox(height: 6),
+                                        GestureDetector(
+                                          onTap: _pickFromDate,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: isDarkMode
+                                                  ? Colors.blueGrey.shade900
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 8.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(fromDate,
+                                                      style: theme
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      )),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
+                                const SizedBox(width: 8),
+                                // Expanded(
+                                //   child: _buildTextField(
+                                //     label: 'Enter Vehicle Application',
+                                //     hintText: 'Enter Vehicle...',
+                                //     controller: descriptionController,
+                                //     // onChanged: onDescriptionChanged,
+                                //     onChanged: (value) {
+                                //       final globalsupplierController =
+                                //           Get.find<GlobalsupplierController>();
+                                //       final selectedSupplierId =
+                                //           globalsupplierController
+                                //               .selectedSupplierId.value;
+
+                                //       if (selectedSupplierId == null ||
+                                //           selectedSupplierId.isEmpty) {
+                                //         AppSnackBar.alert(
+                                //             message:
+                                //                 "Please select a supplier first.");
+                                //         return;
+                                //       }
+                                //       onDescriptionChanged(value);
+                                //     },
+                                //     enabled: true,
+                                //     onFocusChange: (hasFocus) {
+                                //       if (hasFocus) {
+                                //         toggleFields('desc');
+                                //       } else {
+                                //         showDescriptionDropdown.value = true;
+                                //       }
+                                //     },
+                                //   ),
                             
                                 // Expanded(
                                 //   child: _buildTextField(
@@ -411,72 +548,121 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
                                 //       }
                                 //     },
                                 //   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Choose Date'.tr,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      GestureDetector(
-                                        onTap: () async {
-                                          // Open the date picker and update the chosen date
-                                          DateTime? pickedDate =
-                                              await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(2000),
-                                            lastDate: DateTime(2100),
-                                          );
-                                          if (pickedDate != null) {
-                                            _onChooseDatePicked(pickedDate);
-                                          }
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: isDarkMode
-                                                ? Colors.blueGrey.shade900
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                color: Colors.grey.shade300),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 7.0, horizontal: 8.0),
-                                            child: Row(
-                                              children: [
-                                                const Icon(Icons.calendar_month,
-                                                    color: Color.fromARGB(
-                                                        255, 53, 51, 51)),
-                                                const SizedBox(width: 4.0),
-                                                Text(
-                                                  chooseDate.isNotEmpty
-                                                      ? chooseDate
-                                                      : 'Select Date',
-                                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                                      color: chooseDate.isEmpty
-                                                          ? Colors.black
-                                                          : Colors.black),
-                                                ),
-                                              ],
+                                // ),
+                                 Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('To Date',
+                                            style: theme.textTheme.bodySmall),
+                                        const SizedBox(height: 6),
+                                        GestureDetector(
+                                          onTap: _pickToDate,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: isDarkMode
+                                                  ? Colors.blueGrey.shade900
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 8.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(toDate,
+                                                      style: theme
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      )),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                const SizedBox(width: 8),
+                                // Expanded(
+                                //   child: Column(
+                                //     crossAxisAlignment:
+                                //         CrossAxisAlignment.start,
+                                //     children: [
+                                //       Text(
+                                //         'Choose Date'.tr,
+                                //         style: theme.textTheme.bodyMedium
+                                //             ?.copyWith(
+                                //           fontWeight: FontWeight.bold,
+                                //           color: Colors.white,
+                                //         ),
+                                //       ),
+                                //       const SizedBox(height: 6),
+                                //       GestureDetector(
+                                //         onTap: () async {
+                                //           // Open the date picker and update the chosen date
+                                //           DateTime? pickedDate =
+                                //               await showDatePicker(
+                                //             context: context,
+                                //             initialDate: DateTime.now(),
+                                //             firstDate: DateTime(2000),
+                                //             lastDate: DateTime(2100),
+                                //           );
+                                //           if (pickedDate != null) {
+                                //             _onChooseDatePicked(pickedDate);
+                                //           }
+                                //         },
+                                //         child: Container(
+                                //           decoration: BoxDecoration(
+                                //             color: isDarkMode
+                                //                 ? Colors.blueGrey.shade900
+                                //                 : Colors.white,
+                                //             borderRadius:
+                                //                 BorderRadius.circular(10),
+                                //             border: Border.all(
+                                //                 color: Colors.grey.shade300),
+                                //           ),
+                                //           child: Padding(
+                                //             padding: const EdgeInsets.symmetric(
+                                //                 vertical: 7.0, horizontal: 8.0),
+                                //             child: Row(
+                                //               children: [
+                                //                 const Icon(Icons.calendar_month,
+                                //                     color: Color.fromARGB(
+                                //                         255, 53, 51, 51)),
+                                //                 const SizedBox(width: 4.0),
+                                //                 Text(
+                                //                   chooseDate.isNotEmpty
+                                //                       ? chooseDate
+                                //                       : 'Select Date',
+                                //                   style: theme.textTheme.bodyLarge?.copyWith(
+                                //                       color: chooseDate.isEmpty
+                                //                           ? Colors.black
+                                //                           : Colors.black),
+                                //                 ),
+                                //               ],
+                                //             ),
+                                //           ),
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
                                 const SizedBox(width: 8),
                                 SizedBox(
                                   width: 80, // Fixed width for button
@@ -652,35 +838,174 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
   }
 
   Widget _buildMaterialInwardTable(RxList<MaterialInwardDefault> data) {
-    return Expanded(
-        child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: SizedBox(
-          width: 1250,
-          child: Table(
-            defaultColumnWidth: IntrinsicColumnWidth(),
-            children: [
-              _buildTableRow(
-                  ["S.No", "Supplier Name", "Part No", "Desc", "Inward Qty"],
-                  context),
-              ...data.map((material) {
-                return _buildTableRow2([
-                  (data.indexOf(material) + 1).toString(),
-                  material.supplierName,
+   final totalItems = data.length;
+  final totalPages = (totalItems / _itemsPerPage).ceil();
+  final startIndex = (_currentPage - 1) * _itemsPerPage;
+  final endIndex = startIndex + _itemsPerPage;
+  final paginatedData = data.sublist(
+    startIndex,
+    endIndex > totalItems ? totalItems : endIndex,
+  );
+  return Expanded(
+    child: Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SizedBox(
+                width: 1250,
+                child: Table(
+                  defaultColumnWidth: IntrinsicColumnWidth(),
+                  children: [
+                    _buildTableRow(
+                      ["S.No", "Supplier Name", "Part No", "Desc", "Inward Qty"],
+                      context,
+                    ),
+                    ...paginatedData.map((material) {
+                      return _buildTableRow2([
+                        (data.indexOf(material) + 1).toString(),
+                          material.supplierName,
                   "${material.partNo} ",
                   material.desc.toString(),
                   material.inwardQty.toString(),
                 ], context);
-              }),
-            ],
+                    }),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-      ),
-    ));
-  }
+        const SizedBox(height: 10),
+        if (totalPages > 1)
+          _buildPaginationControls(totalItems,totalPages),
+      ],
+    ),
+  );
+}
 
+ Widget _buildPaginationControls(int totalItems, int totalPages) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.first_page),
+            onPressed: _currentPage > 1
+                ? () {
+                    setState(() {
+                      _currentPage = 1;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: _currentPage > 1
+                ? () {
+                    setState(() {
+                      _currentPage--;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+
+          // Page number input
+          Container(
+            width: 80,
+            height: 36,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            child: TextField(
+              // controller: _pageController,
+              controller: TextEditingController(text: _currentPage.toString()),
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+              ),
+              onSubmitted: (value) {
+                final page = int.tryParse(value) ?? _currentPage;
+                if (page >= 1 && page <= totalPages) {
+                  setState(() {
+                    _currentPage = page;
+                    _scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  });
+                }
+              },
+            ),
+          ),
+
+          Text(
+            'of $totalPages',
+            style: theme.textTheme.bodyMedium,
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: _currentPage < totalPages
+                ? () {
+                    setState(() {
+                      _currentPage++;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.last_page),
+            onPressed: _currentPage < totalPages
+                ? () {
+                    setState(() {
+                      _currentPage = totalPages;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+
+          const SizedBox(width: 16),
+          Text(
+            'Total: $totalPages pages',
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildSelectedDateWidget(String selectedDate) {
     final toDate = materialInwardController.toDate.value;
     final theme = Theme.of(context);

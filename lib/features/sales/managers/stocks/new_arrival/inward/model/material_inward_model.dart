@@ -60,15 +60,15 @@ class MaterialEntry {
 class MaterialInwardDefault {
   final int id;
   final String supplierName;
-  final String partNo;
-  final String desc; // Keeping 'Desc' as per the provided structure
+  final String? partNo;
+  final String? desc; // Keeping 'Desc' as per the provided structure
   final int inwardQty;
 
   MaterialInwardDefault({
     required this.id,
     required this.supplierName,
-    required this.partNo,
-    required this.desc,
+     this.partNo,
+     this.desc,
     required this.inwardQty,
   });
 
