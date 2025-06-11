@@ -55,8 +55,9 @@ class BranchTransfersController extends GetxController {
 
   Future<void> fetchBranchStockDefault() async {
     final DateTime currentDate = DateTime.now();
-    final DateTime fromDate = currentDate.subtract(Duration(days: 3));
+    // final DateTime fromDate = currentDate.subtract(Duration(days: 3));
 
+    final DateTime fromDate = DateTime(currentDate.year, currentDate.month, 1);
     String formattedFromDate =
         "${fromDate.day.toString().padLeft(2, '0')}/${fromDate.month.toString().padLeft(2, '0')}/${fromDate.year}";
     String formattedToDate =

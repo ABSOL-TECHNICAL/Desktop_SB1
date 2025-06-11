@@ -20,7 +20,7 @@ class DealerApprovalPage extends StatefulWidget {
 }
 
 class _DealerApprovalPageState extends State<DealerApprovalPage> {
-  Map<String, bool> expandedSections = {};
+  // Map<String, bool> expandedSections = {};
 
   final CreditlimitController creditController =
       Get.put(CreditlimitController());
@@ -290,7 +290,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
 
                           print("Selected ApplicationNo: $selectedApplication");
 
-                          expandedSections["(A) Dealer KYC"] = true;
+                          // expandedSections["(A) Dealer KYC"] = true;
                         },
                         items: approverController.getapp
                             .map((GetApplication application) =>
@@ -731,7 +731,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
 
   Widget buildSection(String title) {
     // Ensure section state is initialized
-    expandedSections.putIfAbsent(title, () => false);
+    // expandedSections.putIfAbsent(title, () => false);
      final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -741,11 +741,11 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
         children: [
           /// **Clickable Header**
           InkWell(
-            onTap: () {
-              setState(() {
-                expandedSections[title] = !expandedSections[title]!;
-              });
-            },
+            // onTap: () {
+            //   setState(() {
+            //     expandedSections[title] = !expandedSections[title]!;
+            //   });
+            // },
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.all(12),
@@ -763,7 +763,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
           ),
 
           /// **Expanded Content (Only Shows if Section is Open)**
-          if (expandedSections[title]!)
+          // if (expandedSections[title]!)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(
