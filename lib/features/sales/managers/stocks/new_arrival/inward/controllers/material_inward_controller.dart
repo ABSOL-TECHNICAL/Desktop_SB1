@@ -32,79 +32,77 @@ class MaterialInwardController extends GetxController {
     alertMessage.value = '';
   }
 
-  Future<void> fetchMaterialInwardDefault() async {
-    final DateTime currentDate = DateTime.now();
-    final DateTime fromDate = currentDate.subtract(Duration(days: 3));
+ Future<void> fetchMaterialInwardDefault() async {
+  final DateTime currentDate = DateTime.now();
+  final DateTime fromDate = DateTime(currentDate.year, currentDate.month, 1); // First day of month
 
-    String formattedFromDate =
-        "${fromDate.day.toString().padLeft(2, '0')}/${fromDate.month.toString().padLeft(2, '0')}/${fromDate.year}";
-    String formattedToDate =
-        "${currentDate.day.toString().padLeft(2, '0')}/${currentDate.month.toString().padLeft(2, '0')}/${currentDate.year}";
+  String formattedFromDate =
+      "${fromDate.day.toString().padLeft(2, '0')}/${fromDate.month.toString().padLeft(2, '0')}/${fromDate.year}";
+  String formattedToDate =
+      "${currentDate.day.toString().padLeft(2, '0')}/${currentDate.month.toString().padLeft(2, '0')}/${currentDate.year}";
 
-    startDate.value = formattedFromDate;
-    endDate.value = formattedToDate;
+  startDate.value = formattedFromDate;
+  endDate.value = formattedToDate;
 
-    final requestBody = {
-      "fromdate": formattedFromDate,
-      "todate": formattedToDate
-    };
+  final requestBody = {
+    "fromdate": formattedFromDate,
+    "todate": formattedToDate
+  };
 
-    try {
-      isLoading.value = true;
-      alertMessage.value = '';
-      noDataMessage.value = '';
+  try {
+    isLoading.value = true;
+    alertMessage.value = '';
+    noDataMessage.value = '';
 
-      final response = await _restletService.fetchReportData(
-        NetSuiteScripts.materialInwardScriptId,
-        requestBody,
+    final response = await _restletService.fetchReportData(
+      NetSuiteScripts.materialInwardScriptId,
+      requestBody,
+    );
+
+    if (response == null) throw Exception("No response received.");
+
+    if (response['error'] != null) {
+      noDataMessage.value = response['error'];
+    } else if (response is Map && response['DefaultMaterialInward'] is List) {
+      List<MaterialInwardDefault> data = List<MaterialInwardDefault>.from(
+        response['DefaultMaterialInward'].map(
+          (material) => MaterialInwardDefault.fromJson(material ?? {}),
+        ),
       );
 
-      if (response == null) throw Exception("No response received.");
-
-      // Check if there's an error in the response
-      if (response['error'] != null) {
-        noDataMessage.value = response['error'];
-      } else if (response is Map && response['DefaultMaterialInward'] is List) {
-        List<MaterialInwardDefault> data = List<MaterialInwardDefault>.from(
-          response['DefaultMaterialInward'].map(
-            (material) => MaterialInwardDefault.fromJson(material ?? {}),
-          ),
-        );
-
-        if (data.isEmpty) {
-          noDataMessage.value = "No results found for the provided criteria.";
-        } else {
-          defaultMaterialInward.value = data;
-        }
+      if (data.isEmpty) {
+        noDataMessage.value = "No results found for the provided criteria.";
       } else {
-        throw FormatException("Unexpected response format.");
+        defaultMaterialInward.value = data;
       }
-    } catch (e) {
-      alertMessage.value =
-          "Error loading data: ${e is FormatException ? e.message : e.toString()}";
-    } finally {
-      isLoading.value = false;
+    } else {
+      throw FormatException("Unexpected response format.");
     }
+  } catch (e) {
+    alertMessage.value =
+        "Error loading data: ${e is FormatException ? e.message : e.toString()}";
+  } finally {
+    isLoading.value = false;
   }
+}
 
-  Future<void> fetchMaterialInwardDetails(
-    String partNumber,
-    String chooseDate,
+   Future<void> fetchMaterialInwardDetails(
+    String supplierId,
+    String fromDate,
+    String toDate,
     RxList<MaterialInwardDefault> searchedMaterialInward,
   ) async {
-    if (partNumber.isEmpty || chooseDate.isEmpty) {
-      noDataMessage.value = '';
+   if (supplierId.isEmpty) {
+    AppSnackBar.alert(message: "Please provide supplier.");
+    return;
+  }
 
-      AppSnackBar.alert(message: "Please provide both part number and date.");
-
-      return;
-    }
-
-    toDate.value = chooseDate;
+    
 
     final requestBody = {
-      'ItemId': partNumber,
-      'ToDate': chooseDate,
+      'SupplierId':supplierId,
+      'FromDate': fromDate,
+      'ToDate': toDate,
     };
 
     try {
@@ -122,14 +120,12 @@ class MaterialInwardController extends GetxController {
         print("Material Inward List: $materialInwardList");
 
         if (materialInwardList is List && materialInwardList.isNotEmpty) {
-          searchedMaterialInward.value = materialInwardList.map((item) {
-            final materialInward = MaterialInwardDefault.fromJson(item);
-            print("Parsed Material Inward: $materialInward");
-            return materialInward;
-          }).toList();
-
-          noDataMessage.value = '';
-        } else {
+        searchedMaterialInward.value = materialInwardList
+            .map((item) => MaterialInwardDefault.fromJson(item))
+            .toList();
+        noDataMessage.value = '';
+      } 
+         else {
           noDataMessage.value = "No results found for the provided criteria.";
         }
       } else {
@@ -144,3 +140,62 @@ class MaterialInwardController extends GetxController {
     }
   }
 }
+
+
+//   Future<void> fetchMaterialInwardDetails(
+//     String partNumber,
+//     String chooseDate,
+//     RxList<MaterialInwardDefault> searchedMaterialInward,
+//   ) async {
+//     if (partNumber.isEmpty || chooseDate.isEmpty) {
+//       noDataMessage.value = '';
+
+//       AppSnackBar.alert(message: "Please provide both part number and date.");
+
+//       return;
+//     }
+
+//     toDate.value = chooseDate;
+
+//     final requestBody = {
+//       'ItemId': partNumber,
+//       'ToDate': chooseDate,
+//     };
+
+//     try {
+//       isLoading.value = true;
+//       alertMessage.value = '';
+
+//       final response = await _restletService.fetchReportData(
+//         NetSuiteScripts.materialInwardScriptId,
+//         requestBody,
+//       );
+
+//       if (response != null && response is Map) {
+//         final materialInwardList = response['MaterialInward'];
+
+//         print("Material Inward List: $materialInwardList");
+
+//         if (materialInwardList is List && materialInwardList.isNotEmpty) {
+//           searchedMaterialInward.value = materialInwardList.map((item) {
+//             final materialInward = MaterialInwardDefault.fromJson(item);
+//             print("Parsed Material Inward: $materialInward");
+//             return materialInward;
+//           }).toList();
+
+//           noDataMessage.value = '';
+//         } else {
+//           noDataMessage.value = "No results found for the provided criteria.";
+//         }
+//       } else {
+//         noDataMessage.value = "Invalid response format.";
+//       }
+//     } catch (e) {
+//       noDataMessage.value =
+//           "An error occurred while fetching Material Inward details.";
+//       print("Error: $e");
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   }
+// }

@@ -391,76 +391,179 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 6),
-                                  Expanded(
-                                    child: _buildTextField1(
-                                      label: 'Enter Part No',
-                                      hintText: 'Enter Part No...',
-                                      controller: partNumberController,
-                                      onChanged: (value) {
-                                        final globalsupplierController = Get
-                                            .find<GlobalsupplierController>();
-                                        final selectedSupplierId =
-                                            globalsupplierController
-                                                .selectedSupplierId.value;
+                                  // Expanded(
+                                  //   child: _buildTextField1(
+                                  //     label: 'Enter Part No',
+                                  //     hintText: 'Enter Part No...',
+                                  //     controller: partNumberController,
+                                  //     onChanged: (value) {
+                                  //       final globalsupplierController = Get
+                                  //           .find<GlobalsupplierController>();
+                                  //       final selectedSupplierId =
+                                  //           globalsupplierController
+                                  //               .selectedSupplierId.value;
 
-                                        if (selectedSupplierId == null ||
-                                            selectedSupplierId.isEmpty) {
-                                          AppSnackBar.alert(
-                                              message:
-                                                  "Please select a supplier first.");
-                                          return;
-                                        }
-                                        onPartNumberChanged(value);
-                                      },
-                                      enabled: true,
-                                      onFocusChange: (hasFocus) {
-                                        if (hasFocus) {
-                                          toggleFields('partNo');
-                                          showPartNumberDropdown.value =
-                                              false; // Keep dropdown open when focused
-                                        } else {
-                                          showPartNumberDropdown.value =
-                                              true; // Hide dropdown when losing focus
-                                        }
-                                      },
+                                  //       if (selectedSupplierId == null ||
+                                  //           selectedSupplierId.isEmpty) {
+                                  //         AppSnackBar.alert(
+                                  //             message:
+                                  //                 "Please select a supplier first.");
+                                  //         return;
+                                  //       }
+                                  //       onPartNumberChanged(value);
+                                  //     },
+                                  //     enabled: true,
+                                  //     onFocusChange: (hasFocus) {
+                                  //       if (hasFocus) {
+                                  //         toggleFields('partNo');
+                                  //         showPartNumberDropdown.value =
+                                  //             false; // Keep dropdown open when focused
+                                  //       } else {
+                                  //         showPartNumberDropdown.value =
+                                  //             true; // Hide dropdown when losing focus
+                                  //       }
+                                  //     },
+                                  //   ),
+                                  // ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('From Date',
+                                            style: theme.textTheme.bodySmall),
+                                        const SizedBox(height: 6),
+                                        GestureDetector(
+                                          onTap: _pickFromDate,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: isDarkMode
+                                                  ? Colors.blueGrey.shade900
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 8.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(fromDate,
+                                                      style: theme
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      )),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   const SizedBox(width: 6),
-                                  Expanded(
-                                    child: _buildTextField1(
-                                      label: 'Enter Vehicle Application',
-                                      hintText: 'Enter vehicle No...',
-                                      controller: descriptionController,
-                                      onChanged: (value) {
-                                        final globalsupplierController = Get
-                                            .find<GlobalsupplierController>();
-                                        final selectedSupplierId =
-                                            globalsupplierController
-                                                .selectedSupplierId.value;
+                                  // Expanded(
+                                  //   child: _buildTextField1(
+                                  //     label: 'Enter Vehicle Application',
+                                  //     hintText: 'Enter vehicle No...',
+                                  //     controller: descriptionController,
+                                  //     onChanged: (value) {
+                                  //       final globalsupplierController = Get
+                                  //           .find<GlobalsupplierController>();
+                                  //       final selectedSupplierId =
+                                  //           globalsupplierController
+                                  //               .selectedSupplierId.value;
 
-                                        if (selectedSupplierId == null ||
-                                            selectedSupplierId.isEmpty) {
-                                          AppSnackBar.alert(
-                                              message:
-                                                  "Please select a supplier first.");
-                                          return;
-                                        }
-                                        onDescriptionChanged(value);
-                                      },
-                                      enabled: true,
-                                        onFocusChange: (hasFocus) {
-      final globalsupplierController = Get.find<GlobalsupplierController>();
-      final selectedSupplierId = globalsupplierController.selectedSupplierId.value;
- 
-      if (hasFocus) {
-        toggleFields('desc');
-        showDescriptionDropdown.value = false;
-      } else {
-        if (selectedSupplierId != null && selectedSupplierId.isNotEmpty) {
-          showDescriptionDropdown.value = true;
-        }
-      }
-                                      },
+                                  //       if (selectedSupplierId == null ||
+                                  //           selectedSupplierId.isEmpty) {
+                                  //         AppSnackBar.alert(
+                                  //             message:
+                                  //                 "Please select a supplier first.");
+                                  //         return;
+                                  //       }
+                                  //       onDescriptionChanged(value);
+                                  //     },
+                                  //     enabled: true,
+                                  //     onFocusChange: (hasFocus) {
+                                  //       final globalsupplierController = Get
+                                  //           .find<GlobalsupplierController>();
+                                  //       final selectedSupplierId =
+                                  //           globalsupplierController
+                                  //               .selectedSupplierId.value;
+
+                                  //       if (hasFocus) {
+                                  //         toggleFields('desc');
+                                  //         showDescriptionDropdown.value = false;
+                                  //       } else {
+                                  //         if (selectedSupplierId != null &&
+                                  //             selectedSupplierId.isNotEmpty) {
+                                  //           showDescriptionDropdown.value =
+                                  //               true;
+                                  //         }
+                                  //       }
+                                  //     },
+                                  //   ),
+                                  // ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('To Date',
+                                            style: theme.textTheme.bodySmall),
+                                        const SizedBox(height: 6),
+                                        GestureDetector(
+                                          onTap: _pickToDate,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: isDarkMode
+                                                  ? Colors.blueGrey.shade900
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 8.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(toDate,
+                                                      style: theme
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      )),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   const SizedBox(width: 6),
@@ -502,18 +605,21 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                     // },
 
                                     onPressed: () {
-                                      final String partNumber =
-                                          selectedPartNumberId.value
-                                                      ?.trim()
-                                                      .isNotEmpty ==
-                                                  true
-                                              ? selectedPartNumberId.value!
-                                                  .trim()
-                                              : partNumberController.text
-                                                  .trim();
+                                      // final String partNumber =
+                                      //     selectedPartNumberId.value
+                                      //                 ?.trim()
+                                      //                 .isNotEmpty ==
+                                      //             true
+                                      //         ? selectedPartNumberId.value!
+                                      //             .trim()
+                                      //         : partNumberController.text
+                                      //             .trim();
 
-                                      final bool isPartNumberEmpty =
-                                          partNumber.isEmpty;
+                                      // final bool isPartNumberEmpty =
+                                      //     partNumber.isEmpty;
+                                      final String selectedSupplierId =
+                                          globalSupplierController
+                                              .selectedSupplierId.value;
                                       final bool isFromDateEmpty =
                                           fromDate.isEmpty ||
                                               fromDate == 'Choose From Date';
@@ -521,9 +627,12 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                           toDate.isEmpty ||
                                               toDate == 'Choose To Date';
 
-                                      if (!isPartNumberEmpty &&
-                                          !isFromDateEmpty &&
-                                          !isToDateEmpty) {
+                                      // if (!isPartNumberEmpty &&
+                                      //     !isFromDateEmpty &&
+                                      //     !isToDateEmpty)
+                                      if (!isFromDateEmpty &&
+                                          !isToDateEmpty &&
+                                          selectedSupplierId.isNotEmpty) {
                                         // Clear previous results
                                         branchTransfersController
                                             .supplierDetails
@@ -532,9 +641,10 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                                         // Make API call
                                         branchTransfersController
                                             .fetchBranchTransferDetails(
-                                          partNumber,
+                                          // partNumber,
                                           branchTransfersController
                                               .defaultBranchStocks,
+                                          supplierId: selectedSupplierId,
                                           fromDate: fromDate,
                                           toDate: toDate,
                                         );
@@ -601,105 +711,105 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
                               ),
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text('From Date',
-                                            style: theme.textTheme.bodySmall),
-                                        const SizedBox(height: 6),
-                                        GestureDetector(
-                                          onTap: _pickFromDate,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: isDarkMode
-                                                  ? Colors.blueGrey.shade900
-                                                  : Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: Colors.grey.shade300),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 10.0,
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                      Icons.calendar_today,
-                                                      color: Colors.grey),
-                                                  const SizedBox(width: 4.0),
-                                                  Text(fromDate,
-                                                      style: theme
-                                                          .textTheme.bodySmall
-                                                          ?.copyWith(
-                                                        color: isDarkMode
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      )),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Expanded(
+                                  //   child: Column(
+                                  //     crossAxisAlignment:
+                                  //         CrossAxisAlignment.start,
+                                  //     children: [
+                                  //       Text('From Date',
+                                  //           style: theme.textTheme.bodySmall),
+                                  //       const SizedBox(height: 6),
+                                  //       GestureDetector(
+                                  //         onTap: _pickFromDate,
+                                  //         child: Container(
+                                  //           decoration: BoxDecoration(
+                                  //             color: isDarkMode
+                                  //                 ? Colors.blueGrey.shade900
+                                  //                 : Colors.white,
+                                  //             borderRadius:
+                                  //                 BorderRadius.circular(10),
+                                  //             border: Border.all(
+                                  //                 color: Colors.grey.shade300),
+                                  //           ),
+                                  //           child: Padding(
+                                  //             padding:
+                                  //                 const EdgeInsets.symmetric(
+                                  //                     vertical: 10.0,
+                                  //                     horizontal: 8.0),
+                                  //             child: Row(
+                                  //               children: [
+                                  //                 const Icon(
+                                  //                     Icons.calendar_today,
+                                  //                     color: Colors.grey),
+                                  //                 const SizedBox(width: 4.0),
+                                  //                 Text(fromDate,
+                                  //                     style: theme
+                                  //                         .textTheme.bodySmall
+                                  //                         ?.copyWith(
+                                  //                       color: isDarkMode
+                                  //                           ? Colors.white
+                                  //                           : Colors.black,
+                                  //                       fontWeight:
+                                  //                           FontWeight.normal,
+                                  //                     )),
+                                  //               ],
+                                  //             ),
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                   const SizedBox(width: 16.0),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text('To Date',
-                                            style: theme.textTheme.bodySmall),
-                                        const SizedBox(height: 6),
-                                        GestureDetector(
-                                          onTap: _pickToDate,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: isDarkMode
-                                                  ? Colors.blueGrey.shade900
-                                                  : Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: Colors.grey.shade300),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 10.0,
-                                                      horizontal: 8.0),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                      Icons.calendar_today,
-                                                      color: Colors.grey),
-                                                  const SizedBox(width: 4.0),
-                                                  Text(toDate,
-                                                      style: theme
-                                                          .textTheme.bodySmall
-                                                          ?.copyWith(
-                                                        color: isDarkMode
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      )),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Expanded(
+                                  //   child: Column(
+                                  //     crossAxisAlignment:
+                                  //         CrossAxisAlignment.start,
+                                  //     children: [
+                                  //       Text('To Date',
+                                  //           style: theme.textTheme.bodySmall),
+                                  //       const SizedBox(height: 6),
+                                  //       GestureDetector(
+                                  //         onTap: _pickToDate,
+                                  //         child: Container(
+                                  //           decoration: BoxDecoration(
+                                  //             color: isDarkMode
+                                  //                 ? Colors.blueGrey.shade900
+                                  //                 : Colors.white,
+                                  //             borderRadius:
+                                  //                 BorderRadius.circular(10),
+                                  //             border: Border.all(
+                                  //                 color: Colors.grey.shade300),
+                                  //           ),
+                                  //           child: Padding(
+                                  //             padding:
+                                  //                 const EdgeInsets.symmetric(
+                                  //                     vertical: 10.0,
+                                  //                     horizontal: 8.0),
+                                  //             child: Row(
+                                  //               children: [
+                                  //                 const Icon(
+                                  //                     Icons.calendar_today,
+                                  //                     color: Colors.grey),
+                                  //                 const SizedBox(width: 4.0),
+                                  //                 Text(toDate,
+                                  //                     style: theme
+                                  //                         .textTheme.bodySmall
+                                  //                         ?.copyWith(
+                                  //                       color: isDarkMode
+                                  //                           ? Colors.white
+                                  //                           : Colors.black,
+                                  //                       fontWeight:
+                                  //                           FontWeight.normal,
+                                  //                     )),
+                                  //               ],
+                                  //             ),
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                               const SizedBox(height: 15),
@@ -1048,7 +1158,6 @@ class _BranchTransfersPageState extends State<BranchTransfersPage> {
           Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width / 2,
-              
               child: GlobalSearchField(
                 hintText: 'Search Tranfser Order or Supplier Name...'.tr,
                 onChanged: (value) {

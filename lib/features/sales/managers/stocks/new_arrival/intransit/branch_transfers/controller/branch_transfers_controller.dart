@@ -56,7 +56,6 @@ class BranchTransfersController extends GetxController {
   Future<void> fetchBranchStockDefault() async {
     final DateTime currentDate = DateTime.now();
     // final DateTime fromDate = currentDate.subtract(Duration(days: 3));
-
     final DateTime fromDate = DateTime(currentDate.year, currentDate.month, 1);
     String formattedFromDate =
         "${fromDate.day.toString().padLeft(2, '0')}/${fromDate.month.toString().padLeft(2, '0')}/${fromDate.year}";
@@ -100,61 +99,65 @@ class BranchTransfersController extends GetxController {
     }
   }
 
- Future<void> fetchBranchTransferDetails(
-  String partNumber,
-  RxList<DefaulBranchstock> searchedBranch, {
-  required String fromDate,
-  required String toDate,
-}) async {
-  // Input validation
-  if (partNumber.isEmpty) {
-    AppSnackBar.alert(message: "Please enter the Item Number.");
-    return;
-  }
-  if (fromDate.isEmpty) {
-    AppSnackBar.alert(message: "Please select a From Date.");
-    return;
-  }
-  if (toDate.isEmpty) {
-    AppSnackBar.alert(message: "Please select a To Date.");
-    return;
-  }
-
-  final requestBody = {
-    'ItemId': partNumber,
-    'FromDate': fromDate,
-    'ToDate': toDate,
-  };
-
-  try {
-    isLoading.value = true;
-    branchTransferErrorMessage.value = '';
-
-    final response = await _restletService.fetchReportData(
-      NetSuiteScripts.defaultBranchStocksId,
-      requestBody,
-    );
-
-    if (response != null &&
-        response is Map &&
-        response['stockInTran'] is List) {
-      searchedBranch.value = List<DefaulBranchstock>.from(
-        response['stockInTran']
-            .map((item) => DefaulBranchstock.fromJson(item ?? {})),
-      );
-    } else {
-      branchTransferErrorMessage.value = "No data found in Entry Stock.";
-      AppSnackBar.alert(message: "No Branch data found in Entry Stock.");
+  Future<void> fetchBranchTransferDetails(
+    // String partNumber,
+    RxList<DefaulBranchstock> searchedBranch, {
+    required String supplierId,
+    required String fromDate,
+    required String toDate,
+  }) async {
+    // Input validation
+    // if (partNumber.isEmpty) {
+    //   AppSnackBar.alert(message: "Please enter the Item Number.");
+    //   return;
+    // }
+    if (supplierId.isEmpty) {
+      AppSnackBar.alert(message: "Please select a Supplier.");
+      return;
     }
-  } catch (e) {
-    branchTransferErrorMessage.value =
-        "Error fetching branch transfers: $e";
-    AppSnackBar.alert(
-      message: "An error occurred while fetching branch transfers.",
-    );
-  } finally {
-    isLoading.value = false;
-  }
-}
+    if (fromDate.isEmpty) {
+      AppSnackBar.alert(message: "Please select a From Date.");
+      return;
+    }
+    if (toDate.isEmpty) {
+      AppSnackBar.alert(message: "Please select a To Date.");
+      return;
+    }
 
+    final requestBody = {
+      // 'ItemId': partNumber,
+      'Supplier': supplierId,
+      'FromDate': fromDate,
+      'ToDate': toDate,
+    };
+
+    try {
+      isLoading.value = true;
+      branchTransferErrorMessage.value = '';
+
+      final response = await _restletService.fetchReportData(
+        NetSuiteScripts.defaultBranchStocksId,
+        requestBody,
+      );
+
+      if (response != null &&
+          response is Map &&
+          response['stockInTran'] is List) {
+        searchedBranch.value = List<DefaulBranchstock>.from(
+          response['stockInTran']
+              .map((item) => DefaulBranchstock.fromJson(item ?? {})),
+        );
+      } else {
+        branchTransferErrorMessage.value = "No data found in Entry Stock.";
+        AppSnackBar.alert(message: "No Branch data found in Entry Stock.");
+      }
+    } catch (e) {
+      branchTransferErrorMessage.value = "Error fetching branch transfers: $e";
+      AppSnackBar.alert(
+        message: "An error occurred while fetching branch transfers.",
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }
