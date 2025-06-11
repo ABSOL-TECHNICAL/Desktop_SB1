@@ -130,8 +130,9 @@ class NetSuiteScripts {
   static const String zonesScriptId = '1785';
   static const String globalitemScriptId = '1764';
   static const String ownbranchStocksScriptId = '1808';
-  // static const String slbownbranchstock = '8217';
- static const String slbownbranchstock = '1808';
+  static const String slbownbranchstock = '8217';
+  //  static const String slbownbranchstock = '8505';
+//  static const String slbownbranchstock = '1808';
    static const String defaultBranchStocksId = '1758';
   // static const String defaultBranchStocksId = '8298';
   static const String locationsScriptId = '1799';

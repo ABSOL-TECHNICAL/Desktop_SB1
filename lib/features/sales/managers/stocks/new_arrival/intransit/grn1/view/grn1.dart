@@ -206,7 +206,7 @@ class _Grn1PageState extends State<Grn1Page> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'GRN1',
+          'GRN',
           style: theme.textTheme.bodyLarge?.copyWith(
             color: Colors.white,
           ),
@@ -449,8 +449,8 @@ class _Grn1PageState extends State<Grn1Page> {
                             "Supplier Name",
                             "Item Name",
                             "Quantity",
-                            "LR Date",
-                            "LR Number"
+                            // "LR Date",
+                            // "LR Number"
                           ],
                           context,
                         ),
@@ -464,8 +464,8 @@ class _Grn1PageState extends State<Grn1Page> {
                               grn.supplierName ?? "N/A",
                               grn.itemName ?? "N/A",
                               grn.quantity ?? "N/A",
-                              grn.lrdate ?? "N/A",
-                              grn.lrnumber ?? "N/A",
+                              // grn.lrdate ?? "N/A",
+                              // grn.lrnumber ?? "N/A",
                             ],
                             isHeader: false,
                             context: context,

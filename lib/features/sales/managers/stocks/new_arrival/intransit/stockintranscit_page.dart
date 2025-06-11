@@ -58,7 +58,7 @@ class _IntranscitPageState extends State<IntranscitPage>
               const SizedBox(width: 16),
               _buildAnimatedCard(
                 icon: Icons.insert_drive_file,
-                title: 'GRN1'.tr,
+                title: 'GRN'.tr,
                 isHovered: _isHoveredIntransit,
                 iconColor: Colors.blue,
                 onTap: () {
