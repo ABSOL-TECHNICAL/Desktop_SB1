@@ -64,11 +64,11 @@ class Items {
       // Ensure that totalPrice is a string, even if it comes as int
       totalPrice = json['TotalPrice'].toString(); // Convert to String
 
-      print(
-          'Parsed Item - Part: $part, Qty: $qty, UnitPrice: $unitPrice, TotalPrice: $totalPrice');
+      // print(
+      //     'Parsed Item - Part: $part, Qty: $qty, UnitPrice: $unitPrice, TotalPrice: $totalPrice');
     } catch (e, stackTrace) {
-      print('Error parsing Item: $e');
-      print('StackTrace: $stackTrace');
+      // print('Error parsing Item: $e');
+      // print('StackTrace: $stackTrace');
     }
   }
 

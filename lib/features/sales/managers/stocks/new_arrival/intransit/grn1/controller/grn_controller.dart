@@ -20,15 +20,16 @@ class Grn1Controller extends GetxController {
   final GlobalsupplierController globalSupplierController =
       Get.put(GlobalsupplierController());
 
+  get text => null;
+
   @override
   void onInit() {
     super.onInit();
     _restletService.init();
   }
-
-  Future<void> fetchGrn1(String partNumber) async {
-    final requestBody = {"ItemId": partNumber};
-
+  Future<void> fetchGrn1(String supplier,String fromDate,String toDate) async {
+   
+final requestBody={"Supplier":supplier,"FromDate":fromDate,"ToDate":toDate,};
     try {
       isLoading.value = true;
       final response = await _restletService.fetchReportData(
@@ -48,6 +49,29 @@ class Grn1Controller extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // Future<void> fetchGrn1(String partNumber) async {
+  //   final requestBody = {"ItemId": partNumber};
+
+  //   try {
+  //     isLoading.value = true;
+  //     final response = await _restletService.fetchReportData(
+  //       NetSuiteScripts.grn1ScriptId,
+  //       requestBody,
+  //     );
+
+  //     if (response != null && response['GRN1'] != null) {
+  //       grnDetails.value = Grn1Model.listFromJson(response['GRN1']);
+  //     } else {
+  //       AppSnackBar.alert(message: "No GRN details found.");
+  //     }
+  //   } catch (e) {
+  //     AppSnackBar.alert(
+  //         message: "An error occurred while fetching GRN details.");
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<void> fetchGrnDefault() async {
     final DateTime currentDate = DateTime.now();
