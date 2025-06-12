@@ -4,7 +4,6 @@ import 'package:impal_desktop/features/sales/managers/customers/customer_details
 import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/view_order/model/view_order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:impal_desktop/features/sales/managers/customers/customer_details/transactions/view_order/widget/view_order_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -24,6 +23,9 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
   bool showSelectedDateWidget = false;
   String fromDate = 'Choose Date';
   String toDate = 'Choose Date';
+  int currentPage=1;
+  final int itemsPerPage=10;
+   final ScrollController _scrollController = ScrollController();
 
   final CustomerDetailsController viewOrderController =
       Get.put(CustomerDetailsController());
@@ -43,11 +45,13 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
       });
     });
   }
+  
 
   void _onSearchButtonPressed() {
     setState(() {
       isSearchLoading = true;
       showSelectedDateWidget = true;
+     
     });
     String customerId =
         customerDetailsController.selectedCustomer['CustomerId'] ?? '';
@@ -60,6 +64,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
       isSearchLoading = false; // Set loading off after search
     });
   }
+  
 
   String formatDate(DateTime date) {
     return DateFormat('dd/MM/yyyy').format(date);
@@ -131,6 +136,14 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
     setState(() {
       toDate = formatDate(pickedDate);
     });
+  }
+    List<ViewOrderDetails> _getPaginatedData(List<ViewOrderDetails> allData) {
+    final startIndex = (currentPage - 1) * itemsPerPage;
+    final endIndex = startIndex + itemsPerPage;
+    return allData.sublist(
+      startIndex,
+      endIndex > allData.length ? allData.length : endIndex,
+    );
   }
 
   @override
@@ -358,116 +371,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         const SizedBox(height: 10),
                         isLoading
                             ? _buildShimmerTable()
-                            :
-                            Expanded( 
-                                                child:   Obx(() {
-                if (viewController.isLoading.value) {
-                  return _buildShimmerTable();
-                }
-
-                if (viewController.viewOrder.isEmpty) {
-                  return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(height: 70),
-              Shimmer.fromColors(
-                baseColor: const Color.fromARGB(255, 53, 51, 51),
-                highlightColor: Colors.white,
-                child: Icon(
-                  Icons.search_off,
-                  size: 100,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              SizedBox(height: 20),
-              Shimmer.fromColors(
-                baseColor: const Color.fromARGB(255, 53, 51, 51),
-                highlightColor: Colors.white,
-                child: Text(
-                  'No results found for last three days.\nPlease refine your search criteria.',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                     fontSize: 20,
-                  ),
-                  
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        );
-                }
-                                            return ListView.builder(
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      const AlwaysScrollableScrollPhysics(),
-                                                  itemCount: (viewController.viewOrder
-                                                              .length /
-                                                          2)
-                                                      .ceil(), // divide by 2 to pair data
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    final detail1 =
-                                                        viewController.viewOrder[
-                                                            index *
-                                                                2]; // first item
-                                                    final detail2 = (index * 2 +
-                                                                1) <
-                                                            viewController.viewOrder
-                                                                .length
-                                                        ? viewController.viewOrder[index *
-                                                                2 +
-                                                            1] // second item (if available)
-                                                        : null;
-
-                                                    return Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 8.0),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          // Card 1
-                                                          Expanded(
-                                                            child:
-                                                                ViewOrderWidget(
-                                                              title:
-                                                                  '${detail1.item}\n${detail1.documentNumber}',
-                                                              subtitle:
-                                                                  'Date: ${detail1.documentDate}',
-                                                              vieworderDetails: [
-                                                                detail1
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          // Add space between cards
-                                                          const SizedBox(
-                                                              width: 10),
-                                                          // Card 2 (if exists)
-                                                          if (detail2 != null)
-                                                            Expanded(
-                                                              child:
-                                                                  ViewOrderWidget(
-                                                                title:
-                                                                    '${detail2.item}\n${detail2.documentNumber}',
-                                                                subtitle:
-                                                                    'Date: ${detail2.documentDate}',
-                                                                vieworderDetails: [
-                                                                  detail2
-                                                                ],
-                                                              ),
-                                                            ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                                })
-                                              )
-                            //  _buildDynamicTable(
-                            //     context, viewController.viewOrder),
+                            : _buildDynamicTable(
+                                context, viewController.viewOrder),
                       ],
                     ),
                   )))
@@ -475,6 +380,119 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
       ),
     );
   }
+   Widget _buildDynamicTable(BuildContext context, RxList<ViewOrderDetails> data) {
+  final theme = Theme.of(context);
+  final isDarkMode = theme.brightness == Brightness.dark;
+
+  return Obx(() {
+    if (viewController.isLoading.value) {
+      return _buildShimmerTable();
+    }
+
+    // Filter out "Rounding off" items
+    final filteredData = data.where((item) => item.item != "Rounding off").toList();
+
+    if (filteredData.isNotEmpty) {
+      final paginatedData = _getPaginatedData(filteredData); // Use filtered data
+      final totalPages = (filteredData.length / itemsPerPage).ceil(); // Recalculate pages
+
+      return Expanded(
+        child: Column(
+          children: [
+            if (!showSelectedDateWidget) _buildDateRangeWidget(),
+            if (showSelectedDateWidget) _buildSelectedDateWidget(fromDate, toDate),
+
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Table(
+                        defaultColumnWidth: const IntrinsicColumnWidth(),
+                        children: [
+                          // Table header row (unchanged)
+                          TableRow(
+                            decoration: BoxDecoration(
+                              gradient: isDarkMode
+                                  ? LinearGradient(colors: [Colors.redAccent.shade400, Colors.pink.shade900])
+                                  : const LinearGradient(colors: [Color(0xFF57AEFE), Color(0xFF6B71FF)]),
+                            ),
+                            children: [
+                              _buildHeaderCell("S.No", context),
+                              _buildHeaderCell("Supplier", context),
+                              _buildHeaderCell("Doc No", context),
+                              _buildHeaderCell("Doc Date", context),
+                              _buildHeaderCell("Item", context),
+                              _buildHeaderCell("Qty Committed", context),
+                              _buildHeaderCell("Qty Fulfilled", context),
+                              _buildHeaderCell("Qty Billed", context),
+                            ],
+                          ),
+                          // Table data rows (using filtered data)
+                          ...paginatedData.map<TableRow>((orderDetail) {
+                            return _buildTableRow1(
+                              [
+                                ((currentPage - 1) * itemsPerPage + 
+                                    paginatedData.indexOf(orderDetail) + 1).toString(),
+                                orderDetail.supplier ?? "N/A",
+                                orderDetail.documentNumber ?? "N/A",
+                                orderDetail.documentDate ?? "N/A",
+                                orderDetail.item ?? "N/A",
+                                orderDetail.quantityCommitted?.toString() ?? "N/A",
+                                orderDetail.quantityFulfilled?.toString() ?? "N/A",
+                                orderDetail.quantityBilled?.toString() ?? "N/A",
+                              ],
+                              isHeader: false,
+                              context: context,
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            _buildPaginationControls(totalPages),
+          ],
+        ),
+      );
+    } else {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 70),
+            Shimmer.fromColors(
+              baseColor: const Color.fromARGB(255, 53, 51, 51),
+              highlightColor: Colors.white,
+              child: Icon(
+                Icons.search_off,
+                size: 100,
+                color: Colors.grey.shade700,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Shimmer.fromColors(
+              baseColor: const Color.fromARGB(255, 53, 51, 51),
+              highlightColor: Colors.white,
+              child: Text(
+                'No order details found.\nPlease refine your search criteria.',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: const Color.fromARGB(255, 10, 10, 10),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  });
+}
 
   // Widget _buildDynamicTable(
   //     BuildContext context, RxList<ViewOrderDetails> data) {
@@ -487,6 +505,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
   //     }
 
   //     if (data.isNotEmpty) {
+  //        final paginatedData = _getPaginatedData(data);
+  //       final totalPages = (data.length / itemsPerPage).ceil();
   //       return Expanded(
   //         child: Column(
   //           children: [
@@ -538,7 +558,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
   //                           _buildHeaderCell("Balance Qty", context),
   //                         ],
   //                       ),
-  //                       ...data.map<TableRow>((orderDetail) {
+  //                       ...paginatedData.map<TableRow>((orderDetail) {
   //                         int orderQuantity =
   //                             (orderDetail.totalQuantity ?? 0).toInt();
   //                         int billedQuantity =
@@ -604,6 +624,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
   //     }
   //   });
   // }
+  
 
   Widget _buildHeaderCell(String text, BuildContext context) {
     final theme = Theme.of(context);
@@ -661,6 +682,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
           .toList(),
     );
   }
+  
 
   Widget _buildDateRangeWidget() {
     final startDate = viewController.startDate.value;
@@ -753,4 +775,124 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
       ),
     );
   }
+   Widget _buildPaginationControls(int totalPages) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.first_page),
+            onPressed:currentPage > 1
+                ? () {
+                    setState(() {
+                     currentPage = 1;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed:currentPage > 1
+                ? () {
+                    setState(() {
+                     currentPage--;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+
+          // Page number input
+          Container(
+            width: 80,
+            height: 36,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            child: TextField(
+              controller: TextEditingController(text:currentPage.toString()),
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+              ),
+              onSubmitted: (value) {
+                final page = int.tryParse(value) ??currentPage;
+                if (page >= 1 && page <= totalPages) {
+                  setState(() {
+                   currentPage = page;
+                    _scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  });
+                }
+              },
+            ),
+          ),
+
+          Text(
+            'of $totalPages',
+            style: theme.textTheme.bodyMedium,
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed:currentPage < totalPages
+                ? () {
+                    setState(() {
+                     currentPage++;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.last_page),
+            onPressed:currentPage < totalPages
+                ? () {
+                    setState(() {
+                     currentPage = totalPages;
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      );
+                    });
+                  }
+                : null,
+          ),
+
+          const SizedBox(width: 16),
+          Text(
+            'Total: $totalPages pages',
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
 }
+
