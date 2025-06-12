@@ -20,7 +20,5 @@ const Map<String, String> oauthCredentials = {
   'token': 'a4307ca9382fa20b851f87b5073bd25e1994725f90d6558683d6155479b55ef6',
   'token_secret':
       'af59ebfc171a492b517f4fc0100eb5644bfb867cef5dd8884225990bc7cd4e20',
-
-
 };
  
