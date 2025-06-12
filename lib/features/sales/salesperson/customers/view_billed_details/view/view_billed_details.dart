@@ -247,7 +247,8 @@ class _BilledDetailsState extends State<BilledDetails> {
               width: MediaQuery.of(context).size.width,
               padding: const EdgeInsets.only(top: 10, bottom: 0),
               child: Padding(
-                padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
+                padding:
+                    const EdgeInsets.only(top: 16.0, right: 150.0, left: 150.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -637,7 +638,7 @@ class _BilledDetailsState extends State<BilledDetails> {
           ),
 
           Text(
-            'of $totalPages',
+            'of  $totalPages',
             style: theme.textTheme.bodyMedium,
           ),
 
