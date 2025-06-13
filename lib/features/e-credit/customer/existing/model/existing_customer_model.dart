@@ -58,6 +58,7 @@ class ApplicationData {
   String? firmTypeName;
   String? town;
   String? townText;
+  String? townName;
   String? area;
   String? districtName;
   String? dealerClassification;
@@ -106,6 +107,7 @@ class ApplicationData {
     this.firmTypeName,
     this.town,
     this.townText,
+    this.townName,
     this.area,
     this.districtName,
     this.dealerClassification,
@@ -155,6 +157,7 @@ class ApplicationData {
     firmTypeName = json['firmTypeName'];
     town = json['Town'];
     townText = json['TownText'];
+     townName = json['TownName'];
     area = json['Area'];
     districtName = json['DistrictName'];
     dealerClassification = json['DealerClassification'];
@@ -205,6 +208,7 @@ class ApplicationData {
     data['firmTypeName'] = firmTypeName;
     data['Town'] = town;
     data['TownText'] = townText;
+     data['TownName'] = townName;
     data['Area'] = area;
     data['DistrictName'] = districtName;
     data['DealerClassification'] = dealerClassification;

@@ -147,7 +147,7 @@ Row(
     }),
   ],
 ),
-const SizedBox(height: 20),
+const SizedBox(height: 5),
                     Expanded(
                       child: Obx(
                         () {
@@ -190,6 +190,9 @@ const SizedBox(height: 20),
                                       ),
                                     )
                                   : Center(
+
+                                     child: SizedBox(
+                    height: 430, // Set your desired reduced height
                                       // Center the entire table container
                                       child: SingleChildScrollView(
                                         scrollDirection: Axis.vertical,
@@ -258,6 +261,7 @@ const SizedBox(height: 20),
                                           ),
                                         ),
                                       ),
+                                     ),
                                     );
                         },
                       ),
