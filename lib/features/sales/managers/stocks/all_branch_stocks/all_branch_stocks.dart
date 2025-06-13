@@ -406,7 +406,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 1),
                             Obx(() => showPartNumberDropdown.value
                                 ? _buildSuggestionsList()
                                 : const SizedBox.shrink()),
@@ -477,7 +477,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 5),
                     SizedBox(
                       child: Obx(() {
                         if (_controller.isLoading.value) {
@@ -637,10 +637,10 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 1),
         ],
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
             color: isDarkMode ? Colors.blueGrey.shade900 : Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -791,7 +791,8 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
     );
   }
 }
-class DisplayedItemsCard extends StatefulWidget {
+
+class DisplayedItemsCard extends StatelessWidget {
   final List<Map<String, dynamic>> displayedItems;
   final int? selectedIndex;
   final Function(int index) onItemSelected;
@@ -804,35 +805,23 @@ class DisplayedItemsCard extends StatefulWidget {
   });
 
   @override
-  State<DisplayedItemsCard> createState() => _DisplayedItemsCardState();
-}
-
-class _DisplayedItemsCardState extends State<DisplayedItemsCard> {
-  final AllBranchStocksController controller = Get.put(AllBranchStocksController());
-  final int _rowsPerPage = 10; // Number of rows per page
-  int _currentPage = 0; // Current page index
-
-  @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final AllBranchStocksController controller =
+        Get.put(AllBranchStocksController());
     final stocks = controller.stocks;
-    final totalPages = (stocks.length / _rowsPerPage).ceil();
-    
-    // Calculate the items to show on current page
-    final startIndex = _currentPage * _rowsPerPage;
-    final endIndex = startIndex + _rowsPerPage > stocks.length 
-        ? stocks.length 
-        : startIndex + _rowsPerPage;
-    final currentPageStocks = stocks.sublist(startIndex, endIndex);
 
     int totalAvailableStock = 0;
     for (var stock in stocks) {
-      totalAvailableStock += (double.tryParse(stock.availableStock ?? '0') ?? 0).toInt();
+      totalAvailableStock +=
+          (double.tryParse(stock.availableStock ?? '0') ?? 0).toInt();
     }
+     
 
     final stockTableRows = [
       _buildTableHeaderRow(context),
-      ...currentPageStocks.asMap().entries.map((entry) {
+      ...stocks.asMap().entries.map((entry) {
         final index = entry.key;
         final stock = entry.value;
         final isEven = index % 2 == 0;
@@ -841,7 +830,7 @@ class _DisplayedItemsCardState extends State<DisplayedItemsCard> {
           context: context,
           isEven: isEven,
           data: [
-            (startIndex + index + 1).toString(), // Global index
+            (index + 1).toString(),
             stock.location ?? 'N/A',
             stock.availableStock ?? '0',
             stock.mRP != null
@@ -853,120 +842,119 @@ class _DisplayedItemsCardState extends State<DisplayedItemsCard> {
     ];
 
     return Column(
+      
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: widget.displayedItems.map((entry) {
+      children: displayedItems.map((entry) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+            // resizeToAvoidBottomInset: false,
           children: [
+            SizedBox(height: 1,),
             _buildItemDetailsHeader(entry, totalAvailableStock, context),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 250,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    child: Table(
-                      columnWidths: const {
-                        0: FlexColumnWidth(1),
-                        1: FlexColumnWidth(3),
-                        2: FlexColumnWidth(2),
-                        3: FlexColumnWidth(2),
-                      },
-                      border: TableBorder.all(color: Colors.transparent),
-                      children: stockTableRows,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Pagination controls
-            _buildPaginationControls(totalPages),
-            const SizedBox(height: 12),
+            // const SizedBox(height: 12),
+          SizedBox(
+  height: 250, // 👈 Set this to a scrollable height
+  child: SingleChildScrollView(
+    scrollDirection: Axis.vertical,
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.85,
+        child: Table(
+          columnWidths: const {
+            0: FlexColumnWidth(1),
+            1: FlexColumnWidth(3),
+            2: FlexColumnWidth(2),
+            3: FlexColumnWidth(2),
+          },
+          border: TableBorder.all(color: Colors.transparent),
+          children: stockTableRows,
+        ),
+      ),
+    ),
+  ),
+),
+
+            const SizedBox(height: 20),
           ],
         );
       }).toList(),
     );
   }
+TableRow _buildTableDataRow({
+  required BuildContext context,
+  required bool isEven,
+  required List<String> data,
+}) {
+  final bgColor = isEven ? Colors.white : Colors.blue.shade50;
+  return TableRow(
+    decoration: BoxDecoration(color: bgColor),
+    children: data
+        .map((text) => _buildTableCell(text, isHeader: false, context: context))
+        .toList(),
+  );
+}
 
-  Widget _buildPaginationControls(int totalPages) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed: _currentPage > 0
-              ? () => setState(() => _currentPage--)
-              : null,
-        ),
-        Text(
-          'Page ${_currentPage + 1} of $totalPages',
-          style: const TextStyle(fontSize: 14),
-        ),
-        IconButton(
-          icon: const Icon(Icons.chevron_right),
-          onPressed: _currentPage < totalPages - 1
-              ? () => setState(() => _currentPage++)
-              : null,
-        ),
-      ],
-    );
-  }
+  TableRow _buildTableHeaderRow(BuildContext context) {
+  return TableRow(
+    decoration: BoxDecoration(color: Colors.blue.shade700),
+    children: [
+      _buildTableCell("S.No.", isHeader: true, context: context),
+      _buildTableCell("Location", isHeader: true, context: context),
+      _buildTableCell("Available Stock", isHeader: true, context: context),
+      _buildTableCell("MRP", isHeader: true, context: context),
+    ],
+  );
+}
 
-  TableRow _buildTableDataRow({
-    required BuildContext context,
-    required bool isEven,
-    required List<String> data,
-  }) {
-    final bgColor = isEven ? Colors.white : Colors.blue.shade50;
+ Widget _buildTableCell(
+  String text, {
+  required bool isHeader,
+  required BuildContext context,
+}) {
+  final theme = Theme.of(context);
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+    child: Text(
+      text,
+      style: theme.textTheme.bodyLarge?.copyWith(
+        fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+        fontSize: isHeader ? 15 : 14,
+        color: isHeader ? Colors.white : Colors.black,
+      ),
+    ),
+  );
+}
+
+  TableRow _buildTableRow1(List<String> data, BuildContext context) {
+    final theme = Theme.of(context);
     return TableRow(
-      decoration: BoxDecoration(color: bgColor),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade100,
+      ),
       children: data
-          .map((text) => _buildTableCell(text, isHeader: false, context: context))
+          .map(
+            (value) => Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Text(
+                value,
+                style: theme.textTheme.bodyLarge?.copyWith(fontSize: 14),
+              ),
+            ),
+          )
           .toList(),
     );
   }
-
-  TableRow _buildTableHeaderRow(BuildContext context) {
-    return TableRow(
-      decoration: BoxDecoration(color: Colors.blue.shade700),
-      children: [
-        _buildTableCell("S.No.", isHeader: true, context: context),
-        _buildTableCell("Location", isHeader: true, context: context),
-        _buildTableCell("Available Stock", isHeader: true, context: context),
-        _buildTableCell("MRP", isHeader: true, context: context),
-      ],
-    );
-  }
-
-  Widget _buildTableCell(
-    String text, {
-    required bool isHeader,
-    required BuildContext context,
-  }) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-      child: Text(
-        text,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-          fontSize: isHeader ? 15 : 14,
-          color: isHeader ? Colors.white : Colors.black,
-        ),
-      ),
-    );
-  }
+}
 
   Widget _buildItemDetailsHeader(Map<String, dynamic> entry, int totalAvailableStock, BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F4FA),
+        color: const Color(0xFFE8F4FA), // Light header background
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -1003,4 +991,3 @@ class _DisplayedItemsCardState extends State<DisplayedItemsCard> {
       ),
     );
   }
-}
