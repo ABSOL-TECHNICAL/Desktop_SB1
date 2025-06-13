@@ -790,7 +790,7 @@ void  onSearchPressed() async {
       if (searchedMaterialInward.isNotEmpty) {
         return Column(
           children: [
-            _buildSelectedDateWidget(materialInwardController.toDate.value),
+           _buildSelectedDateWidget(),
             _buildMaterialInwardTable(searchedMaterialInward),
           ],
         );
@@ -1006,22 +1006,24 @@ void  onSearchPressed() async {
       ),
     );
   }
-  Widget _buildSelectedDateWidget(String selectedDate) {
-    final toDate = materialInwardController.toDate.value;
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        'Material Inward for selected date: $toDate',
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        textAlign: TextAlign.center,
+ Widget _buildSelectedDateWidget() {
+  final fromDate = materialInwardController.fromDate.value;
+  final toDate = materialInwardController.toDate.value;
+  final theme = Theme.of(context);
+
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Text(
+      'Material Inward From Date: $fromDate To Date: $toDate',
+      style: theme.textTheme.bodyLarge?.copyWith(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        color: theme.brightness == Brightness.dark ? Colors.white : Colors.black,
       ),
-    );
-  }
+      textAlign: TextAlign.center,
+    ),
+  );
+}
 
   Widget _buildDateRangeWidget() {
     final startDate = materialInwardController.startDate.value;

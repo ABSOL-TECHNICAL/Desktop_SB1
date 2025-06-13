@@ -20,6 +20,7 @@ class MaterialInwardController extends GetxController {
       <MaterialInwardDefault>[].obs;
   var startDate = ''.obs;
   var endDate = ''.obs;
+  var fromDate=''.obs;
   var toDate = ''.obs;
   RxBool isLoading = false.obs;
   RxString alertMessage = ''.obs;
@@ -96,6 +97,9 @@ class MaterialInwardController extends GetxController {
     AppSnackBar.alert(message: "Please provide supplier.");
     return;
   }
+final materialInwardController = Get.find<MaterialInwardController>();
+materialInwardController.fromDate.value = fromDate;
+materialInwardController.toDate.value = toDate;
 
     
 

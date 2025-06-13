@@ -2,17 +2,21 @@ class ViewBilledDetail {
   String? docNo;
   String? docDate;
   String? customerName;
+  String? customerCode;
+  String? town;
   List<Items>? items;
 
-  ViewBilledDetail({this.docNo, this.docDate, this.items, this.customerName});
+  ViewBilledDetail({this.docNo, this.docDate, this.items, this.customerName,this.customerCode,this.town});
 
   ViewBilledDetail.fromJson(Map<String, dynamic> json) {
     try {
       docNo = json['DocNo'];
       docDate = json['DocDate'];
       customerName = json['customerName'];
-      print(
-          'Parsing ViewBilledDetail - DocNo: $docNo, DocDate: $docDate, customerName: $customerName');
+      customerCode = json['customerCode'];
+      town = json['town'];
+      // print(
+      //     'Parsing ViewBilledDetail - DocNo: $docNo, DocDate: $docDate, customerName: $customerName');
 
       if (json['Items'] != null) {
         items = (json['Items'] as List)
@@ -30,6 +34,8 @@ class ViewBilledDetail {
       'DocNo': docNo,
       'DocDate': docDate,
       'customerName': customerName,
+      'customerCode':customerCode,
+      'town':town,
       if (items != null) 'Items': items!.map((item) => item.toJson()).toList(),
     };
   }
