@@ -115,6 +115,7 @@ var hasZipcodeError = false.obs;
 var hasPhoneError = false.obs;
 var hasPropertierError = false.obs;
 var hasEmailError = false.obs;
+var hasTownNameError = false.obs;
 var hasPanError = false.obs;
 var hasEnhanceError = false.obs;
 var hasStateError = false.obs;
@@ -167,6 +168,8 @@ void resetErrorStates() {
   TextEditingController zipcodeController = TextEditingController();
   TextEditingController address2Controller = TextEditingController();
   TextEditingController dealerController = TextEditingController();
+  
+  TextEditingController townNameController = TextEditingController();
 
   @override
   void onInit() {
@@ -1045,6 +1048,7 @@ void resetErrorStates() {
       required String dealerSegmentValue,
       required String dealerClassificationValue,
       required String town,
+      required String townName,
       required String district,
       required String propertierName,
       required String zone,
@@ -1080,6 +1084,7 @@ void resetErrorStates() {
         "dealerSegmentValue": dealerSegmentValue,
         "dealerClassificationValue": dealerClassificationValue,
         "town": town,
+        "townName":townName,
         "district": district,
         "State": stateName,
         "zone": zone,

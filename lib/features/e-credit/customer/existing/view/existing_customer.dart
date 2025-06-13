@@ -347,6 +347,13 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
             ? controller.applicationdata.first.email
             : '');
 
+
+            String townName = getValue(
+        controller.townNameController.text,
+        controller.applicationdata.isNotEmpty
+            ? controller.applicationdata.first.townName
+            : '');
+
     String propertier = getValue(
         controller.propertierController.text,
         controller.applicationdata.isNotEmpty
@@ -414,6 +421,7 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
       "Zone": zoneId,
       "Town": slbtown,
       "Town Location": townLocationId,
+      "Town Name":townName,
       "Email": email,
       "PAN": pan,
       "Type of Firm": typeofFirm,
@@ -454,6 +462,7 @@ class _ExistingCustomerState extends State<ExistingCustomer> {
             dealerSegmentValue: dealersegment,
             dealerClassificationValue: dealerClassification,
             town: slbtown,
+            townName:townName,
             district: district,
             propertierName: propertier,
             zone: zoneId,

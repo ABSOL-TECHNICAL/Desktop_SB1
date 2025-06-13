@@ -522,7 +522,7 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                       // }
 
                       return buildDropdown<SlbTown>(
-                        label: 'Town',
+                        label: 'SLBTown',
                         required: true,
                         selectedValue: controller.selectedSlbTown,
                         items: controller.dealerslbtown,
@@ -586,40 +586,34 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     }),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
+
+
+ Expanded(
                     child: Obx(() {
-                      if (controller.isLoadings.value) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (controller.isLoadingszone.value) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    
-
-                      // if (controller.selecteddealerzone.value == null &&
-                      //     controller.applicationdata.isNotEmpty) {
-                      //   controller.selecteddealerzone.value = Zzone(
-                      //     name: controller.applicationdata.first.zoneName,
-                      //   );
-                      // }
-
-                      return buildDropdown<Zzone>(
-                        label: 'Zone',
+                      return CustomTextContainer(
+                        label: 'Town Name',
+                        readOnly: false,
                         required: true,
-                          //  hasError: controller.hasZoneError, 
-                        selectedValue: controller.selecteddealerzone,
-                        items: controller.dealerzone,
-                        itemLabel: (zone) => zone.name ?? 'Unknown',
-                        fetchData: controller.fetchZone,
-                        showDropdown: controller.showDropdown.value,
-                        fallbackValue: () =>
-                            controller.applicationdata.isNotEmpty
-                                ? controller.applicationdata.first.zoneName
-                                : '',
-                                //  hasError: controller.hasZoneError.value, // moved inside correctl
+                        hint: "Enter TownName",
+                        value: (controller.applicationdata.isNotEmpty &&
+                                controller.applicationdata.first.townName != null)
+                            ? controller.applicationdata.first.townName!
+                            : null,
+                        
+                        onChanged: (value) {
+                          controller.townNameController.text = value;
+                        },
+                        hasError: controller.hasTownNameError.value, // moved inside correctl
                       );
-                    }),
+                      
+                    }
+                    
+                    ),
                   ),
+
+
+
+                 
                 ],
               ),
               const SizedBox(height: 20),
@@ -688,6 +682,41 @@ class _ExistingCustomerWidgetState extends State<ExistingCustomerWidget> {
                     }
                     
                     ),
+                  ),
+const SizedBox(width: 16),
+                   Expanded(
+                    child: Obx(() {
+                      if (controller.isLoadings.value) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (controller.isLoadingszone.value) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    
+
+                      // if (controller.selecteddealerzone.value == null &&
+                      //     controller.applicationdata.isNotEmpty) {
+                      //   controller.selecteddealerzone.value = Zzone(
+                      //     name: controller.applicationdata.first.zoneName,
+                      //   );
+                      // }
+
+                      return buildDropdown<Zzone>(
+                        label: 'Zone',
+                        required: true,
+                          //  hasError: controller.hasZoneError, 
+                        selectedValue: controller.selecteddealerzone,
+                        items: controller.dealerzone,
+                        itemLabel: (zone) => zone.name ?? 'Unknown',
+                        fetchData: controller.fetchZone,
+                        showDropdown: controller.showDropdown.value,
+                        fallbackValue: () =>
+                            controller.applicationdata.isNotEmpty
+                                ? controller.applicationdata.first.zoneName
+                                : '',
+                                //  hasError: controller.hasZoneError.value, // moved inside correctl
+                      );
+                    }),
                   ),
                 ],
               ),
