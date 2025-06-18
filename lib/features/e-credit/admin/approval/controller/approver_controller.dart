@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:impal_desktop/features/e-credit/admin/Approval/Model/get_application_model.dart';
+import 'package:impal_desktop/features/e-credit/admin/approval/model/aging_summary_model.dart';
 import 'package:impal_desktop/features/e-credit/admin/approval/model/application_detail_model.dart';
 import 'package:impal_desktop/features/e-credit/admin/approval/model/login_branch_model.dart';
 import 'package:impal_desktop/features/e-credit/admin/credit_limit/controller/creditlimit_controller.dart';
@@ -21,6 +22,7 @@ class ApproverController extends GetxController {
 
   var applicationDetail = <ApplicationDetail>[].obs;
   var branchdropdown = <EcreditLoginBranch>[].obs;
+  RxList<AgingSummary> agingSummary = <AgingSummary>[].obs;
 
   var isDropdownVisible = false.obs;
   var selectedvalidityindicator = Rxn<Validityindi?>(null);
@@ -40,6 +42,7 @@ class ApproverController extends GetxController {
   var isLoadingsbranch = false.obs;
   var isLoadings1 = false.obs;
   var isLoadings2 = false.obs;
+  var isLoadingsaging = false.obs;
   var isLoadingsbranchstatus = false.obs;
 
   var validityIndi = ''.obs; // Observable string
@@ -692,6 +695,55 @@ class ApproverController extends GetxController {
       print("Error fetching DealerName: $e");
     } finally {
       isLoadings2.value = false;
+    }
+  }
+
+  Future<void> fetchAgingSummaryDetail(String customerId) async {
+    try {
+      isLoadingsaging.value = true;
+ 
+      final Map<String, String> requestBody = {
+        "CustomerId": customerId,
+      };
+ 
+      final response = await _ecreditservice.postRequest(
+        NetSuiteScriptsEcredit.agingSummaryDetailScriptId,
+        requestBody,
+      );
+    if (response != null && response is String) {
+      final parsed = json.decode(response); // Now parsed is List or Map
+ 
+      if (parsed is List && parsed.isNotEmpty) {
+        List<AgingSummary> fetchedData = parsed
+            .map<AgingSummary>((item) => AgingSummary.fromJson(item))
+            .toList();
+ 
+        print("Parsed Aging List: $fetchedData");
+        agingSummary.assignAll(fetchedData);
+      } else {
+        agingSummary.clear();
+      }
+    } else {
+      agingSummary.clear();
+    }
+ 
+ 
+ 
+      //       if (response != null && response is List && response.isNotEmpty) {
+      //        List<AgingSummary> fetchedData = response
+      //     .map((item) => AgingSummary.fromJson(item))
+      //     .toList();
+ 
+      // agingSummary.assignAll(fetchedData);
+     
+      // } else {
+      //   agingSummary.clear();
+      // }
+ 
+    } catch (e) {
+      print("Error fetching AgeingDetails: $e");
+    } finally {
+      isLoadingsaging.value = false;
     }
   }
 }

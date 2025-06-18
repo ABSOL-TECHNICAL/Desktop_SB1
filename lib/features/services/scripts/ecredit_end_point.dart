@@ -15,6 +15,7 @@ class NetSuiteScriptsEcredit {
   static const String fetchStatusDataUpdatedScriptId = '7406';
   static const String fetchApproverStatusScriptId = '7507';
   static const String applicationDetailScriptId = '2928';
+  static const String agingSummaryDetailScriptId = '8455';
   static const String submitApprovalScriptId = '3228';
   static const String submitwithdrawapplicationScriptId = '4547';
   static const String fetchExistingCustomerScriptId = '4546';
@@ -51,6 +52,7 @@ class NetSuiteScriptsEcredit {
     'fetchApproverBranchScriptId': fetchApproverBranchScriptId,
     'fetchapplicationstatusScriptId': fetchapplicationstatusScriptId,
     'applicationDetail': applicationDetailScriptId,
+    'agingSummaryDetailScriptId':agingSummaryDetailScriptId,
     'submitApproval': submitApprovalScriptId,
     'submitwithdrawapplicationScriptId': submitwithdrawapplicationScriptId,
 

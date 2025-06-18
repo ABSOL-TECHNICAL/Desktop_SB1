@@ -6,11 +6,14 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:impal_desktop/features/global/theme/widgets/snack_bar.dart';
+import 'package:impal_desktop/features/login/controllers/login_controller.dart';
 import 'package:impal_desktop/features/services/scripts/netsuite_end_point.dart';
 import 'package:impal_desktop/features/services/url/restlet_api.dart';
 
 class TempReceiptController extends GetxController {
   final RestletService _restletService = RestletService();
+      final LoginController login = Get.find<LoginController>();
+ 
 
   RxBool isLoading = false.obs;
   RxString transferStatus = ''.obs;
@@ -148,7 +151,10 @@ class TempReceiptController extends GetxController {
       'checkdate': checkdate,
       "fileName": filename,
       "fileType": filetype,
-      "encodedData": image
+      "encodedData": image,
+      "branchId": login.employeeModel.branchid!.toString(),
+      "salesRepId": login.employeeModel.salesRepId!.toString(),
+  
     };
 
     // final requestBody = {

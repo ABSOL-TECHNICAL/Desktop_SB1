@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:impal_desktop/features/global/theme/widgets/card_customer_dropdown.dart';
+import 'package:impal_desktop/features/global/theme/widgets/search.dart';
 import 'package:impal_desktop/features/sales/managers/customers/customer_details/controllers/customer_details_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
@@ -197,22 +198,22 @@ class _BilledDetailsState extends State<BilledDetails> {
       endIndex > flattened.length ? flattened.length : endIndex,
     );
   }
+final RxString _searchQuery = ''.obs;
 
   List<Map<String, dynamic>> get _flattenedItems {
     List<Map<String, dynamic>> flattened = [];
     for (var detail in viewBilledController.viewBilledDetails) {
       if (detail.items != null && detail.items!.isNotEmpty) {
         for (var item in detail.items!) {
-          flattened.add({
-            'detail': detail,
-            'item': item,
-          });
+          if (_searchQuery.value.isEmpty ||
+            (item.part?.toLowerCase().contains(_searchQuery.value.toLowerCase()) ?? false)) {
+          flattened.add({'detail': detail, 'item': item});
+        }
         }
       } else {
-        flattened.add({
-          'detail': detail,
-          'item': null,
-        });
+         if (_searchQuery.value.isEmpty) {
+        flattened.add({'detail': detail, 'item': null});
+      }
       }
     }
     return flattened;
@@ -439,6 +440,26 @@ class _BilledDetailsState extends State<BilledDetails> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                                Center(
+  child: (fromDate == "Choose Date" && toDate == "Choose Date")
+      ? Text(
+          "Showing 1 month data",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        )
+      : Text(
+          "Showing $fromDate to $toDate",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+),
+ const SizedBox(height: 10),
+                           GlobalSearchField(
+  hintText: 'Search PartNo...'.tr,
+  onChanged: (value) {
+    _searchQuery.value = value;
+    _currentPage = 1;
+  },
+),
+  const SizedBox(height: 10),
                     Expanded(
                       child: isLoading
                           ? _buildShimmerTable()

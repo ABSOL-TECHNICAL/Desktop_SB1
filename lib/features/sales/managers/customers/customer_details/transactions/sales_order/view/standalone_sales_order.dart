@@ -94,6 +94,8 @@ class _StandaloneSalesOrderPageState extends State<StandaloneSalesOrderPage> {
     // {"name": "Distress Sale", "id": 4},
   ];
 
+  String previousValue = "";
+
   @override
   void initState() {
     super.initState();
@@ -762,6 +764,17 @@ packingQuantityController.text;
                                                                   customerDetailsController
                                                                       .fetchOutstandingDetailsCustomer(
                                                                           id);
+                                                                               ever(customerDetailsController.outstandingDetails, (details) {
+      print("outstanding");
+    if (details.isNotEmpty) {
+      final out = details[0]['CanBillUpTo'].toString();
+      if (out == "0.00" && out != previousValue) {
+        previousValue = out;
+        AppSnackBar.alert(message: "Your credit limit is low, so you cannot create an estimate.");
+      }
+    }
+  });
+ 
                                                                 },
                                                               ),
                                                             ),

@@ -82,6 +82,8 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     {"name": "Advance Sales", "id": 5}
   ];
 
+  String previousValue = "";
+
   @override
   void initState() {
     super.initState();
@@ -89,6 +91,17 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     ordertypeId = selectedSalesId.toString();
 
     customerDetailsController.fetchOutstandingDetails();
+         ever(customerDetailsController.outstandingDetails, (details) {
+      print("outstanding");
+    if (details.isNotEmpty) {
+      final out = details[0]['CanBillUpTo'].toString();
+      if (out == "0.00" && out != previousValue) {
+        previousValue = out;
+        AppSnackBar.alert(message: "Your credit limit is low, so you cannot create an estimate.");
+      }
+    }
+  });
+ 
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         isLoading = false;

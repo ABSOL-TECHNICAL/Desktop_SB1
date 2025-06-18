@@ -120,6 +120,7 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
   void dispose() {
     approverController.fetchApproverBranch();
     approverController.fetchApproverApplication();
+    approverController.agingSummary.clear();
     super.dispose();
   }
 
@@ -272,7 +273,8 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
                               (app) => app.delarID == selectedApplication,
                               orElse: () => GetApplication(),
                             );
-
+                            approverController.fetchAgingSummaryDetail(
+                                        customerIdController.text);
                             // Update TextEditingControllers
                             customerIdController.text =
                                 selectedApp.customerID ?? "";
@@ -1407,140 +1409,157 @@ class _DealerApprovalPageState extends State<DealerApprovalPage> {
         ];
       case "(D) Review and Approval at Head Office":
         return [
-          Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      "No. of Cheque Returns",
-                        style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold,color: Colors.red),
-                      // style: TextStyle(
-                      //     fontWeight: FontWeight.bold, color: Colors.red),
+          Obx(() {
+            if (approverController.isLoadingsaging.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+ 
+            final agingList = approverController.agingSummary;
+            final theme = Theme.of(context);
+ 
+            // Use null-safe access
+            final agingData = agingList.isNotEmpty ? agingList.first : null;
+ 
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// ✅ Show table only if data is available
+                if (agingData != null)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      headingRowColor:
+                          MaterialStateProperty.all(Colors.grey[200]),
+                      columns: const [
+                        DataColumn(label: Text("0 - 30 Days")),
+                        DataColumn(label: Text("31 - 60 Days")),
+                        DataColumn(label: Text("61 - 90 Days")),
+                        DataColumn(label: Text("91 - 180 Days")),
+                        DataColumn(label: Text("Above 180 Days")),
+                        DataColumn(label: Text("Outstanding")),
+                        DataColumn(label: Text("Credit Limit")),
+                        DataColumn(label: Text("Credit Balance")),
+                        DataColumn(label: Text("Can Bill Up To")),
+                      ],
+                      rows: [
+                        DataRow(cells: [
+                          DataCell(Text("${agingData.days0to30 ?? 0}")),
+                          DataCell(Text("${agingData.days31to60 ?? 0}")),
+                          DataCell(Text("${agingData.days61to90 ?? 0}")),
+                          DataCell(Text("${agingData.days91to180 ?? 0}")),
+                          DataCell(Text("${agingData.above180Days ?? 0}")),
+                          DataCell(Text(agingData.outstanding ?? "-")),
+                          DataCell(Text(agingData.creditLimit ?? "-")),
+                          DataCell(Text(agingData.creditBalance ?? "-")),
+                          DataCell(Text(agingData.canBillUpTo ?? "-")),
+                        ]),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
+ 
+                const SizedBox(height: 25),
+ 
+                /// ✅ Always shown - below-table content
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "No. of Cheque Returns",
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(width: 10),
+                    const Expanded(child: Text("")),
+                    const SizedBox(width: 10),
+                    const Expanded(child: Text("")),
+                  ],
+                ),
+ 
+                const SizedBox(height: 25),
+ 
+                Row(
+                  children: [
+                    Expanded(
+                      child: buildDateField("Date", applicationDateController),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildDateField("Date", applicationDateController),
-                  ),
-                  const SizedBox(width: 10),
-                   Expanded(
-                    child: Text(
-                      "",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        "",
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                   Expanded(
-                    child: Text(
-                      "",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(width: 10),
+                    const Expanded(child: Text("")),
+                  ],
+                ),
+ 
+                const SizedBox(height: 25),
+ 
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Zonal Head Signature",
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-             Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Zonal Head Signature",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(width: 10),
+                    const Expanded(child: Text("")),
+                    const SizedBox(width: 10),
+                    const Expanded(child: Text("")),
+                  ],
+                ),
+ 
+                const SizedBox(height: 25),
+ 
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Accounts & IT Department for Creation of Customer Master",
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(width: 10),
+                    const Expanded(child: Text("")),
+                    const SizedBox(width: 10),
+                    const Expanded(child: Text("")),
+                  ],
+                ),
+ 
+                const SizedBox(height: 25),
+ 
+                Row(
+                  children: [
+                    Expanded(
+                      child: buildReadOnlyTextField(
+                        "Customer code",
+                        approverController.customerCodeController,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      // style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        "DMD Signature (Digital)",
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-               Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Accounts & IT Department for Creation of Customer Master",
-                    style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "",
-                      style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "",
-                    style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildReadOnlyTextField("Customer code",
-                        approverController.customerCodeController),
-                  ),
-                  const SizedBox(width: 10),
-                   Expanded(
-                    child: Text(
-                      "DMD Signature (Digital)",
-                     style:theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                  ],
+                ),
+              ],
+            );
+          }),
         ];
+ 
+ 
       case "(E) Closure of Business with Dealer (with closure of sister concern accounts)":
         return [
           Column(
