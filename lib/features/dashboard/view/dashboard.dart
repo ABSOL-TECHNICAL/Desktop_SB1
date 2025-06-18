@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -34,6 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
       Get.put(NewCustomerController());
 
   bool get isManager => loginController.employeeModel.isManager ?? false;
+
+
+  String selectedReport = 'Sales Summary Report'; // default value
+List<String> reportOptions = [
+  'Sales Summary Report',
+  'New Product Sales Report',
+];
   @override
   void initState() {
     super.initState();
@@ -199,8 +207,67 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    NewProductReport(),
+               
+SizedBox(height: 20),
+if (isManager) ...[
+  Container(
+    margin: const EdgeInsets.only(bottom: 10),
+    child: DropdownButtonHideUnderline(
+      child: DropdownButton2<String>(
+        value: selectedReport,
+        isExpanded: true,
+        items: reportOptions.map((String item) {
+         return DropdownMenuItem<String>(
+  value: item,
+  child: Text(
+    item,
+    style: const TextStyle(fontSize: 14), // 👈 Reduced font size here
+  ),
+);
+
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            selectedReport = value!;
+          });
+        },
+        buttonStyleData: ButtonStyleData(
+          height: 40,
+          width: 300,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.grey),
+            color: Colors.white,
+          ),
+        ),
+        iconStyleData: const IconStyleData(
+          icon: Icon(Icons.arrow_drop_down),
+          iconSize: 24,
+        ),
+        dropdownStyleData: DropdownStyleData(
+          direction: DropdownDirection.textDirection, // ✅ Forces dropdown to open downward
+          maxHeight: 180,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ),
+  ),
+  const SizedBox(height: 5),
+
+  /// Conditionally show selected report
+  if (selectedReport == 'Sales Summary Report') NewProductReport(),
+  if (selectedReport == 'New Product Sales Report') NewProductReport(),
+] else ...[
+  NewProductReport(),
+  const SizedBox(height: 5),
+],
+
+                    // const SizedBox(height: 5),
+                    // NewProductReport(),
                     const SizedBox(height: 15),
                     Obx(() => Row(
                           children: [
@@ -216,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Expanded(child: TargetVsActualPie()),
                           ],
                         )),
-                    LiquidationSurplusStocks(),
+                    //LiquidationSurplusStocks(),
                   ],
                 ),
               ),

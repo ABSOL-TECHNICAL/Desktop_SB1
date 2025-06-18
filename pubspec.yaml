@@ -60,6 +60,7 @@ dependencies:
   encrypt: ^5.0.3
   dropdown_search: ^5.0.6
   multi_dropdown: ^3.0.1
+  dropdown_button2: ^2.3.9
  
 
   

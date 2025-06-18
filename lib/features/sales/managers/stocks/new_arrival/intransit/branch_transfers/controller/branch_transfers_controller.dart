@@ -68,6 +68,7 @@ class BranchTransfersController extends GetxController {
     final requestBody = {
       "FromDate": formattedFromDate,
       "ToDate": formattedToDate,
+      "BranchId": login.employeeModel.branchid!,
     };
 
     try {
@@ -129,6 +130,7 @@ class BranchTransfersController extends GetxController {
       'Supplier': supplierId,
       'FromDate': fromDate,
       'ToDate': toDate,
+      'BranchId': login.employeeModel.branchid!,
     };
 
     try {

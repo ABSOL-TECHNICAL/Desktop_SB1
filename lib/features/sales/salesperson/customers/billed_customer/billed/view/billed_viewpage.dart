@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:impal_desktop/features/sales/salesperson/customers/billed_customer/billed/controller/billed_controller.dart';
-
+import 'package:impal_desktop/features/global/theme/widgets/snack_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:impal_desktop/features/global/theme/widgets/search.dart';
@@ -20,6 +20,8 @@ class _BilledScreenState extends State<BilledScreen> {
   BilledController _controller = Get.put(BilledController());
   bool isLoading = true;
   String searchQuery = '';
+  String fromDate = 'Choose From Date';
+  String toDate = 'Choose To Date';
 
   @override
   void initState() {
@@ -69,179 +71,364 @@ class _BilledScreenState extends State<BilledScreen> {
     }).toList();
   }
 
+  Future<void> _pickFromDate() async {
+    DateTime pickedDate;
+    if (fromDate != 'Choose From Date') {
+      pickedDate = DateFormat('dd/MM/yyyy').parse(fromDate);
+    } else {
+      pickedDate = DateTime.now();
+    }
+
+    DateTime? newPickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (newPickedDate != null) {
+      _onFromDatePicked(newPickedDate);
+    }
+  }
+
+  Future<void> _pickToDate() async {
+    DateTime pickedDate;
+    if (toDate != 'Choose To Date') {
+      pickedDate = DateFormat('dd/MM/yyyy').parse(toDate);
+    } else {
+      pickedDate = DateTime.now();
+    }
+
+    DateTime? newPickedDate = await showDatePicker(
+      context: context,
+      initialDate: pickedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (newPickedDate != null) {
+      _onToDatePicked(newPickedDate);
+    }
+  }
+
+  void _onFromDatePicked(DateTime pickedDate) {
+    if (toDate != 'Choose To Date' &&
+        pickedDate.isAfter(DateFormat('dd/MM/yyyy').parse(toDate))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("From Date cannot be later than To Date.")),
+      );
+      return;
+    }
+
+    setState(() {
+      fromDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+    });
+  }
+
+  void _onToDatePicked(DateTime pickedDate) {
+    if (fromDate != 'Choose From Date' &&
+        pickedDate.isBefore(DateFormat('dd/MM/yyyy').parse(fromDate))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("To Date cannot be earlier than From Date.")),
+      );
+      return;
+    }
+
+    setState(() {
+      toDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Billed Details',
-            style: theme.textTheme.bodyLarge?.copyWith(      
-                  color: Colors.white,
-                ),
+      appBar: AppBar(
+        title: Text(
+          'Billed Details',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: Colors.white,
           ),
-          centerTitle: true,
-          backgroundColor: const Color(0xFF161717),
-          iconTheme: const IconThemeData(color: Colors.white),
         ),
-        body: Stack(
-          children: [
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.only(top: 10, bottom: 0),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 10.0, right: 150.0, left: 150.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 25),
-                      isLoading
-                          ? ShimmerCard(
-                              height: 60,
+        centerTitle: true,
+        backgroundColor: const Color(0xFF161717),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(top: 10, bottom: 0),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0, right: 150.0, left: 150.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 25),
+                    isLoading
+                        ? ShimmerCard(
+                            height: 60,
+                            borderRadius: BorderRadius.circular(16),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                gradient: isDarkMode
-                                    ? LinearGradient(
-                                        colors: [
-                                          Colors.blueGrey.shade900,
-                                          Colors.blueGrey.shade900
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      )
-                                    : const LinearGradient(
-                                        colors: [
-                                          Color(0xFF6B71FF),
-                                          Color(0xFF57AEFE)
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                              gradient: isDarkMode
+                                  ? LinearGradient(
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade900
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )
+                                  : const LinearGradient(
+                                      colors: [
+                                        Color(0xFF6B71FF),
+                                        Color(0xFF57AEFE)
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                            ),
+                             child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                             child: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+                                  // Date filter row
+
+                           
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                "Total Billed Amount".tr,
-                                                style: theme
-                                                    .textTheme.headlineLarge
-                                                    ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              )
-                                            ],
-                                          ),
+                                          Text(
+                                            "Total Billed Amount - ".tr,
+                                            style: theme.textTheme.headlineLarge?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          )
                                         ],
                                       ),
-                                      const SizedBox(height: 10),
                                       Obx(() {
-                                        return Row(
-                                          children: [
-                                            Text(
-                                              _controller.totalAmount.value
-                                                  .toStringAsFixed(2),
-                                              style: theme
-                                                  .textTheme.headlineLarge
-                                                  ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                            )
-                                          ],
+                                        return Text(
+                                          _controller.totalAmount.value.toStringAsFixed(2),
+                                          style: theme.textTheme.headlineLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
                                         );
                                       })
-                                    ]),
+                                    ],
+                                  ),
+
+                                          const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      // From Date
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'From Date',
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            GestureDetector(
+                                              onTap: _pickFromDate,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: isDarkMode
+                                                      ? Colors.blueGrey.shade800
+                                                      : Colors.white,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(color: Colors.grey.shade300),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 10.0, horizontal: 8.0),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(Icons.calendar_today, color: Colors.grey),
+                                                    const SizedBox(width: 4.0),
+                                                    Text(
+                                                      fromDate,
+                                                      style: theme.textTheme.bodySmall?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight: FontWeight.normal,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+
+                                      // To Date
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'To Date',
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            GestureDetector(
+                                              onTap: _pickToDate,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: isDarkMode
+                                                      ? Colors.blueGrey.shade800
+                                                      : Colors.white,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(color: Colors.grey.shade300),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 10.0, horizontal: 8.0),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(Icons.calendar_today, color: Colors.grey),
+                                                    const SizedBox(width: 4.0),
+                                                    Text(
+                                                      toDate,
+                                                      style: theme.textTheme.bodySmall?.copyWith(
+                                                        color: isDarkMode
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontWeight: FontWeight.normal,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          try {
+                                            if (fromDate == 'Choose From Date' && toDate == 'Choose To Date') {
+                                              await _controller.fetchBilled();
+                                            } else if (fromDate != 'Choose From Date' && toDate != 'Choose To Date') {
+                                              final from = DateFormat('dd/MM/yyyy').parse(fromDate);
+                                              final to = DateFormat('dd/MM/yyyy').parse(toDate);
+                                              
+                                              await _controller.fetchBilled(
+                                                fromDate: DateFormat('dd/MM/yyyy').format(from),
+                                                toDate: DateFormat('dd/MM/yyyy').format(to),
+                                              );
+                                            } else {
+                                              AppSnackBar.alert(message: "Please select both dates or none");
+                                            }
+                                          } catch (e) {
+                                            AppSnackBar.alert(message: "Error: ${e.toString()}");
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(255, 251, 134, 45),
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(90),
+                                          ),
+                                          minimumSize: const Size(50, 45),
+                                        ),
+                                        child: Obx(() {
+                                          return _controller.isLoading.value
+                                              ? const SizedBox(
+                                                  width: 24.0,
+                                                  height: 24.0,
+                                                  child: CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                    strokeWidth: 2.0,
+                                                  ),
+                                                )
+                                              : const Icon(Icons.search, color: Colors.white);
+                                        }),
+                                      ),
+                                    ],
+                                  ),
+                                 
+                                ],
                               ),
                             ),
-                      const SizedBox(height: 25),
-                      Text(
-                        'Current data is From : ${DateFormat('MMMM').format(DateTime.now())} Month',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 5),
-                      GlobalSearchField(
-                        hintText: 'Search Customers...'.tr,
-                        onChanged: _onSearchChanged,
-                      ),
-                      const SizedBox(height: 15),
-                      Obx(() {
-                        if (_controller.isLoading.value) {
-                          return _buildShimmerTable();
-                        } else if (_filteredCustomers().isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 70),
-                                Shimmer.fromColors(
-                                  baseColor:
-                                      const Color.fromARGB(255, 53, 51, 51),
-                                  highlightColor: Colors.white,
-                                  child: Icon(
-                                    Icons.search_off,
-                                    size: 100,
-                                    color: Colors.grey.shade700,
-                                  ),
+                          ),
+                    const SizedBox(height: 25),
+                    GlobalSearchField(
+                      hintText: 'Search Customers...'.tr,
+                      onChanged: _onSearchChanged,
+                    ),
+                    const SizedBox(height: 15),
+                    Obx(() {
+                      if (_controller.isLoading.value) {
+                        return _buildShimmerTable();
+                      } else if (_filteredCustomers().isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 70),
+                              Shimmer.fromColors(
+                                baseColor: const Color.fromARGB(255, 53, 51, 51),
+                                highlightColor: Colors.white,
+                                child: Icon(
+                                  Icons.search_off,
+                                  size: 100,
+                                  color: Colors.grey.shade700,
                                 ),
-                                SizedBox(height: 20),
-                                Shimmer.fromColors(
-                                  baseColor:
-                                      const Color.fromARGB(255, 53, 51, 51),
-                                  highlightColor: Colors.white,
-                                  child: Text(
-                                    'No results found.\nPlease refine your search criteria.',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      fontSize: 20,
-                                      color:
-                                          const Color.fromARGB(255, 10, 10, 10),
-                                    ),
-                                    textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 20),
+                              Shimmer.fromColors(
+                                baseColor: const Color.fromARGB(255, 53, 51, 51),
+                                highlightColor: Colors.white,
+                                child: Text(
+                                  'No results found.\nPlease refine your search criteria.',
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    fontSize: 20,
+                                    color: const Color.fromARGB(255, 10, 10, 10),
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ],
-                            ),
-                          );
-                        } else {
-                          return Expanded(
-                            child: SingleChildScrollView(
-                              child: Container(
-                                padding: const EdgeInsets.all(3.0),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Expanded(
+                          child: SingleChildScrollView(
+                            child: Container(
+                              padding: const EdgeInsets.all(3.0),
+                              child: SingleChildScrollView(
+                                child: SizedBox(
+                                  width: 600,
                                   child: Table(
-                                    defaultColumnWidth:
-                                        const IntrinsicColumnWidth(),
+                                    defaultColumnWidth: const IntrinsicColumnWidth(),
                                     children: [
-                                      // Removed sticky header
                                       _buildTableRow(
                                         [
-                                          "S.No", // Add SNo to the header
+                                          "S.No",
                                           "Dealer code/name",
                                           "Address",
-                                          "Location",
                                           "Credit Limit",
                                           "Last Billed Date",
-                                          "Total Amount"
+                                          "Amount"
                                         ],
                                         isHeader: true,
                                         context: context,
@@ -250,39 +437,40 @@ class _BilledScreenState extends State<BilledScreen> {
                                           .asMap()
                                           .entries
                                           .map<TableRow>((entry) {
-                                        int index = entry.key; // Get the index
-                                        Map<String, dynamic> customer = entry
-                                            .value; // Get the customer data
-                                        return _buildTableRow1(
-                                          [
-                                            (index + 1)
-                                                .toString(), // Add serial number (starting from 1)
-                                            customer["DealoreCode"] ?? "",
-                                            customer["Address"] ?? "",
-                                            customer["Location"] ?? "",
-                                            customer["CreditAmount"] ?? "",
-                                            customer["LastBillDate"] ?? "",
-                                            customer["Amount"] ?? "",
-                                          ],
-                                          isHeader: false,
-                                          context: context,
-                                        );
+                                     int index = entry.key;
+Map<String, dynamic> customer = entry.value;
+
+return _buildTableRow1(
+  [
+    (index + 1).toString(),
+    customer["DealoreCode"]?.toString() ?? "",
+    customer["Address"]?.toString() ?? "",
+    customer["CreditAmount"]?.toString() ?? "",
+    customer["LastBillDate"]?.toString() ?? "",
+    customer["Amount"]?.toString() ?? "",
+  ],
+  isHeader: false,
+  context: context,
+);
+
                                       }),
                                     ],
                                   ),
                                 ),
                               ),
                             ),
-                          );
-                        }
-                      }),
-                    ],
-                  ),
+                          ),
+                        );
+                      }
+                    }),
+                  ],
                 ),
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   TableRow _buildTableRow1(List<String> data,
@@ -303,13 +491,13 @@ class _BilledScreenState extends State<BilledScreen> {
               )
             : const LinearGradient(
                 colors: [
-                  Color(0xFFEDFFFB), // Starting color (EDFFFB)
-                  Color(0xFFFAF9FF), // Ending color (FAF9FF)
-                  Color(0xFFEDFFFB), // Starting color (EDFFFB)
-                  Color(0xFFFAF9FF), // Ending color (FAF9FF)
+                  Color(0xFFEDFFFB),
+                  Color(0xFFFAF9FF),
+                  Color(0xFFEDFFFB),
+                  Color(0xFFFAF9FF),
                 ],
-                begin: Alignment.topLeft, // Gradient starting point
-                end: Alignment.bottomRight, // Gradient ending point
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
       ),
       children: data
@@ -388,8 +576,7 @@ class _BilledScreenState extends State<BilledScreen> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Shimmer.fromColors(
               baseColor: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
-              highlightColor:
-                  isDarkMode ? Colors.grey[600]! : Colors.grey[100]!,
+              highlightColor: isDarkMode ? Colors.grey[600]! : Colors.grey[100]!,
               child: Container(
                 height: 20,
                 color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,

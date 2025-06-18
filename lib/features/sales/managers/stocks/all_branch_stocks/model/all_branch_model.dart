@@ -20,7 +20,7 @@ class StockDetail {
   String? location;
   String? availableStock;
   String? unitPrice;
-  String? mRP;
+  String? list;
   String? vehicleApplication;
   String? applicationSegment;
   String? shortDescription;
@@ -31,7 +31,7 @@ class StockDetail {
     this.location,
     this.availableStock,
     this.unitPrice,
-    this.mRP,
+    this.list,
     this.vehicleApplication,
     this.applicationSegment,
     this.shortDescription,
@@ -44,7 +44,7 @@ class StockDetail {
       location: json['Location']?.toString(),
       availableStock: json['Available Stock']?.toString(),
       unitPrice: json['Unit Price']?.toString(),
-      mRP: json['MRP']?.toString(),
+      list: json['List']?.toString(),
       vehicleApplication: json['VehicleApplication']?.toString(),
       applicationSegment: json['ApplicationSegment']?.toString(),
       shortDescription: json['Short Description']?.toString(),
@@ -58,7 +58,7 @@ class StockDetail {
       'Location': location,
       'Available Stock': availableStock,
       'Unit Price': unitPrice,
-      'MRP': mRP,
+      'List': list,
       'VehicleApplication': vehicleApplication,
       'ApplicationSegment': applicationSegment,
       'Short Description': shortDescription,

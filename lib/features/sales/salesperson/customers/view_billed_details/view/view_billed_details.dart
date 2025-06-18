@@ -283,7 +283,7 @@ class _BilledDetailsState extends State<BilledDetails> {
                                     children: [
                                       const SizedBox(height: 8),
                                       CardCustomerDropdown(
-                                        label: 'Customer',
+                                        label: 'CustomerCode/Customer/Location',
                                         hintText: 'Search for a customer...',
                                         globalcustomerController:
                                             globalCustomerController,
@@ -479,15 +479,20 @@ class _BilledDetailsState extends State<BilledDetails> {
                                   ),
                                 );
                               } else {
+                                 final filteredPaginatedData = _paginatedData.where((data) {
+      final item = data['item'];
+      return item?.part != "Rounding off";
+    }).toList();
+ 
                                 return Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                                      child: Text(
-                                        'Total: ${_flattenedItems.length} items',
-                                        style: theme.textTheme.bodyMedium,
-                                      ),
-                                    ),
+                                    // Padding(
+                                    //   padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                                    //   child: Text(
+                                    //     'Total: ${_flattenedItems.length} items',
+                                    //     style: theme.textTheme.bodyMedium,
+                                    //   ),
+                                    // ),
                                     Expanded(
                                       child: SingleChildScrollView(
                                         controller: _scrollController,
@@ -515,7 +520,9 @@ class _BilledDetailsState extends State<BilledDetails> {
                                                   ],
                                                   context,
                                                 ),
-                                                ..._paginatedData.asMap().entries.map((entry) {
+                                                // ..._paginatedData.asMap().entries.map((entry) {
+                                                 ...filteredPaginatedData.asMap().entries.map((entry) {
+ 
                                                   int index = entry.key;
                                                   var data = entry.value;
                                                   final detail = data['detail'];

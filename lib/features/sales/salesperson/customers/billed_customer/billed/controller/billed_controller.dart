@@ -18,9 +18,11 @@ class BilledController extends GetxController {
     fetchBilled();
   }
 
-  Future<void> fetchBilled() async {
+  Future<void> fetchBilled({String? fromDate, String? toDate}) async {
     final requestBody = {
-      'salesRepId': login.employeeModel.salesRepId!.toString()
+      'salesRepId': login.employeeModel.salesRepId!.toString(),
+      'FromDate': fromDate ?? "", // Send empty string if null
+      'ToDate': toDate ?? "",    // Send empty string if null
     };
 
     try {
@@ -36,7 +38,11 @@ class BilledController extends GetxController {
 
         // Calculate the total billed amount
         totalAmount.value = billedCustomer.fold(0.0, (sum, customer) {
-          final amount = double.tryParse(customer["Amount"] ?? '0') ?? 0.0;
+          // final amount = double.tryParse(customer["Amount"] ?? '0') ?? 0.0;
+          final amountValue = customer["Amount"];
+final amount = amountValue is double
+    ? amountValue
+    : double.tryParse(amountValue?.toString() ?? '0') ?? 0.0;
           return sum + amount;
         });
       } else {

@@ -1,3 +1,5 @@
+
+
 import 'package:get/get.dart';
 import 'package:impal_desktop/features/global/theme/widgets/snack_bar.dart';
 import 'package:impal_desktop/features/login/controllers/login_controller.dart';
@@ -16,6 +18,9 @@ class AllBranchStocksController extends GetxController {
   RxBool isLoadingStates = false.obs;
   RxBool isLoadingStocks = false.obs;
   RxBool isLoading = false.obs;
+// Add this variable to your state class
+RxBool selectAllStates = false.obs;
+
 
   @override
   void onInit() {
@@ -47,44 +52,60 @@ class AllBranchStocksController extends GetxController {
     }
   }
 
-  Future<List<StockDetail>> fetchStockDetails(
-      String itemId, String stateId) async {
-    isLoadingStocks.value = true;
-    try {
-      final requestBody = {
-        "ItemId": itemId,
-        "StateId": stateId,
-      };
+Future<List<StockDetail>> fetchStockDetails(String itemId, String? stateId) async {
+  isLoadingStocks.value = true;
+  try {
+    // Create mutable map for the request body
+    final Map<String, dynamic> requestBody = {
+      "ItemId": itemId,
+    };
+    
+    if (selectAllStates.value) {
+      // Create actual array of state IDs
+      final stateIds = states
+          .map((state) => state.stateId)
+          .where((id) => id.isNotEmpty)
+          .toList();
+      
+      // Assign directly as array
+      requestBody["AllState"] = stateIds;
+    } else if (stateId != null) {
+      requestBody["StateId"] = stateId;
+    } else {
+      requestBody["StateId"] = "";
+    }
 
-      final response = await _restletService.fetchReportData(
-        NetSuiteScripts.allbranchStocksScriptId,
-        requestBody,
-      );
+  
 
-      if (response != null) {
-        if (response is Map) {
-          AppSnackBar.alert(
-              message: response['message'] ??
-                  "No stock available for the provided criteria.");
-          return [];
-        } else if (response.isNotEmpty) {
-          final fetchedStocks = StockDetail.listFromJson(response);
-          stocks.assignAll(fetchedStocks);
-          return fetchedStocks;
-        } else {
-          AppSnackBar.alert(message: "No stock details found.");
-          return [];
-        }
+    final response = await _restletService.fetchReportData(
+      NetSuiteScripts.allbranchStocksScriptId,
+      requestBody,
+    );
+
+    if (response != null) {
+      if (response is Map) {
+        AppSnackBar.alert(
+            message: response['message'] ??
+                "No stock available for the provided criteria.");
+        return [];
+      } else if (response.isNotEmpty) {
+        final fetchedStocks = StockDetail.listFromJson(response);
+        stocks.assignAll(fetchedStocks);
+        return fetchedStocks;
       } else {
-        AppSnackBar.alert(message: "Error: No response from the server.");
+        AppSnackBar.alert(message: "No stock details found.");
         return [];
       }
-    } catch (e) {
-      AppSnackBar.alert(
-          message: "Error fetching stock details: ${e.toString()}");
+    } else {
+      AppSnackBar.alert(message: "Error: No response from the server.");
       return [];
-    } finally {
-      isLoadingStocks.value = false;
     }
+  } catch (e) {
+    AppSnackBar.alert(
+        message: "Error fetching stock details: ${e.toString()}");
+    return [];
+  } finally {
+    isLoadingStocks.value = false;
   }
+}
 }

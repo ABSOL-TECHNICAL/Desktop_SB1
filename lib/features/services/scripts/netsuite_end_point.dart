@@ -103,7 +103,8 @@ class NetSuiteScripts {
   static const String liquidationofstocksScriptId = '4551';
   static const String newCustomerScriptId = '1776';
   static const String targetVsActualScriptId = '1757';
-  static const String newProductSalesReportScriptId = '2632';
+  //static const String newProductSalesReportScriptId = '2632';//old endpoint 
+  static const String newProductSalesReportScriptId = '8446';
 
   // Customer Details
   static const String customerDetailsScriptId = '7837';

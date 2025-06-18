@@ -41,6 +41,9 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
   RxBool showPartNumberDropdown = false.obs;
   RxBool showDescriptionDropdown = false.obs;
 
+
+
+
   final GlobalsupplierController globalSupplierController =
       Get.put(GlobalsupplierController());
   final GlobalItemsController globalItemsController =
@@ -60,7 +63,36 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
       setState(() {});
     });
   }
+void resetAllFields() {
+  setState(() {
+    selectedZone = null;
+    selectedState = null;
+    selectedStateId = null;
+    partNumberController.clear();
+    descriptionController.clear();
+    selectedIndex = null;
+    selectedSupplier.value = null;
+    selectedPartNumberId.value = null;
+    selectedDescriptionId.value = null;
+    showPartNumberDropdown.value = false;
+    showDescriptionDropdown.value = false;
+    fetchedStockDetails.clear();
+    isSearchInvalid.value = false;
+  });
 
+  // Properly reset supplier selection
+  globalSupplierController.selectedSupplierName.value = '';
+  globalSupplierController.selectedSupplierId.value = '';
+  globalSupplierController.selectedSupplierId.value = '';
+  
+  // Clear items
+  globalItemsController.globalItems.clear();
+
+  // Reset "All States" checkbox
+  _controller.selectAllStates.value = false;
+
+  Get.forceAppUpdate();
+}
   void onZoneChanged(String? newValue) async {
     if (newValue != selectedZone) {
       setState(() {
@@ -80,27 +112,28 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
   }
 
   void onStateChanged(String? newValue) {
-    StateDetail? selectedStateDetail = _controller.states.firstWhere(
-      (state) => state.stateName == newValue,
-      orElse: () => StateDetail(stateId: '', stateName: ''),
-    );
+  StateDetail? selectedStateDetail = _controller.states.firstWhere(
+    (state) => state.stateName == newValue,
+    orElse: () => StateDetail(stateId: '', stateName: ''),
+  );
 
-    setState(() {
-      selectedState = newValue;
-      selectedStateId = selectedStateDetail.stateId;
-      fetchedStockDetails.clear();
-      selectedPartNumberId.value = null;
-      selectedDescriptionId.value = null;
-      partNumberController.clear();
-      descriptionController.clear();
-    });
-
-    if (selectedState != null) {
-      print('Selected State: $selectedState, ID: $selectedStateId');
-    } else {
-      print('Selected state is null; ensure state is in the list.');
+  setState(() {
+    selectedState = newValue;
+    selectedStateId = selectedStateDetail.stateId;
+    fetchedStockDetails.clear();
+    
+    // Uncheck "All States" when a specific state is selected
+    if (newValue != null) {
+      _controller.selectAllStates.value = false;
     }
+  });
+
+  if (selectedState != null) {
+    print('Selected State: $selectedState, ID: $selectedStateId');
+  } else {
+    print('Selected state is null; ensure state is in the list.');
   }
+}
 
   void fetchPartNumbersByDescription(String description) {
     final globalsupplierController = Get.find<GlobalsupplierController>();
@@ -182,7 +215,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
     partNumberController.text = item.itemName ?? '';
     selectedPartNumberId.value = item.itemId;
 
-    descriptionController.text = item.desc ?? '';
+    descriptionController.text = item.vehicalApplication ?? '';
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear();
@@ -192,37 +225,23 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
 
   void onSelectDescription(GlobalitemDetail item) {
     FocusScope.of(context).unfocus();
-    descriptionController.text = item.desc ?? '';
+    descriptionController.text = item.vehicalApplication ?? '';
     selectedDescriptionId.value = item.itemId;
 
     globalItemsController.globalItems.clear();
-    fetchPartNumbersByDescription(item.desc!);
+    fetchPartNumbersByDescription(item.vehicalApplication!);
 
     showDescriptionDropdown.value = false;
   }
 
-  void _fetchStockDetails() {
-    String partNo = selectedPartNumberId.value ?? '';
-    print("Part number entered: $partNo");
-    print("Selected State ID: $selectedStateId");
-
-    // If selectedStateId is null, handle it appropriately
-    if (partNo.isEmpty) {
-      AppSnackBar.alert(message: "Please enter a Part Number.");
-      return;
-    }
-
-    print(
-        "Fetching stock details with PartNo: $partNo, StateId: $selectedStateId");
-    fetchedStockDetails.clear();
-    isSearchInvalid.value = false;
-    isSearching.value = true; // Start loading
-
-    // Call the fetchStockDetails method with partNo and consider stateId if it's not null
-    _controller
-        .fetchStockDetails(partNo,
-            selectedStateId ?? '') // Use a default value if stateId is null
-        .then((List<StockDetail> fetchedItems) {
+ void _fetchStockDetails() {
+  String partNo = selectedPartNumberId.value ?? '';
+  
+  // Pass null as stateId when "All States" is selected
+  String? stateIdToSend = _controller.selectAllStates.value ? null : selectedStateId;
+  
+  _controller.fetchStockDetails(partNo, stateIdToSend)
+      .then((List<StockDetail> fetchedItems) {
       setState(() {
         isSearching.value = false; // Stop loading
         if (fetchedItems.isNotEmpty) {
@@ -231,7 +250,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
             'Location': item.location ?? 'N/A',
             'Available Stock': item.availableStock ?? '0.0',
             'Cost Price': item.unitPrice ?? '0.0',
-            'MRP': item.mRP ?? '0.0',
+            'MRP': item.list ?? '0.0',
             'Vehicle Application': item.vehicleApplication,
             'Short Description': item.shortDescription,
             'Product Description': item.productDescription,
@@ -253,10 +272,16 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
     });
   }
 
-  void onSearchPressed() {
-    _fetchStockDetails();
+void onSearchPressed() {
+  // Check if neither a state nor "All States" is selected
+  if (selectedZone != null && selectedState == null && !_controller.selectAllStates.value) {
+    AppSnackBar.alert(message: "Please choose a state or select 'All States'.");
+    return;
   }
 
+  // Proceed with the search
+  _fetchStockDetails();
+}
   void onItemSelected(int index) {
     setState(() {
       if (selectedIndex == index) {
@@ -297,6 +322,13 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
         centerTitle: true,
         backgroundColor: const Color(0xFF161717),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Reset all fields',
+            onPressed: resetAllFields,
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -342,7 +374,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const SizedBox(height: 6),
+                                      const SizedBox(height: 10),
                                       Row(
                                         children: [
                                           Expanded(
@@ -384,8 +416,8 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: _buildTextField(
-                                              label: 'Enter Description',
-                                              hintText: 'Enter  Description...',
+                                              label: 'Enter Vehicle Application',
+                                              hintText: 'Enter  Vehicle Application...',
                                               controller: descriptionController,
                                               onChanged: onDescriptionChanged,
                                               enabled: true,
@@ -415,64 +447,87 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
                                 : const SizedBox.shrink()),
                             const SizedBox(height: 12),
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Expanded(
-                                  child: _buildDropdownField(
-                                    label: 'Choose Zone'.tr,
-                                    hintText: 'Choose Zone'.tr,
-                                    context: context,
-                                    value: selectedZone,
-                                    items: [
-                                      'South Zone',
-                                      'North Zone',
-                                      'East Zone',
-                                      'West Zone'
-                                    ],
-                                    onChanged: onZoneChanged,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: _buildDropdownField(
-                                    label: 'Choose State'.tr,
-                                    hintText: 'Choose State'.tr,
-                                    context: context,
-                                    value: selectedState,
-                                    items: _controller.states
-                                        .map((state) => state.stateName)
-                                        .toList(),
-                                    onChanged: onStateChanged,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Obx(() => ElevatedButton(
-                                      onPressed: isSearching.value
-                                          ? null
-                                          : onSearchPressed, // Disable if searching
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 251, 134, 45),
-                                        foregroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(90),
-                                        ),
-                                        minimumSize: const Size(50, 45),
-                                      ),
-                                      child: isSearching
-                                              .value // If searching, show circular indicator
-                                          ? const CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
-                                            )
-                                          : const Icon(
-                                              Icons.search,
-                                              color: Colors.white,
-                                            ),
-                                    )),
-                              ],
-                            ),
+  crossAxisAlignment: CrossAxisAlignment.end,
+  children: [
+    Expanded(
+      child: _buildDropdownField(
+        label: 'Choose Zone'.tr,
+        hintText: 'Choose Zone'.tr,
+        context: context,
+        value: selectedZone,
+        items: [
+          'South Zone',
+          'North Zone',
+          'East Zone',
+          'West Zone'
+        ],
+        onChanged: onZoneChanged,
+      ),
+    ),
+    const SizedBox(width: 6),
+    Expanded(
+      child: _buildDropdownField(
+        label: 'Choose State'.tr,
+        hintText: 'Choose State'.tr,
+        context: context,
+        value: selectedState,
+        items: _controller.states
+            .map((state) => state.stateName)
+            .toList(),
+        onChanged: onStateChanged,
+      ),
+    ),
+    const SizedBox(width: 6),
+   Row(
+  children: [
+    Obx(() => Checkbox(
+      value: _controller.selectAllStates.value,
+      onChanged: selectedZone != null
+          ? (value) {
+              _controller.selectAllStates.value = value!;
+              if (value) {
+                // When "All States" is checked, clear the selected state
+                setState(() {
+                  selectedState = null;
+                  selectedStateId = null;
+                });
+              }
+            }
+          : null, // Disable if no zone is selected
+    )),
+    Tooltip(
+      message: selectedZone == null 
+          ? "Please select a zone first" 
+          : "Check to include all states",
+      child: Text(
+        'All States',
+        style: TextStyle(
+          color: selectedZone == null ? Colors.grey : null,
+        ),
+      ),
+    ),
+  ],
+),
+    const SizedBox(width: 6),
+    Obx(() => ElevatedButton(
+      onPressed: isSearching.value ? null : onSearchPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 251, 134, 45),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(90),
+        ),
+        minimumSize: const Size(50, 45),
+      ),
+      child: isSearching.value
+          ? const CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2,
+            )
+          : const Icon(Icons.search, color: Colors.white),
+    )),
+  ],
+),
                           ],
                         ),
                       ),
@@ -597,7 +652,7 @@ class _AllBranchStocksPageState extends State<AllBranchStocksPage> {
             return SizedBox(
               height: 40,
               child: ListTile(
-                title: Text(item.desc ?? '',
+                title: Text(item.vehicalApplication ?? '',
                     style: const TextStyle(fontSize: 14.0)),
                 onTap: () {
                   onSelectDescription(item);
@@ -833,8 +888,8 @@ Widget build(BuildContext context) {
             (index + 1).toString(),
             stock.location ?? 'N/A',
             stock.availableStock ?? '0',
-            stock.mRP != null
-                ? double.tryParse(stock.mRP.toString())?.toStringAsFixed(2) ?? '0.0'
+            stock.list != null
+                ? double.tryParse(stock.list.toString())?.toStringAsFixed(2) ?? '0.0'
                 : '0.0',
           ],
         );
@@ -902,7 +957,7 @@ TableRow _buildTableDataRow({
       _buildTableCell("S.No.", isHeader: true, context: context),
       _buildTableCell("Location", isHeader: true, context: context),
       _buildTableCell("Available Stock", isHeader: true, context: context),
-      _buildTableCell("MRP", isHeader: true, context: context),
+      _buildTableCell("List Price", isHeader: true, context: context),
     ],
   );
 }
