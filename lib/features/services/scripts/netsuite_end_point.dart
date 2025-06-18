@@ -144,8 +144,8 @@ class NetSuiteScripts {
 
   static const String surplusStockManagerScriptId = '1772';
   static const String salesExecutivesScriptId = '2630';
-  // static const String sendsalesorderscriptId = '1754';
-  static const String sendsalesorderscriptId = '8400';
+   static const String sendsalesorderscriptId = '1754';
+  // static const String sendsalesorderscriptId = '8400';
   static const String availablestocksunitpricescriptId = '6786';
   static const String tempreceiptscriptId = '1780';
   static const String fetchslbscriptId = '6785';
