@@ -577,7 +577,7 @@ class _NonBilledScreenState extends State<NonBilledScreen> {
                                             ),
                                             children: [
                                               _buildHeaderCell("S.No", context),
-                                              _buildHeaderCell("Dealer code / Name", context),
+                                              _buildHeaderCell("Customer code / Name", context),
                                               _buildHeaderCell("Address", context),
                                               _buildHeaderCell("Last Billed Date", context),
                                               _buildHeaderCell("Credit Limit", context),

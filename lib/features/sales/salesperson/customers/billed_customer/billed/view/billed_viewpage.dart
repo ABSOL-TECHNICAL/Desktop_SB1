@@ -424,7 +424,7 @@ class _BilledScreenState extends State<BilledScreen> {
                                       _buildTableRow(
                                         [
                                           "S.No",
-                                          "Dealer code/name",
+                                          "Customer code/name",
                                           "Address",
                                           "Credit Limit",
                                           "Last Billed Date",
