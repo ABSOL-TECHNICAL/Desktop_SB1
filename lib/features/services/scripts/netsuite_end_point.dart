@@ -149,8 +149,8 @@ class NetSuiteScripts {
   static const String availablestocksunitpricescriptId = '6786';
   static const String tempreceiptscriptId = '1780';
   static const String fetchslbscriptId = '6785';
-    // static const String fetchpacking= '8219';
-        static const String fetchpacking= '8297';
+    static const String fetchpacking= '8219';
+        // static const String fetchpacking= '8297';
   static const String fetchslbvaluescriptId = '6084';
   static const String fetchslbtownlocationscriptId = '6185';
   static const String fetchslbPartnumberValuescriptId = '4751';

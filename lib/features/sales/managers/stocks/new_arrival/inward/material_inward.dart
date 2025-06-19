@@ -280,11 +280,23 @@ class _MaterialInwardPageState extends State<MaterialInwardPage> {
 void  onSearchPressed() async {
     final selectedSupplierId = globalSupplierController.selectedSupplierId.value;
    
-    
-    if (selectedSupplierId == null || selectedSupplierId.isEmpty) {
-      AppSnackBar.alert(message: "Please select a supplier first");
-      return;
-    }
+     final isSupplierOnlySelected =
+      selectedSupplierId.isNotEmpty &&
+      fromDate == 'Choose From Date' &&
+      toDate == 'Choose To Date';
+
+  // ✅ If no fields are properly filled
+  final isIncomplete =
+      selectedSupplierId.isEmpty ||
+      fromDate == 'Choose From Date' ||
+      toDate == 'Choose To Date';
+
+  if (isSupplierOnlySelected || isIncomplete) {
+    AppSnackBar.alert(
+      message: "Please fill all the fields",
+    );
+    return;
+  }
 
    try {
       if (fromDate == 'Choose From Date' && toDate == 'Choose To Date') {
