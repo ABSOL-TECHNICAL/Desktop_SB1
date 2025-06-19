@@ -148,7 +148,7 @@ class _NewCustomersState extends State<NewCustomers> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Current Year\'s Customers (${newCustomerController.customerData[0].customerYear?.length ?? 0})', // Add count in the header
+                    'Current Year\'s New Customers (${newCustomerController.customerData[0].customerYear?.length ?? 0})', // Add count in the header
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF1A1A1A),
