@@ -770,7 +770,7 @@ packingQuantityController.text;
       final out = details[0]['CanBillUpTo'].toString();
       if (out == "0.00" && out != previousValue) {
         previousValue = out;
-        AppSnackBar.alert(message: "Your credit limit is low, so you cannot create an estimate.");
+        AppSnackBar.alert(message: "You don't have enough credit balance to this Customer to made this Transaction.");
       }
     }
   });
